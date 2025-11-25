@@ -13,19 +13,15 @@
 
     /* --- PALETA DE COLORES FINAL --- */
     :root {
-      --color-fondo-pagina: #31302F;       
-      --color-fondo-form: #52504E;         
-      --color-primary: #6F0909;            
-      --color-primary-hover: #792929;      
-      --color-secondary: #792929;          
-      --color-secondary-hover: #6F0909;    
-      --color-danger: #dc3545;             
-      --color-danger-hover: #c82333;       
-      --color-telegram: #0088cc;           /* Color de Telegram */
-      --color-telegram-hover: #0077b3;     
-      --color-dark-text: #31302F;          
-      --color-light-text: #F0EAD1;         
-      --color-input-bg: #F0EAD1;           
+      --color-fondo-pagina: #31302F;       /* Oscuro Suave */
+      --color-fondo-form: #52504E;         /* Gris Cálido (Fondo del Formulario) */
+      --color-primary: #6F0909;            /* Rojo Intenso (Guardar/Borrar Todo) */
+      --color-primary-hover: #792929;      /* Rojo Suave */
+      --color-secondary: #792929;          /* Rojo Suave (Botón Limpiar/Hover) */
+      --color-secondary-hover: #6F0909;    /* Rojo Intenso */
+      --color-dark-text: #31302F;          /* Texto para inputs (fondo claro) */
+      --color-light-text: #F0EAD1;         /* Texto principal (fondo oscuro) */
+      --color-input-bg: #F0EAD1;           /* Fondo de inputs */
       --radius: 0.25rem;
     }
     body {
@@ -55,7 +51,6 @@
       height: 50px;
       width: auto;
     }
-    
     /* --- FORMULARIO Y GRIDS --- */
     form {
       display: grid;
@@ -68,6 +63,7 @@
       border-radius: var(--radius);
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+    /* ESTILOS PARA EL LOGOTIPO DENTRO DEL FORMULARIO */
     .form-logo-container {
         grid-column: span 4; 
         text-align: center;
@@ -80,6 +76,8 @@
         width: auto; 
         opacity: 0.9;
     }
+    /* FIN ESTILOS LOGOTIPO */
+
     label {
         font-weight: 700;
         align-self: center;
@@ -107,12 +105,14 @@
         box-shadow: 0 0 0 0.2rem rgba(111, 9, 9, 0.25);
         outline: none;
     }
-    form > label:nth-child(8), /* Titular Label */
-    form > div:nth-child(9) { /* Titular Input */
+    /* Campos de span 4 (Usuario y Titular) - Se ajustan los índices por el logo */
+    form > label:nth-child(2),
+    form > div:nth-child(3), 
+    form > label:nth-child(8),
+    form > div:nth-child(9) {
         grid-column: span 4;
     }
-    
-    /* --- SUGERENCIAS, BLOQUEO, VALIDACIÓN (Sin cambios) --- */
+    /* --- SUGERENCIAS --- */
     .sugerencias {
       position: absolute;
       top: 100%;
@@ -127,13 +127,28 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       color: var(--color-dark-text);
     }
-    .sugerencia { padding: 8px 10px; cursor: pointer; }
-    .sugerencia:hover, .sugerencia.resaltado { background-color: #d8c9a6; color: var(--color-dark-text); }
-    .bloqueado { background-color: #d8c9a6 !important; border: 1px solid var(--color-primary-hover) !important; cursor: not-allowed; }
-    input:required:invalid { border-left: 5px solid #dc3545; }
-    input:required:valid { border-left: 5px solid #28a745; }
-    
-    /* --- BOTONES DE FORMULARIO --- */
+    .sugerencia {
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+    .sugerencia:hover,
+    .sugerencia.resaltado {
+      background-color: #d8c9a6;
+      color: var(--color-dark-text);
+    }
+    /* --- BLOQUEO Y VALIDACIÓN --- */
+    .bloqueado {
+      background-color: #d8c9a6 !important;
+      border: 1px solid var(--color-primary-hover) !important;
+      cursor: not-allowed;
+    }
+    input:required:invalid {
+      border-left: 5px solid #dc3545;
+    }
+    input:required:valid {
+      border-left: 5px solid #28a745;
+    }
+    /* --- BOTONES --- */
     .button-group-form {
         grid-column: span 4;
         display: flex;
@@ -141,6 +156,11 @@
         margin-top: 10px;
         justify-content: flex-end;
     }
+    .button-group-form button {
+        flex-grow: 0;
+        width: auto;
+    }
+
     button {
       padding: 10px 15px;
       border: none;
@@ -151,15 +171,40 @@
       color: var(--color-light-text);
       margin-right: 5px;
     }
-    #btnGuardar { background-color: var(--color-primary); }
-    #btnGuardar:hover { background-color: var(--color-primary-hover); transform: translateY(-1px); }
-    #btnLimpiar { background-color: var(--color-secondary); }
-    #btnLimpiar:hover { background-color: var(--color-secondary-hover); transform: translateY(-1px); }
-    #btnEliminar { background-color: var(--color-danger); }
-    #btnEliminar:hover { background-color: var(--color-danger-hover); transform: translateY(-1px); }
-    .campo button[type="button"] { background-color: var(--color-secondary); padding: 8px; margin-right: 0; }
-    .campo button[type="button"]:hover { background-color: var(--color-secondary-hover); }
-    button i { margin-right: 8px; font-size: 1.1em; }
+    
+    /* Botón Guardar/Actualizar (Principal) */
+    #btnGuardar {
+        background-color: var(--color-primary);
+    }
+    #btnGuardar:hover {
+        background-color: var(--color-primary-hover);
+        transform: translateY(-1px);
+    }
+
+    /* Botón Limpiar (Secundario) */
+    #btnLimpiar {
+        background-color: var(--color-secondary);
+    }
+    #btnLimpiar:hover {
+        background-color: var(--color-secondary-hover);
+        transform: translateY(-1px);
+    }
+    
+    /* Botón desplegable (🔽) */
+    .campo button[type="button"] {
+        background-color: var(--color-secondary);
+        padding: 8px;
+        margin-right: 0;
+    }
+    .campo button[type="button"]:hover {
+        background-color: var(--color-secondary-hover);
+    }
+
+    /* Iconos dentro de botones */
+    button i {
+        margin-right: 8px;
+        font-size: 1.1em;
+    }
     
     /* --- TABLA --- */
     h2 {
@@ -180,7 +225,6 @@
       border: 1px solid var(--color-secondary);
       text-align: left;
       color: var(--color-light-text);
-      font-size: 0.85rem;
     }
     th {
       background-color: var(--color-primary);
@@ -189,11 +233,18 @@
       position: sticky;
       top: 0;
     }
-    tbody tr:nth-child(even) { background-color: #63615F; }
-    .editando { background-color: var(--color-primary-hover) !important; color: var(--color-light-text); }
-    .editando td { color: var(--color-light-text); }
+    tbody tr:nth-child(even) {
+        background-color: #63615F;
+    }
+    .editando {
+        background-color: var(--color-primary-hover) !important;
+        color: var(--color-light-text);
+    }
+    .editando td {
+        color: var(--color-light-text);
+    }
     .error-carga {
-      color: var(--color-danger);
+      color: #dc3545;
       font-weight: bold;
       margin-top: 15px;
       background-color: var(--color-input-bg);
@@ -217,39 +268,59 @@
       justify-content: space-between;
       width: 100%;
     }
-    .sort-icon { margin-left: 5px; font-size: 0.8em; opacity: 0.5; }
-    .sorted .sort-icon { opacity: 1; color: var(--color-light-text); }
+    .sort-icon {
+      margin-left: 5px;
+      font-size: 0.8em;
+      opacity: 0.5;
+    }
+    .sorted .sort-icon {
+      opacity: 1;
+      color: var(--color-light-text);
+    }
     
-    /* --- GRUPO DE ACCIONES BAJO LA TABLA --- */
+    /* --- GRUPO DE ACCIONES BAJO LA TABLA (AHORA ANTES) --- */
     .actions-group {
         display: flex;
         gap: 15px;
         margin-top: 15px;
+        margin-bottom: 25px; /* Separación de las notas capturadas */
         justify-content: flex-start;
     }
-    #btnExportar { background-color: var(--color-fondo-form); }
-    #btnExportar:hover { background-color: var(--color-secondary); }
-
-    /* Botón de Telegram en la tabla */
-    .btn-telegram {
-        background-color: var(--color-telegram);
-        color: white;
-        padding: 6px 10px;
-        font-size: 0.8rem;
-        border-radius: var(--radius);
-        transition: background-color 0.2s;
+    
+    /* Botón Exportar */
+    #btnExportar {
+        background-color: var(--color-fondo-form);
     }
-    .btn-telegram:hover {
-        background-color: var(--color-telegram-hover);
+    #btnExportar:hover {
+        background-color: var(--color-secondary); /* Usa Rojo Suave para hover */
     }
     
+    /* Botón Borrar Todo (Destructivo) */
+    #btnBorrarTodo {
+        background-color: var(--color-primary); 
+    }
+    #btnBorrarTodo:hover {
+        background-color: var(--color-primary-hover); 
+        transform: translateY(-1px);
+    }
+    
+    /* Ajuste para el botón Editar */
+    .btn-accion-tabla {
+        padding: 8px 12px;
+        background-color: var(--color-secondary); 
+        color: var(--color-light-text); /* Asegura texto claro */
+    }
+    .btn-accion-tabla:hover {
+        background-color: var(--color-secondary-hover);
+    }
+
     /* --- ESTILOS RESPONSIVE (MÓVIL) --- */
     @media (max-width: 768px) {
         body { padding: 10px; }
         header { flex-direction: column; align-items: flex-start; padding: 10px; }
         form { grid-template-columns: 1fr; gap: 10px; padding: 15px; }
         form > label, form > div, .button-group-form, .form-logo-container { grid-column: span 1 !important; justify-content: space-around; }
-        .button-group-form button { width: 48%; margin-right: 0; }
+        .button-group-form button { width: 48%; }
         .actions-group { flex-direction: column; }
         
         table, thead, tbody, th, td, tr { display: block; }
@@ -289,7 +360,7 @@
 
   <form>
     <div class="form-logo-container">
-        <img src="./logo.png" alt="Logotipo del Formulario"> 
+        <img src="./logo.png" alt="Logotipo del Formulario">
     </div>
 
     <label for="usuario">Usuario:</label>
@@ -306,13 +377,6 @@
       <label for="checkFecha">🔒</label>
     </div>
 
-    <label for="titular">Titular:</label>
-    <div class="campo">
-      <input type="text" id="titular" name="titular" required>
-      <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')">
-      <label for="checkTitular">🔒</label>
-    </div>
-    
     <label for="radiodifusora">Radiodifusora:</label>
     <div class="campo">
       <input type="text" id="radiodifusora" name="radiodifusora" autocomplete="off" required>
@@ -322,22 +386,29 @@
       <div id="sugRadiodifusora" class="sugerencias"></div>
     </div>
 
-    <label for="programa">Programa:</label>
+    <label for="titular">Titular:</label>
     <div class="campo">
-      <input type="text" id="programa" name="programa">
-      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button> 
-      <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
-      <label for="checkPrograma">🔒</label>
-      <div id="sugPrograma" class="sugerencias"></div> 
+      <input type="text" id="titular" name="titular" required>
+      <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')">
+      <label for="checkTitular">🔒</label>
     </div>
 
     <label for="autor">Autor:</label>
     <div class="campo">
-      <input type="text" id="autor" name="autor">
-      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button> 
+      <input type="text" id="autor" name="autor" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button>
       <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')">
       <label for="checkAutor">🔒</label>
-      <div id="sugAutor" class="sugerencias"></div> 
+      <div id="sugAutor" class="sugerencias"></div>
+    </div>
+
+    <label for="programa">Programa:</label>
+    <div class="campo">
+      <input type="text" id="programa" name="programa" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button>
+      <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
+      <label for="checkPrograma">🔒</label>
+      <div id="sugPrograma" class="sugerencias"></div>
     </div>
 
     <label for="dependencia">Dependencia:</label>
@@ -402,12 +473,8 @@
       <label for="checkMunicipio">🔒</label>
       <div id="sugMunicipio" class="sugerencias"></div>
     </div>
-    
-    <div class="button-group-form">
-      <button type="button" id="btnEliminar" style="display: none;" onclick="borrarNota()">
-        <i class="fa-solid fa-trash-can"></i> Borrar Nota
-      </button>
 
+    <div class="button-group-form">
       <button type="submit" id="btnGuardar">
         <i class="fa-solid fa-floppy-disk"></i> Guardar
       </button>
@@ -418,14 +485,22 @@
     </div>
   </form>
 
-  <h2>Notas capturadas</h2>
+  <div class="actions-group">
+    <button id="btnExportar" onclick="exportarCSV()">
+      <i class="fa-solid fa-file-csv"></i> Exportar a hoja de cálculo
+    </button>
+    
+    <button id="btnBorrarTodo" onclick="borrarTodo()">
+      <i class="fa-solid fa-trash-can"></i> Borrar Todas
+    </button>
+  </div>
+  
   <div id="erroresCarga" class="error-carga"></div>
-
+  
+  <h2>Notas capturadas</h2>
   <table id="tablaNotas">
     <thead>
       <tr>
-        <th data-col="ordenCaptura"><div class="sortable-header"># <span class="sort-icon"></span></div></th> 
-        
         <th data-col="usuario"><div class="sortable-header">Usuario <span class="sort-icon"></span></div></th>
         <th data-col="fecha"><div class="sortable-header">Fecha <span class="sort-icon"></span></div></th>
         <th data-col="radiodifusora"><div class="sortable-header">Radiodifusora <span class="sort-icon"></span></div></th>
@@ -439,8 +514,6 @@
         <th data-col="tema"><div class="sortable-header">Tema <span class="sort-icon"></span></div></th>
         <th data-col="estatus"><div class="sortable-header">Estatus <span class="sort-icon"></span></div></th>
         <th data-col="municipio"><div class="sortable-header">Municipio <span class="sort-icon"></span></div></th>
-        
-        <th>Telegram</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -448,43 +521,30 @@
   </table>
   <br>
 
-  <div class="actions-group">
-    <button id="btnExportar" onclick="exportarCSV()">
-      <i class="fa-solid fa-file-csv"></i> Exportar a hoja de cálculo
-    </button>
-  </div>
-  
-
   <script>
     let notas = [];
     let filaEnEdicion = null;
-    let nextOrdenCaptura = 1; // Contador para la numeración de notas
-    
-    // ✅ ACTUALIZADO: Añadir ordenCaptura al principio
-    const camposDeDatos = ["ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
-    
-    // ✅ ACTUALIZADO: Añadir # a los encabezados
+    // MODIFICADO: Campos adaptados a Radio
+    const camposDeDatos = ["usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
     const encabezadosTabla = {
-        "ordenCaptura": "#", "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor", 
+        "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor", 
         "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género", 
-        "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "telegram": "Telegram", "acciones": "Acciones"
+        "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "acciones": "Acciones"
     };
     
-    // ✅ ACTUALIZADO: Orden por defecto es ordenCaptura descendente (la última nota arriba)
-    let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' }; 
+    let ordenActual = { columna: 'fecha', direccion: 'desc' }; 
 
-    // Rutas de archivos CSV (Sin cambios)
+    // MODIFICADO: Rutas relativas y archivos de radio
     const urls = {
       dependencias: "./Dependencia.csv",
-      radiodifusoras: "./Radiodifusora.csv", 
+      radiodifusoras: "./Radiodifusora.csv",
       generos: "./Genero.csv",
       estatus: "./Estatus.csv",
       temas: "./Tema.csv",
       municipios: "./Municipio.csv",
-      autores: "./Autor.csv" 
+      autores: "./Autor.csv" // Añadido
     };
     
-    // --- Funciones de Utilidad (Sin cambios) ---
     function findKeyCaseInsensitive(map, value) {
         if (!value) return null;
         const lowerValue = value.toLowerCase();
@@ -497,24 +557,15 @@
     }
 
     async function cargarCSV(url) {
-      // ... (código de carga CSV sin cambios) ...
       try {
         const urlConCacheBuster = `${url}?t=${new Date().getTime()}`;
         const res = await fetch(urlConCacheBuster);
-        
-        const contentType = res.headers.get("content-type");
-        if (contentType && !contentType.includes("text/csv") && !contentType.includes("text/plain")) {
-            if (contentType.includes("text/html")) {
-                throw new Error(`Contenido cargado es HTML. Revise la ruta de su archivo CSV: ${url}`);
-            }
-        }
-        
         const buffer = await res.arrayBuffer(); 
         const decoder = new TextDecoder('utf-8'); 
         const texto = decoder.decode(buffer); 
         return texto.split('\n').map(linea => linea.split(','));
       } catch (e) {
-        document.getElementById("erroresCarga").innerText += `Error al cargar ${url}. Posible causa: Archivo no encontrado o contenido incorrecto. Detalles: ${e.message}.\n`;
+        document.getElementById("erroresCarga").innerText += `Error al cargar ${url} (problema de codificación o red).\n`;
         return [];
       }
     }
@@ -548,7 +599,6 @@
     }
 
     function autocompletar(idCampo, idSugerencias, lista, callback) {
-      // ... (código autocompletar sin cambios) ...
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
       campo.dataset.lista = JSON.stringify(lista);
@@ -602,23 +652,14 @@
             }
         });
       });
-      
-      campo.addEventListener("blur", () => {
-          setTimeout(() => {
-              if (!contenedor.contains(document.activeElement)) {
-                  contenedor.innerHTML = "";
-              }
-          }, 150); 
-      });
 
       function resaltar(items, i) {
         items.forEach(el => el.classList.remove("resaltado"));
         items[i].classList.add("resaltado");
       }
     }
-    
+
     function mostrarSugerencias(idCampo, idSugerencias) {
-      // ... (código mostrarSugerencias sin cambios) ...
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
       document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = "");
@@ -633,32 +674,32 @@
         div.onclick = () => {
           campo.value = s;
           contenedor.innerHTML = "";
+          // Si es radiodifusora, forzar el evento blur para cargar programas
           if (idCampo === 'radiodifusora') {
               document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
           }
+          // Si es dependencia, forzar el evento blur para cargar organismos
           if (idCampo === 'dependencia') {
               document.getElementById("dependencia").dispatchEvent(new Event('blur'));
           }
         };
         contenedor.appendChild(div);
       });
-      if (lista.length > 0) {
-        contenedor.style.display = 'block';
-      }
-    }
-
-    // --- Funciones de Almacenamiento y Tabla ---
-    
-    function resetearEstadoEdicion() {
-        filaEnEdicion = null;
-        document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-        document.getElementById('btnEliminar').style.display = 'none';
-        document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
     }
 
     function guardarNotas() {
         localStorage.setItem('notasCapturadas', JSON.stringify(notas));
-        localStorage.setItem('nextOrdenCaptura', nextOrdenCaptura); // Guardar el contador
+    }
+
+    function borrarTodo() {
+        if (confirm("¿Estás seguro de que quieres BORRAR TODAS las notas capturadas? Esta acción es irreversible.")) {
+            notas = []; 
+            localStorage.removeItem('notasCapturadas'); 
+            renderizarTabla(); 
+            document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+            filaEnEdicion = null;
+            document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
+        }
     }
 
     function renderizarTabla() {
@@ -667,7 +708,7 @@
         
         notas.forEach((nota, indice) => {
             const tr = document.createElement("tr");
-            tr.dataset.index = notas.indexOf(nota);
+            tr.dataset.index = notas.indexOf(nota); 
 
             camposDeDatos.forEach(campo => {
                 const td = document.createElement("td");
@@ -676,17 +717,6 @@
                 tr.appendChild(td);
             });
             
-            // ✅ COLUMNA TELEGRAM
-            const tdTelegram = document.createElement("td");
-            tdTelegram.setAttribute('data-label', encabezadosTabla['telegram']);
-            const btnTelegram = document.createElement("button");
-            btnTelegram.textContent = "Enviar";
-            btnTelegram.classList.add('btn-telegram'); 
-            btnTelegram.onclick = function() { enviarTelegram(indice); };
-            tdTelegram.appendChild(btnTelegram);
-            tr.appendChild(tdTelegram);
-            
-            // COLUMNA ACCIONES
             const tdAcciones = document.createElement("td");
             tdAcciones.setAttribute('data-label', encabezadosTabla['acciones']);
             const btnEditar = document.createElement("button");
@@ -702,23 +732,10 @@
 
     function cargarNotasGuardadas() {
         const datosJSON = localStorage.getItem('notasCapturadas');
-        const ordenJSON = localStorage.getItem('nextOrdenCaptura');
-
-        if (ordenJSON) {
-            nextOrdenCaptura = parseInt(ordenJSON, 10);
-        }
-
         if (datosJSON) {
             try {
                 notas = JSON.parse(datosJSON);
-                // Asegurar que todas las notas tengan ordenCaptura
-                notas.forEach(nota => {
-                    if (!nota.ordenCaptura) {
-                         // Esto solo debería suceder con notas muy viejas sin la propiedad
-                        nota.ordenCaptura = nextOrdenCaptura++; 
-                    }
-                });
-                ordenarTabla(ordenActual.columna, true);
+                ordenarTabla(ordenActual.columna, true); 
             } catch (e) {
                 console.error("Error al cargar notas de localStorage:", e);
                 notas = [];
@@ -727,8 +744,7 @@
             actualizarIndicadoresOrden();
         }
     }
-    
-    // --- Funciones de Edición/Eliminación/Bloqueo (Sin cambios) ---
+
     function alternarBloqueo(idCampo) {
         const campo = document.getElementById(idCampo);
         const checkboxId = `check${idCampo.charAt(0).toUpperCase() + idCampo.slice(1)}`;
@@ -744,90 +760,34 @@
         const indice = parseInt(tr.dataset.index);
         const nota = notas[indice];
 
-        // Se excluye ordenCaptura del llenado del formulario ya que es un ID
-        const camposFormulario = camposDeDatos.filter(c => c !== 'ordenCaptura');
-        camposFormulario.forEach(id => {
+        camposDeDatos.forEach(id => {
             document.getElementById(id).value = nota[id];
         });
 
-        resetearEstadoEdicion(); 
+        filaEnEdicion = null; 
         
         document.getElementById("dependencia").dispatchEvent(new Event('blur'));
-        document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
+        // MODIFICADO: Usar radiodifusora
+        document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
         
         filaEnEdicion = indice; 
         document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Actualizar Nota';
         
-        document.getElementById('btnEliminar').style.display = 'inline-block';
-
         document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
         tr.classList.add('editando');
         
         window.scrollTo(0, 0);
     }
-    
-    function borrarNota() {
-        if (filaEnEdicion !== null) {
-            const confirmar = confirm(`¿Está seguro de que desea eliminar la nota #${notas[filaEnEdicion].ordenCaptura} del titular: "${notas[filaEnEdicion].titular}"?`);
-            if (confirmar) {
-                notas.splice(filaEnEdicion, 1);
-                guardarNotas();
-                ordenarTabla(ordenActual.columna, true); 
-                document.querySelector("form").reset(); 
-                resetearEstadoEdicion(); 
-            }
-        }
-    }
 
-    // --- Funcionalidad de Telegram (Nueva) ---
-    function enviarTelegram(indice) {
-        const nota = notas[indice];
-        
-        // Formato del mensaje
-        const mensaje = `
-*--- NOTA DE RADIO #${nota.ordenCaptura} ---*
-
-*Titular:* ${nota.titular}
-*Fecha:* ${nota.fecha}
-*Medio:* ${nota.radiodifusora}
-*Programa:* ${nota.programa || 'N/A'}
-*Autor:* ${nota.autor || 'N/A'}
-
-*Estatus:* ${nota.estatus || 'N/A'}
-*Género:* ${nota.genero || 'N/A'}
-*Tema:* ${nota.tema || 'N/A'}
-*Canal:* ${nota.canal || 'N/A'}
-*Municipio:* ${nota.municipio || 'N/A'}
-
-*Dependencia:* ${nota.dependencia || 'N/A'}
-*Organismo:* ${nota.organismo || 'N/A'}
-
-_Capturado por: ${nota.usuario}_
-        `.trim();
-        
-        const mensajeCodificado = encodeURIComponent(mensaje);
-        
-        // NOTA: Reemplace 'TU_BOT_USERNAME' o 'ID_DEL_CHAT' con la información real.
-        // La URL de un bot API es preferible, pero una URL de chat directo funciona para demostración.
-        // Si no se tiene un bot, se puede intentar abrir Telegram para compartir el texto.
-        const telegramUrl = `https://t.me/share/url?text=${mensajeCodificado}`;
-
-        window.open(telegramUrl, '_blank');
-    }
-
-
-    // --- Funciones de Exportación y Ordenamiento (Sin cambios funcionales) ---
     function exportarCSV() {
-      // Se añade 'ordenCaptura' al principio de las cabeceras
-      const cabeceras = ["#", "Usuario", "Fecha", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
+      // MODIFICADO: Cabeceras de Radio
+      const cabeceras = ["Usuario", "Fecha", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
       const filas = [cabeceras];
       
-      const camposExport = ["ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
-
       notas.forEach(nota => {
-        const fila = camposExport.map(key => {
+        const fila = camposDeDatos.map(key => {
             let valor = nota[key] || '';
-            return `"${valor.toString().replace(/"/g, '""')}"`; 
+            return `"${valor.replace(/"/g, '""')}"`; 
         });
         filas.push(fila);
       });
@@ -837,7 +797,7 @@ _Capturado por: ${nota.usuario}_
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "notas_radio_capturadas.csv"; 
+      a.download = "notas_radio_capturadas.csv";
       a.click();
       URL.revokeObjectURL(url);
     }
@@ -849,8 +809,8 @@ _Capturado por: ${nota.usuario}_
         
         if (ordenActual.columna === columna && !esInicial) {
             direccion = ordenActual.direccion === 'asc' ? 'desc' : 'asc';
-        } else if (esInicial && columna === 'ordenCaptura') {
-            direccion = 'desc'; // Por defecto: la última nota capturada va arriba
+        } else if (esInicial && columna === 'fecha') {
+            direccion = 'desc';
         }
 
         notas.sort((a, b) => {
@@ -863,9 +823,6 @@ _Capturado por: ${nota.usuario}_
                 const dateB = new Date(valB + 'T00:00:00');
                 if (dateA < dateB) comparacion = -1;
                 if (dateA > dateB) comparacion = 1;
-            } else if (columna === 'ordenCaptura') {
-                // Comparación numérica para el ID de nota
-                comparacion = valA - valB;
             } else {
                 comparacion = valA.localeCompare(valB, 'es', { sensitivity: 'base' });
             }
@@ -901,20 +858,20 @@ _Capturado por: ${nota.usuario}_
     // --- Eventos ---
 
     document.addEventListener("DOMContentLoaded", async () => {
-      let orgMap, programaMap; 
+      let orgMap, programaMap;
 
-      // Carga de listas (Sin cambios)
       const depData = await cargarMapa(urls.dependencias);
       orgMap = depData.map;
       autocompletar("dependencia", "sugDep", depData.claves, dep => {
         autocompletar("organismo", "sugOrg", orgMap[dep] || []);
       });
-      
+
+      // MODIFICADO: Lógica de Radiodifusora -> Programa
       const radioData = await cargarMapa(urls.radiodifusoras);
       programaMap = radioData.map;
       autocompletar("radiodifusora", "sugRadiodifusora", radioData.claves, radio => {
         const programas = programaMap[radio] || [];
-        autocompletar("programa", "sugPrograma", programas); 
+        autocompletar("programa", "sugPrograma", programas);
         if (programas.length === 1) {
           document.getElementById("programa").value = programas[0];
         }
@@ -951,10 +908,100 @@ _Capturado por: ${nota.usuario}_
       });
       
       autocompletar("organismo", "sugOrg", []); 
-      autocompletar("programa", "sugPrograma", []); 
+      autocompletar("programa", "sugPrograma", []); // Inicializar vacío
 
       autocompletar("genero", "sugGenero", await cargarLista(urls.generos));
       autocompletar("estatus", "sugEstatus", await cargarLista(urls.estatus));
       autocompletar("tema", "sugTema", await cargarLista(urls.temas));
       autocompletar("municipio", "sugMunicipio", await cargarLista(urls.municipios));
-      autocompletar("autor", "sugAutor", await
+      // MODIFICADO: Carga de autor y canal (relativo)
+      autocompletar("autor", "sugAutor", await cargarLista(urls.autores)); 
+      autocompletar("canal", "sugCanal", await cargarLista("./Canal.csv"));
+
+      // Persistencia
+      camposDeDatos.forEach(id => {
+        const campo = document.getElementById(id);
+        
+        if (localStorage.getItem(id)) campo.value = localStorage.getItem(id);
+        
+        campo.addEventListener("input", () => {
+          localStorage.setItem(id, campo.value);
+        });
+
+        const checkboxId = `check${id.charAt(0).toUpperCase() + id.slice(1)}`;
+        const checkbox = document.getElementById(checkboxId);
+        const isBlocked = localStorage.getItem(`bloqueado_${id}`) === 'true';
+
+        if (checkbox) {
+            checkbox.checked = isBlocked;
+            alternarBloqueo(id);
+        }
+      });
+      
+      cargarNotasGuardadas();
+
+      document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
+          th.addEventListener('click', () => {
+              ordenarTabla(th.dataset.col);
+          });
+      });
+
+      document.querySelector("form").addEventListener('reset', () => {
+          setTimeout(() => {
+              document.getElementById('titular').focus();
+              document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+              filaEnEdicion = null;
+              document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
+          }, 10);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.campo')) {
+            document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = "");
+        }
+      });
+    });
+
+    document.querySelector("form").addEventListener("submit", e => {
+      e.preventDefault();
+      
+      const nuevaNota = {};
+      camposDeDatos.forEach(id => {
+        nuevaNota[id] = document.getElementById(id).value.trim();
+      });
+
+      if (filaEnEdicion !== null) {
+          notas[filaEnEdicion] = nuevaNota;
+          
+          document.querySelector(`tr[data-index="${filaEnEdicion}"]`).classList.remove('editando');
+          filaEnEdicion = null;
+          document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+          
+      } else {
+          notas.push(nuevaNota);
+      }
+      
+      guardarNotas();
+      ordenarTabla('fecha', true); 
+      
+      camposDeDatos.forEach(id => {
+          const campo = document.getElementById(id);
+          const isBlocked = localStorage.getItem(`bloqueado_${id}`) === 'true';
+          
+          if (!isBlocked) {
+              campo.value = '';
+              localStorage.removeItem(id); 
+          } else {
+              localStorage.setItem(id, campo.value);
+          }
+      });
+
+      document.getElementById('titular').focus();
+    });
+  </script>
+
+  <footer>
+    © 2025 Institución Pública. Todos los derechos reservados.
+  </footer>
+</body>
+</html>
