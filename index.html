@@ -377,13 +377,16 @@
     <label for="autor">Autor:</label>
     <div class="campo">
       <input type="text" id="autor" name="autor">
+      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button> 
       <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')">
       <label for="checkAutor">🔒</label>
+      <div id="sugAutor" class="sugerencias"></div> 
     </div>
 
     <label for="programa">Programa:</label>
     <div class="campo">
       <input type="text" id="programa" name="programa">
+      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button> 
       <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
       <label for="checkPrograma">🔒</label>
       <div id="sugPrograma" class="sugerencias"></div> 
@@ -511,7 +514,7 @@
     
     let ordenActual = { columna: 'fecha', direccion: 'desc' }; 
 
-    // ✅ CORRECCIÓN CRÍTICA: Rutas de archivos CSV apuntando a la misma carpeta (Rutas Relativas)
+    // Rutas de archivos CSV apuntando a la misma carpeta (Rutas Relativas)
     const urls = {
       dependencias: "./Dependencia.csv",
       radiodifusoras: "./Radiodifusora.csv", // Archivo de radio
@@ -854,7 +857,7 @@
         autocompletar("organismo", "sugOrg", orgMap[dep] || []);
       });
       
-      // ✅ Carga de radiodifusora -> programa
+      // Carga de radiodifusora -> programa
       const radioData = await cargarMapa(urls.radiodifusoras);
       programaMap = radioData.map;
       autocompletar("radiodifusora", "sugRadiodifusora", radioData.claves, radio => {
@@ -906,7 +909,10 @@
       autocompletar("tema", "sugTema", await cargarLista(urls.temas));
       autocompletar("municipio", "sugMunicipio", await cargarLista(urls.municipios));
       
-      // ✅ CORRECCIÓN: Carga de Canal.csv con ruta relativa
+      // ✅ CORRECCIÓN: Carga de Autor.csv (Asegúrese de crear este archivo)
+      autocompletar("autor", "sugAutor", await cargarLista("./Autor.csv")); 
+      
+      // Carga de Canal.csv con ruta relativa
       autocompletar("canal", "sugCanal", await cargarLista("./Canal.csv")); 
 
       // Persistencia
