@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>Sistema de Captura de Notas - Radio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    /* Aquí mantienes los mismos estilos que en capturanotas */
+    /* ... (todo tu bloque CSS original) ... */
+  </style>
+</head>
+<body>
+  <header>
+    <img src="./logo.png" alt="Logotipo institucional">
+    <h1>Sistema de Captura de Notas - Radio</h1>
+  </header>
+
+  <form>
+    <div class="form-logo-container">
+        <img src="./logo.png" alt="Logotipo del Formulario"> 
+    </div>
+
+    <label for="usuario">Usuario:</label>
+    <div class="campo">
+      <input type="text" id="usuario" name="usuario" required>
+      <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')">
+      <label for="checkUsuario">🔒</label>
+    </div>
+    
+    <label for="fecha">Fecha:</label>
+    <div class="campo">
+      <input type="date" id="fecha" name="fecha" required>
+      <input type="checkbox" id="checkFecha" onchange="alternarBloqueo('fecha')">
+      <label for="checkFecha">🔒</label>
+    </div>
+
+    <!-- CAMBIO: Medio → Radiodifusora -->
+    <label for="radiodifusora">Radiodifusora:</label>
+    <div class="campo">
+      <input type="text" id="radiodifusora" name="radiodifusora" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('radiodifusora','sugRadio')">🔽</button>
+      <input type="checkbox" id="checkRadiodifusora" onchange="alternarBloqueo('radiodifusora')">
+      <label for="checkRadiodifusora">🔒</label>
+      <div id="sugRadio" class="sugerencias"></div>
+    </div>
+
+    <label for="titular">Titular:</label>
+    <div class="campo">
+      <input type="text" id="titular" name="titular" required>
+      <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')">
+      <label for="checkTitular">🔒</label>
+    </div>
+
+    <!-- CAMBIO: Firma → Autor -->
+    <label for="autor">Autor:</label>
+    <div class="campo">
+      <input type="text" id="autor" name="autor">
+      <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')">
+      <label for="checkAutor">🔒</label>
+    </div>
+
+    <!-- CAMBIO: Página → Programa -->
+    <label for="programa">Programa:</label>
+    <div class="campo">
+      <select id="programa" name="programa" required></select>
+      <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
+      <label for="checkPrograma">🔒</label>
+    </div>
+
+    <!-- Los demás campos igual que en capturanotas -->
+    <label for="dependencia">Dependencia:</label>
+    <div class="campo">
+      <input type="text" id="dependencia" name="dependencia" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('dependencia','sugDep')">🔽</button>
+      <div id="sugDep" class="sugerencias"></div>
+    </div>
+
+    <label for="genero">Género:</label>
+    <div class="campo">
+      <input type="text" id="genero" name="genero" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('genero','sugGenero')">🔽</button>
+      <div id="sugGenero" class="sugerencias"></div>
+    </div>
+
+    <label for="tema">Tema:</label>
+    <div class="campo">
+      <input type="text" id="tema" name="tema" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('tema','sugTema')">🔽</button>
+      <div id="sugTema" class="sugerencias"></div>
+    </div>
+
+    <label for="estatus">Estatus:</label>
+    <div class="campo">
+      <input type="text" id="estatus" name="estatus" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('estatus','sugEstatus')">🔽</button>
+      <div id="sugEstatus" class="sugerencias"></div>
+    </div>
+
+    <label for="municipio">Municipio:</label>
+    <div class="campo">
+      <input type="text" id="municipio" name="municipio" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('municipio','sugMunicipio')">🔽</button>
+      <div id="sugMunicipio" class="sugerencias"></div>
+    </div>
+
+    <div class="button-group-form">
+      <button type="submit" id="btnGuardar">
+        <i class="fa-solid fa-floppy-disk"></i> Guardar
+      </button>
+      <button type="button" id="btnEliminar" style="display: none;" onclick="eliminarNotaEnEdicion()">
+        <i class="fa-solid fa-trash-can"></i> Eliminar
+      </button>
+      <button type="reset" id="btnLimpiar">
+        <i class="fa-solid fa-broom"></i> Limpiar
+      </button>
+    </div>
+  </form>
+
+  <h2>Notas capturadas</h2>
+  <table id="tablaNotas">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Usuario</th>
+        <th>Fecha</th>
+        <th>Radiodifusora</th>
+        <th>Titular</th>
+        <th>Autor</th>
+        <th>Programa</th>
+        <th>Dependencia</th>
+        <th>Organismo</th>
+        <th>Género</th>
+        <th>Canal</th>
+        <th>Tema</th>
+        <th>Estatus</th>
+        <th>Municipio</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    let notas = [];
+    let filaEnEdicion = null;
+    let nextOrdenCaptura = 1;
+
+    const camposDeDatos = ["usuario","fecha","radiodifusora","titular","autor","programa","dependencia","organismo","genero","canal","tema","estatus","municipio"];
+
+    const encabezadosTabla = {
+      "ordenCaptura":"No.",
+      "usuario":"Usuario","fecha":"Fecha","radiodifusora":"Radiodifusora","titular":"Titular","autor":"Autor",
+      "programa":"Programa","dependencia":"Dependencia","organismo":"Organismo","genero":"Género",
+      "canal":"Canal","tema":"Tema","estatus":"Estatus","municipio":"Municipio","acciones":"Acciones"
+    };
+
+    // Dependencia Radiodifusora → Programa
+    document.getElementById('radiodifusora').addEventListener('change', function() {
+      const seleccion = this.value.trim();
+      const programaSelect = document.getElementById('programa');
+      programaSelect.innerHTML = '';
+
+      fetch('Canal.csv')
+        .then(response => response.text())
+        .then(data => {
+          const filas = data.trim().split('\n').slice(1);
+          filas.forEach(fila => {
+            const [radioId, programa] = fila.split(',');
+            if (radioId.trim() === seleccion) {
+              const option = document.createElement('option');
+              option.value = programa.trim();
+              option.textContent = programa.trim();
+              programaSelect.appendChild(option);
+            }
+          });
+        });
+    });
+
+    // Aquí mantienes todas las funciones de capturanotas: guardarNotas, renderizarTabla, editar, borrar, exportar, etc.
+    // ... (tu bloque JS original adaptado con los nuevos campos) ...
+  </script>
+</body>
+</html>
