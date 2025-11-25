@@ -499,10 +499,10 @@
     let notas = [];
     let filaEnEdicion = null;
     
-    // NOMBRES DE CAMPOS ACTUALIZADOS
+    // NOMBRES DE CAMPOS ACTUALIZADOS (Radio)
     const camposDeDatos = ["usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
     
-    // ENCABEZADOS DE TABLA ACTUALIZADOS
+    // ENCABEZADOS DE TABLA ACTUALIZADOS (Radio)
     const encabezadosTabla = {
         "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor", 
         "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género", 
@@ -511,10 +511,10 @@
     
     let ordenActual = { columna: 'fecha', direccion: 'desc' }; 
 
-    // ✅ CORRECCIÓN: Rutas de archivos CSV apuntando a la misma carpeta (Rutas Relativas)
+    // ✅ CORRECCIÓN CRÍTICA: Rutas de archivos CSV apuntando a la misma carpeta (Rutas Relativas)
     const urls = {
       dependencias: "./Dependencia.csv",
-      radiodifusoras: "./Radiodifusora.csv", 
+      radiodifusoras: "./Radiodifusora.csv", // Archivo de radio
       generos: "./Genero.csv",
       estatus: "./Estatus.csv",
       temas: "./Tema.csv",
@@ -537,11 +537,9 @@
         const urlConCacheBuster = `${url}?t=${new Date().getTime()}`;
         const res = await fetch(urlConCacheBuster);
         
-        // 🚨 VERIFICACIÓN CRÍTICA: Si el fetch no es un texto plano, puede ser el HTML de un error 404.
+        // 🚨 VERIFICACIÓN: Si el fetch no es un texto plano, puede ser el HTML de un error 404.
         const contentType = res.headers.get("content-type");
-        // Esta verificación ayuda a detectar si se está cargando HTML de error 404 en lugar de CSV/TXT
         if (contentType && !contentType.includes("text/csv") && !contentType.includes("text/plain")) {
-            // Si el contenido es HTML, es casi seguro un error 404 o un problema de ruta.
             if (contentType.includes("text/html")) {
                 throw new Error(`Contenido cargado es HTML. Revise la ruta de su archivo CSV: ${url}`);
             }
@@ -856,7 +854,7 @@
         autocompletar("organismo", "sugOrg", orgMap[dep] || []);
       });
       
-      // Carga de radiodifusora -> programa
+      // ✅ Carga de radiodifusora -> programa
       const radioData = await cargarMapa(urls.radiodifusoras);
       programaMap = radioData.map;
       autocompletar("radiodifusora", "sugRadiodifusora", radioData.claves, radio => {
@@ -900,7 +898,7 @@
       });
       
       autocompletar("organismo", "sugOrg", []); 
-      autocompletar("programa", "sugPrograma", []); // Inicialización del campo dependiente
+      autocompletar("programa", "sugPrograma", []); 
 
       // Se mantienen los demás campos
       autocompletar("genero", "sugGenero", await cargarLista(urls.generos));
