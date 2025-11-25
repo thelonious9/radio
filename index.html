@@ -386,6 +386,7 @@
       <input type="text" id="programa" name="programa">
       <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
       <label for="checkPrograma">🔒</label>
+      <div id="sugPrograma" class="sugerencias"></div> 
     </div>
 
     <label for="dependencia">Dependencia:</label>
@@ -498,10 +499,10 @@
     let notas = [];
     let filaEnEdicion = null;
     
-    // ⚠️ CAMPO DE DATOS ACTUALIZADO
+    // NOMBRES DE CAMPOS ACTUALIZADOS
     const camposDeDatos = ["usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
     
-    // ⚠️ ENCABEZADOS DE TABLA ACTUALIZADOS
+    // ENCABEZADOS DE TABLA ACTUALIZADOS
     const encabezadosTabla = {
         "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor", 
         "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género", 
@@ -510,15 +511,14 @@
     
     let ordenActual = { columna: 'fecha', direccion: 'desc' }; 
 
-    // ⚠️ URLs DE ARCHIVOS CSV ACTUALIZADAS
+    // ✅ CORRECCIÓN: Rutas de archivos CSV apuntando a la misma carpeta (Rutas Relativas)
     const urls = {
-      dependencias: "https://thelonious9.github.io/capturanotas/Dependencia.csv",
-      // Cambio de medios a radiodifusora.csv (que contiene el mapa Radiodifusora -> Programa)
-      radiodifusoras: "https://thelonious9.github.io/capturanotas/Radiodifusora.csv", 
-      generos: "https://thelonious9.github.io/capturanotas/Genero.csv",
-      estatus: "https://thelonious9.github.io/capturanotas/Estatus.csv",
-      temas: "https://thelonious9.github.io/capturanotas/Tema.csv",
-      municipios: "https://thelonious9.github.io/capturanotas/Municipio.csv"
+      dependencias: "./Dependencia.csv",
+      radiodifusoras: "./Radiodifusora.csv", 
+      generos: "./Genero.csv",
+      estatus: "./Estatus.csv",
+      temas: "./Tema.csv",
+      municipios: "./Municipio.csv"
     };
     
     function findKeyCaseInsensitive(map, value) {
@@ -536,18 +536,31 @@
       try {
         const urlConCacheBuster = `${url}?t=${new Date().getTime()}`;
         const res = await fetch(urlConCacheBuster);
+        
+        // 🚨 VERIFICACIÓN CRÍTICA: Si el fetch no es un texto plano, puede ser el HTML de un error 404.
+        const contentType = res.headers.get("content-type");
+        // Esta verificación ayuda a detectar si se está cargando HTML de error 404 en lugar de CSV/TXT
+        if (contentType && !contentType.includes("text/csv") && !contentType.includes("text/plain")) {
+            // Si el contenido es HTML, es casi seguro un error 404 o un problema de ruta.
+            if (contentType.includes("text/html")) {
+                throw new Error(`Contenido cargado es HTML. Revise la ruta de su archivo CSV: ${url}`);
+            }
+        }
+        
         const buffer = await res.arrayBuffer(); 
         const decoder = new TextDecoder('utf-8'); 
         const texto = decoder.decode(buffer); 
         return texto.split('\n').map(linea => linea.split(','));
       } catch (e) {
-        document.getElementById("erroresCarga").innerText += `Error al cargar ${url} (problema de codificación o red).\n`;
+        // Muestra el error más detallado al usuario.
+        document.getElementById("erroresCarga").innerText += `Error al cargar ${url}. Posible causa: Archivo no encontrado o contenido incorrecto. Detalles: ${e.message}.\n`;
         return [];
       }
     }
     
     function limpiarFilasCSV(filas) {
       if (!filas || filas.length === 0) return [];
+      // Elimina el Byte Order Mark (BOM) si existe
       filas[0][0] = filas[0][0].replace(/^\uFEFF/, "");
       const encabezado = filas[0].map(c => (c || "").toLowerCase()).join(",");
       const tieneEncabezado = encabezado.includes("dependencia") || encabezado.includes("radiodifusora") || encabezado.includes("género");
@@ -642,7 +655,7 @@
         items[i].classList.add("resaltado");
       }
     }
-
+    
     function mostrarSugerencias(idCampo, idSugerencias) {
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
@@ -658,10 +671,22 @@
         div.onclick = () => {
           campo.value = s;
           contenedor.innerHTML = "";
+          // Si es radiodifusora o dependencia, forzar la lógica de dependencia al seleccionarla
+          if (idCampo === 'radiodifusora') {
+              document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
+          }
+          if (idCampo === 'dependencia') {
+              document.getElementById("dependencia").dispatchEvent(new Event('blur'));
+          }
         };
         contenedor.appendChild(div);
       });
+      // Mostrar el contenedor solo si tiene elementos
+      if (lista.length > 0) {
+        contenedor.style.display = 'block';
+      }
     }
+
 
     function guardarNotas() {
         localStorage.setItem('notasCapturadas', JSON.stringify(notas));
@@ -733,7 +758,6 @@
         
         // Disparar eventos para actualizar sugerencias de Organismo/Programa
         document.getElementById("dependencia").dispatchEvent(new Event('blur'));
-        // ⚠️ CAMBIO: Disparar blur en radiodifusora para cargar programas
         document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
         
         filaEnEdicion = indice; 
@@ -746,7 +770,6 @@
     }
 
     function exportarCSV() {
-      // ⚠️ CABECERAS ACTUALIZADAS
       const cabeceras = ["Usuario", "Fecha", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
       const filas = [cabeceras];
       
@@ -763,7 +786,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "notas_radio_capturadas.csv"; // ⚠️ NOMBRE DE ARCHIVO DIFERENTE
+      a.download = "notas_radio_capturadas.csv"; 
       a.click();
       URL.revokeObjectURL(url);
     }
@@ -824,7 +847,7 @@
     // --- Eventos ---
 
     document.addEventListener("DOMContentLoaded", async () => {
-      let orgMap, programaMap; // ⚠️ Cambio de canalMap a programaMap
+      let orgMap, programaMap; 
 
       // Carga de dependencia -> organismo
       const depData = await cargarMapa(urls.dependencias);
@@ -833,11 +856,10 @@
         autocompletar("organismo", "sugOrg", orgMap[dep] || []);
       });
       
-      // ⚠️ Carga de radiodifusora -> programa
+      // Carga de radiodifusora -> programa
       const radioData = await cargarMapa(urls.radiodifusoras);
       programaMap = radioData.map;
       autocompletar("radiodifusora", "sugRadiodifusora", radioData.claves, radio => {
-        // Enlaza el autocompletado de 'programa' a los valores asociados a 'radio'
         const programas = programaMap[radio] || [];
         autocompletar("programa", "sugPrograma", programas); 
         if (programas.length === 1) {
@@ -845,7 +867,7 @@
         }
       });
       
-      // Lógica de blur para dependencia (mantiene la funcionalidad)
+      // Lógica de blur para dependencia
       document.getElementById("dependencia").addEventListener("blur", (e) => {
           const campo = e.target;
           const depValue = campo.value.trim();
@@ -859,7 +881,7 @@
           }
       });
       
-      // ⚠️ Lógica de blur para radiodifusora (nueva implementación)
+      // Lógica de blur para radiodifusora (para cargar programas)
       document.getElementById("radiodifusora").addEventListener("blur", (e) => {
           const campo = e.target;
           const radioValue = campo.value.trim();
@@ -885,8 +907,9 @@
       autocompletar("estatus", "sugEstatus", await cargarLista(urls.estatus));
       autocompletar("tema", "sugTema", await cargarLista(urls.temas));
       autocompletar("municipio", "sugMunicipio", await cargarLista(urls.municipios));
-      // Canal.csv (con tu nombre de archivo 'Canal.csv')
-      autocompletar("canal", "sugCanal", await cargarLista("https://thelonious9.github.io/capturanotas/Canal.csv")); 
+      
+      // ✅ CORRECCIÓN: Carga de Canal.csv con ruta relativa
+      autocompletar("canal", "sugCanal", await cargarLista("./Canal.csv")); 
 
       // Persistencia
       camposDeDatos.forEach(id => {
