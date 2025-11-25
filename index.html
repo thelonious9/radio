@@ -11,7 +11,7 @@
     /* Importación de Google Fonts para Roboto */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-    /* --- PALETA DE COLORES (Idéntica al index de muestra) --- */
+    /* --- PALETA DE COLORES --- */
     :root {
       --color-fondo-pagina: #31302F;       
       --color-fondo-form: #52504E;         
@@ -57,7 +57,7 @@
       width: auto;
     }
     
-    /* --- FORMULARIO Y GRIDS --- */
+    /* --- FORMULARIO --- */
     form {
       display: grid;
       grid-template-columns: auto 1fr auto 1fr;
@@ -108,7 +108,6 @@
         box-shadow: 0 0 0 0.2rem rgba(111, 9, 9, 0.25);
         outline: none;
     }
-    /* Titular ocupa todo el ancho */
     form > label:nth-child(8), 
     form > div:nth-child(9) { 
         grid-column: span 4;
@@ -132,7 +131,7 @@
     .sugerencia { padding: 8px 10px; cursor: pointer; }
     .sugerencia:hover, .sugerencia.resaltado { background-color: #d8c9a6; color: var(--color-dark-text); }
     
-    /* --- BLOQUEO Y VALIDACIÓN --- */
+    /* --- BLOQUEO --- */
     .bloqueado { background-color: #d8c9a6 !important; border: 1px solid var(--color-primary-hover) !important; cursor: not-allowed; }
     input:required:invalid { border-left: 5px solid #dc3545; }
     input:required:valid { border-left: 5px solid #28a745; }
@@ -159,12 +158,9 @@
     #btnGuardar:hover { background-color: var(--color-primary-hover); transform: translateY(-1px); }
     #btnLimpiar { background-color: var(--color-secondary); }
     #btnLimpiar:hover { background-color: var(--color-secondary-hover); transform: translateY(-1px); }
-    
-    /* Botón Eliminar (Rojo) */
     #btnEliminar { background-color: var(--color-danger); }
     #btnEliminar:hover { background-color: var(--color-danger-hover); transform: translateY(-1px); }
     
-    /* Botón desplegable */
     .campo button[type="button"] { background-color: var(--color-secondary); padding: 8px; margin-right: 0; }
     .campo button[type="button"]:hover { background-color: var(--color-secondary-hover); }
     button i { margin-right: 8px; font-size: 1.1em; }
@@ -226,31 +222,24 @@
     .sorted .sort-icon { opacity: 1; color: var(--color-light-text); }
     .sorted.alerta-vacio .sort-icon { color: var(--color-dark-text); }
     
-    /* --- GRUPO DE ACCIONES --- */
+    /* --- GRUPO DE ACCIONES (Globales) --- */
     .actions-group {
         display: flex;
         gap: 15px;
         margin-top: 15px;
+        margin-bottom: 25px; 
         justify-content: flex-start;
         align-items: center;
     }
     #btnExportar { background-color: var(--color-fondo-form); }
     #btnExportar:hover { background-color: var(--color-secondary); }
     
+    #btnTelegram { background-color: var(--color-telegram); }
+    #btnTelegram:hover { background-color: var(--color-telegram-hover); }
+
     #btnBorrarTodo { background-color: var(--color-primary); }
     #btnBorrarTodo:hover { background-color: var(--color-primary-hover); transform: translateY(-1px); }
 
-    /* Botón Telegram en Tabla */
-    .btn-telegram {
-        background-color: var(--color-telegram);
-        color: white;
-        padding: 6px 10px;
-        font-size: 0.8rem;
-        border-radius: var(--radius);
-        transition: background-color 0.2s;
-    }
-    .btn-telegram:hover { background-color: var(--color-telegram-hover); }
-    
     /* Botón Editar en Tabla */
     .btn-accion-tabla {
         padding: 8px 12px;
@@ -305,7 +294,7 @@
 
   <form>
     <div class="form-logo-container">
-        <img src="./logo.png" alt="Logotipo del Formulario"> 
+        <img src="./logo.png" alt="Logotipo del Formulario">
     </div>
 
     <label for="usuario">Usuario:</label>
@@ -340,20 +329,20 @@
 
     <label for="autor">Autor:</label>
     <div class="campo">
-      <input type="text" id="autor" name="autor">
-      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button> 
+      <input type="text" id="autor" name="autor" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button>
       <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')">
       <label for="checkAutor">🔒</label>
-      <div id="sugAutor" class="sugerencias"></div> 
+      <div id="sugAutor" class="sugerencias"></div>
     </div>
 
     <label for="programa">Programa:</label>
     <div class="campo">
-      <input type="text" id="programa" name="programa">
-      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button> 
+      <input type="text" id="programa" name="programa" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button>
       <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
       <label for="checkPrograma">🔒</label>
-      <div id="sugPrograma" class="sugerencias"></div> 
+      <div id="sugPrograma" class="sugerencias"></div>
     </div>
 
     <label for="dependencia">Dependencia:</label>
@@ -425,7 +414,7 @@
       </button>
 
       <button type="button" id="btnEliminar" style="display: none;" onclick="borrarNota()">
-        <i class="fa-solid fa-trash-can"></i> Eliminar
+        <i class="fa-solid fa-trash-can"></i> Borrar Nota
       </button>
 
       <button type="reset" id="btnLimpiar">
@@ -436,15 +425,20 @@
 
   <div class="actions-group">
     <button id="btnExportar" onclick="exportarCSV()">
-      <i class="fa-solid fa-file-csv"></i> Exportar Hoja de Cálculo (CSV)
+      <i class="fa-solid fa-file-csv"></i> Exportar a hoja de cálculo
     </button>
+    
+    <button id="btnTelegram" onclick="enviarTelegram()">
+      <i class="fa-brands fa-telegram"></i> Enviar por Telegram
+    </button> 
+    
     <button id="btnBorrarTodo" onclick="borrarTodo()">
       <i class="fa-solid fa-trash-can"></i> Borrar Todas
     </button>
   </div>
   
   <div id="erroresCarga" class="error-carga"></div>
-
+  
   <h2>Notas capturadas</h2>
   <table id="tablaNotas">
     <thead>
@@ -463,7 +457,6 @@
         <th data-col="tema"><div class="sortable-header">Tema <span class="sort-icon"></span></div></th>
         <th data-col="estatus"><div class="sortable-header">Estatus <span class="sort-icon"></span></div></th>
         <th data-col="municipio"><div class="sortable-header">Municipio <span class="sort-icon"></span></div></th>
-        <th>Telegram</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -478,10 +471,12 @@
     
     // CAMPOS PARA RADIO
     const camposDeDatos = ["ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
+    
+    // ENCABEZADOS (Sin columna Telegram individual)
     const encabezadosTabla = {
         "ordenCaptura": "#", "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor", 
         "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género", 
-        "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "telegram": "Telegram", "acciones": "Acciones"
+        "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "acciones": "Acciones"
     };
     
     let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' }; 
@@ -720,17 +715,6 @@
                 tr.appendChild(td);
             });
             
-            // Columna Telegram
-            const tdTelegram = document.createElement("td");
-            tdTelegram.setAttribute('data-label', encabezadosTabla['telegram']);
-            const btnTelegram = document.createElement("button");
-            btnTelegram.textContent = "Enviar";
-            btnTelegram.classList.add('btn-telegram');
-            btnTelegram.onclick = function() { enviarTelegram(indice); };
-            tdTelegram.appendChild(btnTelegram);
-            tr.appendChild(tdTelegram);
-            
-            // Columna Acciones
             const tdAcciones = document.createElement("td");
             tdAcciones.setAttribute('data-label', encabezadosTabla['acciones']);
             const btnEditar = document.createElement("button");
@@ -787,7 +771,6 @@
 
         resetearEstadoEdicion();
         
-        // Cargar dependencias
         document.getElementById("dependencia").dispatchEvent(new Event('blur'));
         document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
         
@@ -807,9 +790,7 @@
         return `${usuarioLimpio}_${fechaHoy}.csv`;
     }
 
-    function exportarCSV() {
-      if (notas.length === 0) { alert("No hay notas."); return; }
-      
+    function generarCSVContenido() {
       const cabeceras = ["#", "Usuario", "Fecha", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
       const filas = [cabeceras];
       
@@ -821,51 +802,72 @@
         filas.push(fila);
       });
       
-      const contenido = "\uFEFF" + filas.map(f => f.join(",")).join("\n");
-      const blob = new Blob([contenido], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = generarNombreArchivoCSV();
-      a.click();
-      URL.revokeObjectURL(url);
+      return "\uFEFF" + filas.map(f => f.join(",")).join("\n");
     }
 
-    // Función para enviar mensaje formateado al canal
-    async function enviarTelegram(indice) {
-        const nota = notas[indice];
-        const mensaje = `
-*--- NOTA DE RADIO #${nota.ordenCaptura} ---*
-*Titular:* ${nota.titular}
-*Fecha:* ${nota.fecha}
-*Radiodifusora:* ${nota.radiodifusora}
-*Programa:* ${nota.programa}
-*Autor:* ${nota.autor}
-*Dependencia:* ${nota.dependencia}
-*Organismo:* ${nota.organismo}
-_Capturado por: ${nota.usuario}_
-`.trim();
+    function exportarCSV() {
+        if (notas.length === 0) { alert("No hay notas para exportar."); return; }
+        
+        const csvContenido = generarCSVContenido();
+        const nombreArchivo = generarNombreArchivoCSV();
+        
+        const blob = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = nombreArchivo;
+        document.body.appendChild(a); 
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // ✅ Función para enviar CSV por Telegram (BOTÓN GLOBAL)
+    async function enviarTelegram() {
+        if (notas.length === 0) {
+             alert("No hay notas para enviar por Telegram.");
+             return;
+        }
 
         // CONFIGURACIÓN TELEGRAM
-        const TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fv6fkV4";
-        const CHAT_ID = "@capsmonitoreo"; 
+        const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
+        const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
+
+        const URL_TELEGRAM = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`; 
         
         try {
-            const url = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
-            const response = await fetch(url, {
+            document.getElementById('btnTelegram').disabled = true;
+            document.getElementById('btnTelegram').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+            const csvContenido = generarCSVContenido();
+            const blobCSV = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
+            const nombreArchivoTelegram = generarNombreArchivoCSV();
+
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT_ID);
+            formData.append('document', blobCSV, nombreArchivoTelegram); 
+            formData.append('caption', `📋 Reporte de notas de Radio (${nombreArchivoTelegram}) enviado automáticamente.`);
+
+            const response = await fetch(URL_TELEGRAM, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    chat_id: CHAT_ID,
-                    text: mensaje,
-                    parse_mode: 'Markdown'
-                })
+                body: formData 
             });
-            const data = await response.json();
-            if (data.ok) alert("Nota enviada al canal correctamente.");
-            else alert("Error de Telegram: " + data.description);
-        } catch (e) {
-            alert("Error de conexión al enviar a Telegram.");
+
+            const result = await response.json();
+
+            if (response.ok && result.ok) {
+                alert(`¡CSV '${nombreArchivoTelegram}' enviado con éxito al canal ${TELEGRAM_CHAT_ID}!`);
+            } else {
+                console.error("Error Telegram:", result);
+                alert(`Error Telegram: ${result.description}`);
+            }
+
+        } catch (error) {
+            console.error("Error conexión:", error);
+            alert("Error al intentar comunicarse con Telegram. Revisa la consola.");
+        } finally {
+            document.getElementById('btnTelegram').disabled = false;
+            document.getElementById('btnTelegram').innerHTML = '<i class="fa-brands fa-telegram"></i> Enviar por Telegram';
         }
     }
 
@@ -1028,7 +1030,7 @@ _Capturado por: ${nota.usuario}_
   </script>
 
   <footer>
-    © 2025 José Francisco Villeda Velázquez. Todos los derechos reservados.
+    © 2025 Institución Pública. Todos los derechos reservados.
   </footer>
 </body>
 </html>
