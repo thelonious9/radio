@@ -11,21 +11,21 @@
     /* Importación de Google Fonts para Roboto */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-    /* --- PALETA DE COLORES --- */
+    /* --- PALETA DE COLORES ACTUALIZADA (Rojo, Blanco, Negro) --- */
     :root {
-      --color-fondo-pagina: #31302F;       
-      --color-fondo-form: #52504E;         
-      --color-primary: #6F0909;            
-      --color-primary-hover: #792929;      
-      --color-secondary: #792929;          
-      --color-secondary-hover: #6F0909;    
-      --color-danger: #dc3545;             
-      --color-danger-hover: #c82333;       
+      --color-fondo-pagina: #1E1E1E;       /* Negro Oscuro (Fondo Principal) */
+      --color-fondo-form: #2C2C2C;         /* Gris Oscuro (Fondo del Formulario/Tabla) */
+      --color-primary: #D20A11;            /* Rojo Vivo (Botón Guardar/Encabezado Tabla) */
+      --color-primary-hover: #AA080C;      /* Rojo Oscuro (Hover) */
+      --color-secondary: #D20A11;          /* Rojo Vivo (Botón Limpiar/Iconos) */
+      --color-secondary-hover: #AA080C;    /* Rojo Oscuro (Hover) */
+      --color-danger: #AA080C;             /* Rojo para advertencias/eliminar */
+      --color-danger-hover: #D20A11;       /* Rojo Vivo */
       --color-telegram: #0088cc;           
       --color-telegram-hover: #0077b3;     
-      --color-dark-text: #31302F;          
-      --color-light-text: #F0EAD1;         
-      --color-input-bg: #F0EAD1;           
+      --color-dark-text: #1E1E1E;          /* Texto para inputs (fondo claro) */
+      --color-light-text: #FFFFFF;         /* Texto principal (fondo oscuro) */
+      --color-input-bg: #FFFFFF;           /* Fondo de los campos de texto: Blanco */
       --color-alerta-vacio: #FFD700;       
       --radius: 0.25rem;
     }
@@ -105,7 +105,7 @@
     .campo > input[type="text"]:focus,
     .campo > input[type="date"]:focus {
         border-color: var(--color-primary);
-        box-shadow: 0 0 0 0.2rem rgba(111, 9, 9, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(210, 10, 17, 0.25);
         outline: none;
     }
     form > label:nth-child(8), 
@@ -129,11 +129,11 @@
       color: var(--color-dark-text);
     }
     .sugerencia { padding: 8px 10px; cursor: pointer; }
-    .sugerencia:hover, .sugerencia.resaltado { background-color: #d8c9a6; color: var(--color-dark-text); }
+    .sugerencia:hover, .sugerencia.resaltado { background-color: #f0f0f0; color: var(--color-dark-text); }
     
     /* --- BLOQUEO --- */
-    .bloqueado { background-color: #d8c9a6 !important; border: 1px solid var(--color-primary-hover) !important; cursor: not-allowed; }
-    input:required:invalid { border-left: 5px solid #dc3545; }
+    .bloqueado { background-color: #e9e9e9 !important; border: 1px solid var(--color-primary-hover) !important; cursor: not-allowed; }
+    input:required:invalid { border-left: 5px solid var(--color-danger); }
     input:required:valid { border-left: 5px solid #28a745; }
     
     /* --- BOTONES --- */
@@ -181,7 +181,7 @@
     }
     th, td {
       padding: 12px 15px;
-      border: 1px solid var(--color-secondary);
+      border: 1px solid #3A3A3A;
       text-align: left;
       color: var(--color-light-text);
       font-size: 0.85rem;
@@ -193,7 +193,7 @@
       position: sticky;
       top: 0;
     }
-    tbody tr:nth-child(even) { background-color: #63615F; }
+    tbody tr:nth-child(even) { background-color: #353535; } 
     .editando { background-color: var(--color-primary-hover) !important; color: var(--color-light-text); }
     .editando td { color: var(--color-light-text); }
     .alerta-vacio { background-color: var(--color-alerta-vacio) !important; color: var(--color-dark-text) !important; }
@@ -231,11 +231,11 @@
         justify-content: flex-start;
         align-items: center;
     }
-    #btnExportar { background-color: var(--color-fondo-form); }
-    #btnExportar:hover { background-color: var(--color-secondary); }
+    #btnExportar { background-color: #4A4A4A; } 
+    #btnExportar:hover { background-color: #616161; }
     
-    #btnTelegram { background-color: var(--color-telegram); }
-    #btnTelegram:hover { background-color: var(--color-telegram-hover); }
+    #btnTelegram { background-color: #0088cc; }
+    #btnTelegram:hover { background-color: #0077b3; }
 
     #btnBorrarTodo { background-color: var(--color-primary); }
     #btnBorrarTodo:hover { background-color: var(--color-primary-hover); transform: translateY(-1px); }
@@ -248,16 +248,16 @@
     }
     .btn-accion-tabla:hover { background-color: var(--color-secondary-hover); }
 
-    /* --- ESTILOS DEL BUSCADOR (NUEVO) --- */
+    /* --- ESTILOS DEL BUSCADOR --- */
     .buscador-container {
       position: relative;
       margin-bottom: 15px;
-      max-width: 400px; /* Ancho máximo para que no ocupe toda la pantalla en PC */
+      max-width: 400px;
     }
     
     #buscador {
       width: 100%;
-      padding: 10px 10px 10px 40px; /* Padding izquierdo extra para el icono */
+      padding: 10px 10px 10px 40px; 
       border: 1px solid var(--color-primary-hover);
       border-radius: var(--radius);
       background-color: var(--color-input-bg);
@@ -270,7 +270,7 @@
     #buscador:focus {
       outline: none;
       border-color: var(--color-primary);
-      box-shadow: 0 0 0 0.2rem rgba(111, 9, 9, 0.25);
+      box-shadow: 0 0 0 0.2rem rgba(210, 10, 17, 0.25);
     }
 
     .buscador-icon {
@@ -278,7 +278,7 @@
       left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--color-secondary);
+      color: var(--color-primary);
       font-size: 1.1rem;
     }
 
@@ -295,10 +295,10 @@
         
         table, thead, tbody, th, td, tr { display: block; }
         thead tr { position: absolute; top: -9999px; left: -9999px; }
-        tr { border: 1px solid var(--color-secondary); margin-bottom: 10px; }
+        tr { border: 1px solid #3A3A3A; margin-bottom: 10px; }
         td { 
             border: none;
-            border-bottom: 1px solid #7c7774;
+            border-bottom: 1px solid #4A4A4A;
             position: relative;
             padding-left: 50%;
             text-align: right;
@@ -473,12 +473,12 @@
   
   <div id="erroresCarga" class="error-carga"></div>
   
-  <h2>Notas capturadas</h2>
-  
   <div class="buscador-container">
-    <i class="fa-solid fa-magnifying-glass buscador-icon"></i>
-    <input type="text" id="buscador" placeholder="Buscar por titular, radiodifusora, autor, municipio...">
+      <i class="fas fa-search buscador-icon"></i>
+      <input type="text" id="buscador" placeholder="Buscar en la tabla (Titular, Autor, etc.)">
   </div>
+  
+  <h2>Notas capturadas</h2>
   <table id="tablaNotas">
     <thead>
       <tr>
@@ -741,7 +741,6 @@
         
         notas.forEach((nota, indice) => {
             const tr = document.createElement("tr");
-            // Nota: Aquí estamos usando notas.indexOf(nota) para el índice, lo que es seguro si no hay duplicados y se usa después de ordenar.
             tr.dataset.index = notas.indexOf(nota);
 
             if (contieneCamposVacios(nota)) {
@@ -766,6 +765,9 @@
 
             tablaBody.appendChild(tr);
         });
+        
+        // Vuelve a aplicar el filtro después de renderizar (útil para cuando se edita/guarda)
+        filtrarTabla();
     }
 
     function cargarNotasGuardadas() {
@@ -811,7 +813,6 @@
 
         resetearEstadoEdicion();
         
-        // Disparar blur para cargar listas dependientes
         document.getElementById("dependencia").dispatchEvent(new Event('blur'));
         document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
         
@@ -828,7 +829,7 @@
         const usuario = document.getElementById('usuario').value.trim() || 'Desconocido';
         const usuarioLimpio = usuario.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, ''); 
         const fechaHoy = new Date().toISOString().slice(0, 10); 
-        return `${usuarioLimpio}_${fechaHoy}_RADIO.csv`;
+        return `${usuarioLimpio}_${fechaHoy}.csv`;
     }
 
     function generarCSVContenido() {
@@ -863,7 +864,6 @@
         URL.revokeObjectURL(url);
     }
 
-    // Función para enviar CSV por Telegram (BOTÓN GLOBAL)
     async function enviarTelegram() {
         if (notas.length === 0) {
              alert("No hay notas para enviar por Telegram.");
@@ -912,22 +912,6 @@
         }
     }
 
-    // NUEVA FUNCIÓN: Lógica de filtrado de filas
-    function aplicarFiltroBusqueda() {
-        const termino = document.getElementById('buscador').value.toLowerCase();
-        const filas = document.querySelectorAll('#tablaNotas tbody tr');
-
-        filas.forEach(fila => {
-            const textoFila = fila.textContent.toLowerCase();
-            
-            if(termino === '' || textoFila.includes(termino)) {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
-        });
-    }
-
     function ordenarTabla(columna, esInicial = false) {
         if (!columna) return;
         let direccion = 'asc';
@@ -957,8 +941,6 @@
         ordenActual = { columna, direccion };
         actualizarIndicadoresOrden();
         renderizarTabla();
-        // Aplicar el filtro después de re-renderizar la tabla ordenada
-        aplicarFiltroBusqueda(); 
     }
 
     function actualizarIndicadoresOrden() {
@@ -974,6 +956,26 @@
             } else {
                 iconSpan.innerHTML = '<i class="fas fa-sort"></i>';
             }
+        });
+    }
+
+    // --- NUEVA FUNCIÓN: BÚSQUEDA EN TIEMPO REAL ---
+    function filtrarTabla() {
+        const input = document.getElementById('buscador');
+        const filtro = input.value.toLowerCase();
+        const filas = document.getElementById('tablaNotas').querySelectorAll('tbody tr');
+        
+        filas.forEach(tr => {
+            let encontrado = false;
+            // Itera sobre las celdas (excepto la última, que es la de Acciones)
+            for (let i = 0; i < tr.cells.length - 1; i++) {
+                const textoCelda = tr.cells[i].textContent || tr.cells[i].innerText;
+                if (textoCelda.toLowerCase().includes(filtro)) {
+                    encontrado = true;
+                    break;
+                }
+            }
+            tr.style.display = encontrado ? "" : "none";
         });
     }
 
@@ -1027,8 +1029,8 @@
       autocompletar("autor", "sugAutor", await cargarLista(urls.autores)); 
       autocompletar("canal", "sugCanal", await cargarLista("./Canal.csv")); 
       
-      // VINCULAR BUSCADOR (NUEVO)
-      document.getElementById('buscador').addEventListener('keyup', aplicarFiltroBusqueda);
+      // --- Listener para el buscador en tiempo real ---
+      document.getElementById('buscador').addEventListener('input', filtrarTabla); 
 
       // Persistence & Locks
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
@@ -1057,7 +1059,7 @@
       });
 
       document.addEventListener('click', (e) => {
-        if (!e.target.closest('.campo') && !e.target.closest('.buscador-container')) {
+        if (!e.target.closest('.campo')) {
             document.querySelectorAll('.sugerencias').forEach(s => s.innerHTML = "");
         }
       });
@@ -1079,7 +1081,6 @@
       }
       
       guardarNotas();
-      // Re-ordenar y re-renderizar, lo que aplicará el filtro de búsqueda
       ordenarTabla(ordenActual.columna, true); 
       
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
