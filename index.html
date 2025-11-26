@@ -108,6 +108,7 @@
         box-shadow: 0 0 0 0.2rem rgba(210, 10, 17, 0.25);
         outline: none;
     }
+    /* El campo Titular (tercer par) pasa a ocupar todo el ancho */
     form > label:nth-child(8), 
     form > div:nth-child(9) { 
         grid-column: span 4;
@@ -179,13 +180,35 @@
       margin-top: 20px;
       background-color: var(--color-fondo-form);
     }
+    
+    /* REGLAS CORREGIDAS PARA EVITAR DEFORMACIÓN DE LA TABLA */
     th, td {
       padding: 12px 15px;
       border: 1px solid #3A3A3A;
       text-align: left;
       color: var(--color-light-text);
       font-size: 0.85rem;
+      /* Aplica truncamiento por defecto a todas las celdas (excepto en responsive) */
+      max-width: 180px; 
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis; 
     }
+    
+    /* Ajuste para la columna Titular para que tenga un ancho visible, pero truncado */
+    #tablaNotas th[data-col="titular"], #tablaNotas td:nth-child(5) {
+        max-width: 250px; 
+    }
+    /* Ajuste para la columna de acciones (última) */
+    #tablaNotas th:last-child, #tablaNotas td:last-child {
+        max-width: 100px;
+        min-width: 100px;
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: clip; /* Permite que el botón se muestre */
+    }
+    /* FIN DE REGLAS CORREGIDAS */
+    
     th {
       background-color: var(--color-primary);
       color: var(--color-light-text);
@@ -304,6 +327,11 @@
             text-align: right;
             font-size: 0.9em;
             color: var(--color-light-text);
+            /* Resetear la deformación en responsive para que el texto se ajuste */
+            max-width: 100% !important; 
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: clip !important;
         }
         td:before { 
             content: attr(data-label);
