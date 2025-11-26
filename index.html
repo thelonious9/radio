@@ -185,21 +185,7 @@
       text-align: left;
       color: var(--color-light-text);
       font-size: 0.85rem;
-      /* Añadido: permite el truncamiento y evita saltos de línea excesivos */
-      max-width: 250px; 
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis; 
     }
-
-    /* Ajuste para la columna Titular para que se vea bien el truncamiento */
-    #tablaNotas th[data-col="titular"], #tablaNotas td:nth-child(5) {
-        max-width: 150px; /* Ancho específico para el titular */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
     th {
       background-color: var(--color-primary);
       color: var(--color-light-text);
@@ -318,10 +304,6 @@
             text-align: right;
             font-size: 0.9em;
             color: var(--color-light-text);
-            /* Resetear para responsive */
-            max-width: 100%; 
-            white-space: normal;
-            text-overflow: clip; 
         }
         td:before { 
             content: attr(data-label);
@@ -538,7 +520,7 @@
     
     let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' }; 
 
-    // RUTAS RELATIVAS (Asegúrate de tener estos archivos CSV en la misma carpeta)
+    // RUTAS RELATIVAS
     const urls = {
       dependencias: "./Dependencia.csv",
       radiodifusoras: "./Radiodifusora.csv", 
@@ -753,25 +735,13 @@
         return false;
     }
 
-    // --- FUNCIÓN DE TRUNCAMIENTO ---
-    function truncarTexto(texto, limite) {
-        if (!texto) return '';
-        if (texto.length > limite) {
-            return texto.substring(0, limite) + '...';
-        }
-        return texto;
-    }
-    // --- FIN FUNCIÓN TRUNCAMIENTO ---
-
     function renderizarTabla() {
         const tablaBody = document.getElementById("tablaNotas").querySelector("tbody");
         tablaBody.innerHTML = '';
-        const LIMITE_CARACTERES_TITULAR = 50; // Límite de caracteres para el titular en la tabla
         
         notas.forEach((nota, indice) => {
             const tr = document.createElement("tr");
-            // Usamos el índice de la nota en el array para poder editarla
-            tr.dataset.index = notas.indexOf(nota); 
+            tr.dataset.index = notas.indexOf(nota);
 
             if (contieneCamposVacios(nota)) {
                 tr.classList.add('alerta-vacio');
@@ -779,14 +749,7 @@
 
             camposDeDatos.forEach(campo => {
                 const td = document.createElement("td");
-                let textoADisplay = nota[campo];
-                
-                // APLICAR TRUNCAMIENTO SOLO AL CAMPO TITULAR
-                if (campo === 'titular') {
-                    textoADisplay = truncarTexto(nota[campo], LIMITE_CARACTERES_TITULAR);
-                }
-
-                td.textContent = textoADisplay;
+                td.textContent = nota[campo];
                 td.setAttribute('data-label', encabezadosTabla[campo]);
                 tr.appendChild(td);
             });
@@ -803,6 +766,7 @@
             tablaBody.appendChild(tr);
         });
         
+        // Vuelve a aplicar el filtro después de renderizar (útil para cuando se edita/guarda)
         filtrarTabla();
     }
 
@@ -869,7 +833,6 @@
     }
 
     function generarCSVContenido() {
-      // ESTA FUNCIÓN LEE DIRECTAMENTE EL ARRAY 'notas' (que tiene el titular completo)
       const cabeceras = ["#", "Usuario", "Fecha", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
       const filas = [cabeceras];
       
@@ -907,7 +870,7 @@
              return;
         }
 
-        // CONFIGURACIÓN TELEGRAM (Mantenemos tus datos de configuración)
+        // CONFIGURACIÓN TELEGRAM
         const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
         const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
 
@@ -996,6 +959,7 @@
         });
     }
 
+    // --- NUEVA FUNCIÓN: BÚSQUEDA EN TIEMPO REAL ---
     function filtrarTabla() {
         const input = document.getElementById('buscador');
         const filtro = input.value.toLowerCase();
@@ -1005,12 +969,8 @@
             let encontrado = false;
             // Itera sobre las celdas (excepto la última, que es la de Acciones)
             for (let i = 0; i < tr.cells.length - 1; i++) {
-                // Para la búsqueda, usamos el texto COMPLETO de la nota original, no el truncado de la celda
-                const colKey = camposDeDatos[i];
-                const notaIndex = parseInt(tr.dataset.index);
-                const textoCompleto = notas[notaIndex] ? (notas[notaIndex][colKey] || '').toLowerCase() : '';
-                
-                if (textoCompleto.includes(filtro)) {
+                const textoCelda = tr.cells[i].textContent || tr.cells[i].innerText;
+                if (textoCelda.toLowerCase().includes(filtro)) {
                     encontrado = true;
                     break;
                 }
@@ -1069,7 +1029,7 @@
       autocompletar("autor", "sugAutor", await cargarLista(urls.autores)); 
       autocompletar("canal", "sugCanal", await cargarLista("./Canal.csv")); 
       
-      // Listener para el buscador en tiempo real
+      // --- Listener para el buscador en tiempo real ---
       document.getElementById('buscador').addEventListener('input', filtrarTabla); 
 
       // Persistence & Locks
@@ -1134,7 +1094,7 @@
   </script>
 
   <footer>
-    © 2025 Institución Pública. Todos los derechos reservados.
+    © 2025 Francisco, El Bizcocho de Montecristo Villeda. Todos los derechos reservados.
   </footer>
 </body>
 </html>
