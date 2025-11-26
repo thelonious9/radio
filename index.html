@@ -248,6 +248,40 @@
     }
     .btn-accion-tabla:hover { background-color: var(--color-secondary-hover); }
 
+    /* --- ESTILOS DEL BUSCADOR (NUEVO) --- */
+    .buscador-container {
+      position: relative;
+      margin-bottom: 15px;
+      max-width: 400px; /* Ancho máximo para que no ocupe toda la pantalla en PC */
+    }
+    
+    #buscador {
+      width: 100%;
+      padding: 10px 10px 10px 40px; /* Padding izquierdo extra para el icono */
+      border: 1px solid var(--color-primary-hover);
+      border-radius: var(--radius);
+      background-color: var(--color-input-bg);
+      color: var(--color-dark-text);
+      font-size: 1rem;
+      box-sizing: border-box; 
+      transition: all 0.2s ease;
+    }
+
+    #buscador:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 0.2rem rgba(111, 9, 9, 0.25);
+    }
+
+    .buscador-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-secondary);
+      font-size: 1.1rem;
+    }
+
     /* --- RESPONSIVE --- */
     @media (max-width: 768px) {
         body { padding: 10px; }
@@ -440,6 +474,11 @@
   <div id="erroresCarga" class="error-carga"></div>
   
   <h2>Notas capturadas</h2>
+  
+  <div class="buscador-container">
+    <i class="fa-solid fa-magnifying-glass buscador-icon"></i>
+    <input type="text" id="buscador" placeholder="Buscar por titular, radiodifusora, autor, municipio...">
+  </div>
   <table id="tablaNotas">
     <thead>
       <tr>
@@ -702,6 +741,7 @@
         
         notas.forEach((nota, indice) => {
             const tr = document.createElement("tr");
+            // Nota: Aquí estamos usando notas.indexOf(nota) para el índice, lo que es seguro si no hay duplicados y se usa después de ordenar.
             tr.dataset.index = notas.indexOf(nota);
 
             if (contieneCamposVacios(nota)) {
@@ -771,6 +811,7 @@
 
         resetearEstadoEdicion();
         
+        // Disparar blur para cargar listas dependientes
         document.getElementById("dependencia").dispatchEvent(new Event('blur'));
         document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
         
@@ -787,7 +828,7 @@
         const usuario = document.getElementById('usuario').value.trim() || 'Desconocido';
         const usuarioLimpio = usuario.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, ''); 
         const fechaHoy = new Date().toISOString().slice(0, 10); 
-        return `${usuarioLimpio}_${fechaHoy}.csv`;
+        return `${usuarioLimpio}_${fechaHoy}_RADIO.csv`;
     }
 
     function generarCSVContenido() {
@@ -822,7 +863,7 @@
         URL.revokeObjectURL(url);
     }
 
-    // ✅ Función para enviar CSV por Telegram (BOTÓN GLOBAL)
+    // Función para enviar CSV por Telegram (BOTÓN GLOBAL)
     async function enviarTelegram() {
         if (notas.length === 0) {
              alert("No hay notas para enviar por Telegram.");
@@ -871,6 +912,22 @@
         }
     }
 
+    // NUEVA FUNCIÓN: Lógica de filtrado de filas
+    function aplicarFiltroBusqueda() {
+        const termino = document.getElementById('buscador').value.toLowerCase();
+        const filas = document.querySelectorAll('#tablaNotas tbody tr');
+
+        filas.forEach(fila => {
+            const textoFila = fila.textContent.toLowerCase();
+            
+            if(termino === '' || textoFila.includes(termino)) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    }
+
     function ordenarTabla(columna, esInicial = false) {
         if (!columna) return;
         let direccion = 'asc';
@@ -900,6 +957,8 @@
         ordenActual = { columna, direccion };
         actualizarIndicadoresOrden();
         renderizarTabla();
+        // Aplicar el filtro después de re-renderizar la tabla ordenada
+        aplicarFiltroBusqueda(); 
     }
 
     function actualizarIndicadoresOrden() {
@@ -967,6 +1026,9 @@
       autocompletar("municipio", "sugMunicipio", await cargarLista(urls.municipios));
       autocompletar("autor", "sugAutor", await cargarLista(urls.autores)); 
       autocompletar("canal", "sugCanal", await cargarLista("./Canal.csv")); 
+      
+      // VINCULAR BUSCADOR (NUEVO)
+      document.getElementById('buscador').addEventListener('keyup', aplicarFiltroBusqueda);
 
       // Persistence & Locks
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
@@ -995,7 +1057,7 @@
       });
 
       document.addEventListener('click', (e) => {
-        if (!e.target.closest('.campo')) {
+        if (!e.target.closest('.campo') && !e.target.closest('.buscador-container')) {
             document.querySelectorAll('.sugerencias').forEach(s => s.innerHTML = "");
         }
       });
@@ -1017,6 +1079,7 @@
       }
       
       guardarNotas();
+      // Re-ordenar y re-renderizar, lo que aplicará el filtro de búsqueda
       ordenarTabla(ordenActual.columna, true); 
       
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
