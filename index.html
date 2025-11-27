@@ -617,11 +617,11 @@
     };
 
     // RUTA DE DESPLIEGUE DE TU GOOGLE APPS SCRIPT
-    // *** DEBES REEMPLAZAR ESTA URL CON TU URL REAL DE DESPLIEGUE (/exec) ***
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/exec"; 
+    // *** ESTA ES LA URL PROPORCIONADA POR TI PARA LA PRUEBA ***
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjR-Fs3IF_y5wGI/exec"; 
 
     // CONFIGURACIÓN TELEGRAM
-    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
+    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
     const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
     
     function findKeyCaseInsensitive(map, value) {
@@ -1019,12 +1019,6 @@
             input.focus();
             return;
         }
-        
-        if (GAS_URL.includes("zzzzzz")) {
-             mensajeDiv.style.color = 'red';
-             mensajeDiv.textContent = "❌ ERROR: Debes reemplazar la variable GAS_URL en el código con tu URL de App Script.";
-             return;
-        }
 
         try {
             btn.disabled = true;
@@ -1047,7 +1041,18 @@
 
             // App Script devuelve un JSON de texto. Lo leemos y parseamos
             const textResponse = await response.text();
-            const result = JSON.parse(textResponse);
+            
+            // Intenta parsear la respuesta
+            let result;
+            try {
+                result = JSON.parse(textResponse);
+            } catch (e) {
+                 // Si falla el parseo, el App Script puede haber devuelto un texto simple o un error HTML
+                mensajeDiv.style.color = 'red';
+                mensajeDiv.textContent = `❌ Error: Respuesta inesperada del script. Revisa el código de tu App Script.`;
+                console.error("Error al parsear la respuesta JSON:", e, "Respuesta recibida:", textResponse);
+                return;
+            }
             
             if (result && result.estado === "ok") {
                 mensajeDiv.style.color = 'lightgreen';
@@ -1061,8 +1066,8 @@
             
         } catch (error) {
             mensajeDiv.style.color = 'red';
-            mensajeDiv.textContent = `❌ Error de conexión. Revisa la consola y tu App Script.`;
-            console.error("Error conexión/parseo:", error);
+            mensajeDiv.textContent = `❌ Error de conexión. Revisa la consola (F12) para detalles de red y verifica que tu App Script esté desplegado correctamente.`;
+            console.error("Error de red/conexión:", error);
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-lightbulb"></i> Sugerir Tema';
