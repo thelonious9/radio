@@ -408,22 +408,22 @@
     <label for="usuario">Usuario:</label>
     <div class="campo">
       <input type="text" id="usuario" name="usuario" required>
-      <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')">
+      <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')" tabindex="-1">
       <label for="checkUsuario">🔒</label>
     </div>
     
     <label for="fecha">Fecha:</label>
     <div class="campo">
       <input type="date" id="fecha" name="fecha" required>
-      <input type="checkbox" id="checkFecha" onchange="alternarBloqueo('fecha')">
+      <input type="checkbox" id="checkFecha" onchange="alternarBloqueo('fecha')" tabindex="-1">
       <label for="checkFecha">🔒</label>
     </div>
 
     <label for="radiodifusora">Radiodifusora:</label>
     <div class="campo">
       <input type="text" id="radiodifusora" name="radiodifusora" autocomplete="off" required>
-      <button type="button" onclick="mostrarSugerencias('radiodifusora','sugRadiodifusora')">🔽</button>
-      <input type="checkbox" id="checkRadiodifusora" onchange="alternarBloqueo('radiodifusora')">
+      <button type="button" onclick="mostrarSugerencias('radiodifusora','sugRadiodifusora')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkRadiodifusora" onchange="alternarBloqueo('radiodifusora')" tabindex="-1">
       <label for="checkRadiodifusora">🔒</label>
       <div id="sugRadiodifusora" class="sugerencias"></div>
     </div>
@@ -431,15 +431,15 @@
     <label for="titular">Titular:</label>
     <div class="campo">
       <input type="text" id="titular" name="titular" required>
-      <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')">
+      <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')" tabindex="-1">
       <label for="checkTitular">🔒</label>
     </div>
 
     <label for="autor">Autor:</label>
     <div class="campo">
       <input type="text" id="autor" name="autor" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button>
-      <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')">
+      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')" tabindex="-1">
       <label for="checkAutor">🔒</label>
       <div id="sugAutor" class="sugerencias"></div>
     </div>
@@ -447,8 +447,8 @@
     <label for="programa">Programa:</label>
     <div class="campo">
       <input type="text" id="programa" name="programa" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button>
-      <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
+      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')" tabindex="-1">
       <label for="checkPrograma">🔒</label>
       <div id="sugPrograma" class="sugerencias"></div>
     </div>
@@ -456,8 +456,8 @@
     <label for="dependencia">Dependencia:</label>
     <div class="campo">
       <input type="text" id="dependencia" name="dependencia" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('dependencia','sugDep')">🔽</button>
-      <input type="checkbox" id="checkDependencia" onchange="alternarBloqueo('dependencia')">
+      <button type="button" onclick="mostrarSugerencias('dependencia','sugDep')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkDependencia" onchange="alternarBloqueo('dependencia')" tabindex="-1">
       <label for="checkDependencia">🔒</label>
       <div id="sugDep" class="sugerencias"></div>
     </div>
@@ -465,8 +465,8 @@
     <label for="organismo">Organismo:</label>
     <div class="campo">
       <input type="text" id="organismo" name="organismo" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('organismo','sugOrg')">🔽</button>
-      <input type="checkbox" id="checkOrganismo" onchange="alternarBloqueo('organismo')">
+      <button type="button" onclick="mostrarSugerencias('organismo','sugOrg')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkOrganismo" onchange="alternarBloqueo('organismo')" tabindex="-1">
       <label for="checkOrganismo">🔒</label>
       <div id="sugOrg" class="sugerencias"></div>
     </div>
@@ -474,8 +474,8 @@
     <label for="genero">Género:</label>
     <div class="campo">
       <input type="text" id="genero" name="genero" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('genero','sugGenero')">🔽</button>
-      <input type="checkbox" id="checkGenero" onchange="alternarBloqueo('genero')">
+      <button type="button" onclick="mostrarSugerencias('genero','sugGenero')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkGenero" onchange="alternarBloqueo('genero')" tabindex="-1">
       <label for="checkGenero">🔒</label>
       <div id="sugGenero" class="sugerencias"></div>
     </div>
@@ -483,8 +483,8 @@
     <label for="canal">Canal:</label>
     <div class="campo">
       <input type="text" id="canal" name="canal" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('canal','sugCanal')">🔽</button>
-      <input type="checkbox" id="checkCanal" onchange="alternarBloqueo('canal')">
+      <button type="button" onclick="mostrarSugerencias('canal','sugCanal')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkCanal" onchange="alternarBloqueo('canal')" tabindex="-1">
       <label for="checkCanal">🔒</label>
       <div id="sugCanal" class="sugerencias"></div>
     </div>
@@ -494,8 +494,8 @@
       <input type="text" id="tema" name="tema" autocomplete="off">
       
       
-      <button type="button" onclick="mostrarSugerencias('tema','sugTema')">🔽</button>
-      <input type="checkbox" id="checkTema" onchange="alternarBloqueo('tema')">
+      <button type="button" onclick="mostrarSugerencias('tema','sugTema')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkTema" onchange="alternarBloqueo('tema')" tabindex="-1">
       <label for="checkTema">🔒</label>
       <div id="sugTema" class="sugerencias"></div>
     </div>
@@ -503,8 +503,8 @@
     <label for="estatus">Estatus:</label>
     <div class="campo">
       <input type="text" id="estatus" name="estatus" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('estatus','sugEstatus')">🔽</button>
-      <input type="checkbox" id="checkEstatus" onchange="alternarBloqueo('estatus')">
+      <button type="button" onclick="mostrarSugerencias('estatus','sugEstatus')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkEstatus" onchange="alternarBloqueo('estatus')" tabindex="-1">
       <label for="checkEstatus">🔒</label>
       <div id="sugEstatus" class="sugerencias"></div>
     </div>
@@ -512,8 +512,8 @@
     <label for="municipio">Municipio:</label>
     <div class="campo">
       <input type="text" id="municipio" name="municipio" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('municipio','sugMunicipio')">🔽</button>
-      <input type="checkbox" id="checkMunicipio" onchange="alternarBloqueo('municipio')">
+      <button type="button" onclick="mostrarSugerencias('municipio','sugMunicipio')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkMunicipio" onchange="alternarBloqueo('municipio')" tabindex="-1">
       <label for="checkMunicipio">🔒</label>
       <div id="sugMunicipio" class="sugerencias"></div>
     </div>
@@ -596,9 +596,6 @@
     // CAMPOS PARA RADIO
     const camposDeDatos = ["ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
     
-    // CAMPOS EN ORDEN PARA LA NAVEGACIÓN CON ENTER (excluye ordenCaptura)
-    const inputOrder = camposDeDatos.filter(c => c !== 'ordenCaptura');
-    
     // ENCABEZADOS
     const encabezadosTabla = {
         "ordenCaptura": "#", "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor", 
@@ -621,10 +618,10 @@
 
     // RUTA DE DESPLIEGUE DE TU GOOGLE APPS SCRIPT
     // *** ESTA ES LA URL PROPORCIONADA POR TI PARA LA PRUEBA ***
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjr-Fs3IF_y5wGI/exec"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjR-Fs3IF_y5wGI/exec"; 
 
     // CONFIGURACIÓN TELEGRAM
-    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAL_G1-X6LdL4Fv6fkV4"; 
+    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
     const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
     
     function findKeyCaseInsensitive(map, value) {
@@ -709,54 +706,35 @@
             campo.value = s;
             contenedor.innerHTML = "";
             if (callback) callback(s);
-            // Al hacer clic, simular el salto al siguiente campo
-            const currentId = campo.id;
-            const currentIndex = inputOrder.indexOf(currentId);
-            if (currentIndex !== -1 && currentIndex + 1 < inputOrder.length) {
-                document.getElementById(inputOrder[currentIndex + 1]).focus();
-            } else if (currentId === inputOrder[inputOrder.length - 1]) {
-                document.getElementById('btnGuardar').focus();
-            }
           };
           contenedor.appendChild(div);
         });
       });
 
       campo.addEventListener("keydown", e => {
-        // CORRECCIÓN: Se corrigieron las comillas mezcladas que podían causar un error de sintaxis y la falla al desplegar.
-        const items = contenedor.querySelectorAll(".sugerencia"); 
+        const items = contenedor.querySelectorAll(".sugerencia");
         if (items.length === 0) return;
         if (e.key === "ArrowDown") {
           e.preventDefault();
           indice = (indice + 1) % items.length;
           resaltar(items, indice);
-          // Scroll to keep the highlighted item visible
-          if (items[indice]) {
-            items[indice].scrollIntoView({ block: 'nearest' });
-          }
         } else if (e.key === "ArrowUp") {
           e.preventDefault();
           indice = (indice - 1 + items.length) % items.length;
           resaltar(items, indice);
-          // Scroll to keep the highlighted item visible
-          if (items[indice]) {
-            items[indice].scrollIntoView({ block: 'nearest' });
-          }
         } else if (e.key === "Enter") {
-          e.preventDefault();
+          e.preventDefault(); // Previene el envío del formulario
           if (indice >= 0 && items[indice]) {
             campo.value = items[indice].textContent;
             contenedor.innerHTML = "";
             if (callback) callback(campo.value);
-            
-            // --- FIX: Saltamos al siguiente input después de seleccionar con Enter ---
-            const currentId = campo.id;
-            const currentIndex = inputOrder.indexOf(currentId);
-            if (currentIndex !== -1 && currentIndex + 1 < inputOrder.length) {
-                document.getElementById(inputOrder[currentIndex + 1]).focus();
-            } else if (currentId === inputOrder[inputOrder.length - 1]) {
-                document.getElementById('btnGuardar').focus();
-            }
+          }
+        } else if (e.key === "Tab") { // <--- LÓGICA AGREGADA: Selección con Tab
+          if (indice >= 0 && items[indice]) {
+            e.preventDefault(); // Previene el cambio de foco predeterminado de Tab
+            campo.value = items[indice].textContent;
+            contenedor.innerHTML = "";
+            if (callback) callback(campo.value);
           }
         }
       });
@@ -786,8 +764,7 @@
     function mostrarSugerencias(idCampo, idSugerencias) {
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
-      // Limpia todas las sugerencias para asegurar que solo se muestre una lista a la vez
-      document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = ""); 
+      document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = "");
 
       const lista = campo.dataset.lista ? JSON.parse(campo.dataset.lista) : [];
       contenedor.innerHTML = "";
@@ -799,7 +776,6 @@
         div.onclick = () => {
           campo.value = s;
           contenedor.innerHTML = "";
-          // Disparamos blur/input manualmente si se requiere lógica dependiente (Dependencia/Radiodifusora)
           if (idCampo === 'radiodifusora') {
               document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
           }
@@ -809,7 +785,9 @@
         };
         contenedor.appendChild(div);
       });
-      // La lista se despliega automáticamente ya que se le añadió contenido.
+      if (lista.length > 0) {
+        contenedor.style.display = 'block';
+      }
     }
 
     function resetearEstadoEdicion() {
@@ -848,17 +826,13 @@
     }
 
     function contieneCamposVacios(nota) {
-        const camposARevisar = inputOrder; // Ahora solo revisamos los de inputOrder
-        const camposFaltantes = [];
-        
-        camposARevisar.forEach(campo => {
-            if (document.getElementById(campo).required && (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === ''))) {
-                // Buscamos el label para mostrar un nombre amigable
-                const label = document.querySelector(`label[for="${campo}"]`);
-                camposFaltantes.push(label ? label.textContent.replace(':', '').trim() : campo);
+        const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura'); 
+        for (const campo of camposARevisar) {
+            if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
+                return true;
             }
-        });
-        return camposFaltantes;
+        }
+        return false;
     }
 
     function renderizarTabla() {
@@ -869,7 +843,7 @@
             const tr = document.createElement("tr");
             tr.dataset.index = notas.indexOf(nota);
 
-            if (contieneCamposVacios(nota).length > 0) {
+            if (contieneCamposVacios(nota)) {
                 tr.classList.add('alerta-vacio');
             }
 
@@ -933,13 +907,12 @@
         const indice = parseInt(tr.dataset.index);
         const nota = notas[indice];
 
-        inputOrder.forEach(id => {
+        camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
             document.getElementById(id).value = nota[id];
         });
 
         resetearEstadoEdicion();
         
-        // Dispara los eventos de blur para recargar las listas dependientes
         document.getElementById("dependencia").dispatchEvent(new Event('blur'));
         document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
         
@@ -1264,7 +1237,7 @@
       document.getElementById('buscador').addEventListener('input', filtrarTabla); 
 
       // Persistence & Locks
-      inputOrder.forEach(id => {
+      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
         const campo = document.getElementById(id);
         if (localStorage.getItem(id)) campo.value = localStorage.getItem(id);
         campo.addEventListener("input", () => localStorage.setItem(id, campo.value));
@@ -1290,7 +1263,6 @@
       });
 
       document.addEventListener('click', (e) => {
-        // Asegura que al hacer clic fuera de un campo, se cierren las sugerencias.
         if (!e.target.closest('.campo')) {
             document.querySelectorAll('.sugerencias').forEach(s => s.innerHTML = "");
         }
@@ -1299,19 +1271,10 @@
 
     document.querySelector("form").addEventListener("submit", e => {
       e.preventDefault();
-      
       const nuevaNota = {};
-      inputOrder.forEach(id => {
+      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
         nuevaNota[id] = document.getElementById(id).value.trim();
       });
-      
-      // 1. Verificación de campos obligatorios
-      // Usamos el checkValidity() del formulario para disparar los mensajes de error
-      const form = document.querySelector("form");
-      if (!form.checkValidity()) {
-          // El navegador mostrará los mensajes de error.
-          return;
-      }
 
       if (filaEnEdicion !== null) {
           notas[filaEnEdicion] = {...nuevaNota, ordenCaptura: notas[filaEnEdicion].ordenCaptura};
@@ -1324,71 +1287,13 @@
       guardarNotas();
       ordenarTabla(ordenActual.columna, true); 
       
-      inputOrder.forEach(id => {
+      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
           if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
               document.getElementById(id).value = '';
               localStorage.removeItem(id); 
           }
       });
       document.getElementById('titular').focus();
-    });
-    
-    // --- Atajo de teclado (Ctrl+Q para Guardar) y Navegación (Enter) ---
-    document.addEventListener('keydown', (e) => {
-        // 1. Lógica Ctrl+Q para Guardar
-        if ((e.ctrlKey || e.metaKey) && e.key === 'q') {
-            e.preventDefault(); 
-            
-            const form = document.querySelector("form");
-            
-            // Verificamos si el formulario es válido (campos requeridos llenos)
-            if (form.checkValidity()) {
-                 // Disparamos el evento submit, lo que activará la lógica de guardado/actualización.
-                 form.dispatchEvent(new Event('submit', { cancelable: true }));
-            } else {
-                 // Si el formulario no es válido, mostramos los mensajes de error de validación
-                 form.reportValidity(); 
-            }
-            return; // Salimos después de manejar Ctrl+Q
-        }
-
-        // 2. Lógica de Navegación con Enter (como si fuera Tab)
-        if (e.key === 'Enter') {
-            const activeElement = document.activeElement;
-            const isInput = activeElement.tagName === 'INPUT' && activeElement.type !== 'checkbox' && activeElement.type !== 'submit';
-            
-            // Si el elemento activo es un INPUT
-            if (isInput) {
-                 // Verificamos si hay sugerencias visibles.
-                 // Si hay sugerencias, el Enter es manejado dentro de autocompletar, así que no intervenimos aquí.
-                 const isSuggestionsVisible = activeElement.nextElementSibling && activeElement.nextElementSibling.classList.contains('sugerencias') && activeElement.nextElementSibling.children.length > 0;
-                
-                if (!isSuggestionsVisible) {
-                    e.preventDefault(); 
-                    
-                    const currentId = activeElement.id;
-                    const currentIndex = inputOrder.indexOf(currentId);
-                    
-                    if (currentIndex !== -1) {
-                        const nextIndex = currentIndex + 1;
-                        if (nextIndex < inputOrder.length) {
-                            // Saltar al siguiente input
-                            document.getElementById(inputOrder[nextIndex]).focus();
-                        } else {
-                            // Si es el último, enfocar el botón Guardar
-                            document.getElementById('btnGuardar').focus();
-                        }
-                    } else if (currentId === 'buscador') {
-                         // Si se presiona Enter en el buscador, enfocar el primer campo
-                         document.getElementById(inputOrder[0]).focus();
-                    }
-                }
-            } else if (activeElement.id === 'btnGuardar') {
-                 // Si se presiona Enter en el botón Guardar, hacer submit
-                 e.preventDefault();
-                 document.querySelector("form").dispatchEvent(new Event('submit', { cancelable: true }));
-            }
-        }
     });
   </script>
 
