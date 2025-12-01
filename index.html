@@ -624,7 +624,7 @@
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjr-Fs3IF_y5wGI/exec"; 
 
     // CONFIGURACIÓN TELEGRAM
-    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAbL_G1-X6LdL4Fv6fkV4"; 
+    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAL_G1-X6LdL4Fv6fkV4"; 
     const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
     
     function findKeyCaseInsensitive(map, value) {
@@ -723,7 +723,8 @@
       });
 
       campo.addEventListener("keydown", e => {
-        const items = contenedor.querySelectorAll(".sugerencia');
+        // CORRECCIÓN: Se corrigieron las comillas mezcladas que podían causar un error de sintaxis y la falla al desplegar.
+        const items = contenedor.querySelectorAll(".sugerencia"); 
         if (items.length === 0) return;
         if (e.key === "ArrowDown") {
           e.preventDefault();
@@ -785,7 +786,8 @@
     function mostrarSugerencias(idCampo, idSugerencias) {
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
-      document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = "");
+      // Limpia todas las sugerencias para asegurar que solo se muestre una lista a la vez
+      document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = ""); 
 
       const lista = campo.dataset.lista ? JSON.parse(campo.dataset.lista) : [];
       contenedor.innerHTML = "";
@@ -797,6 +799,7 @@
         div.onclick = () => {
           campo.value = s;
           contenedor.innerHTML = "";
+          // Disparamos blur/input manualmente si se requiere lógica dependiente (Dependencia/Radiodifusora)
           if (idCampo === 'radiodifusora') {
               document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
           }
@@ -806,9 +809,7 @@
         };
         contenedor.appendChild(div);
       });
-      if (lista.length > 0) {
-        contenedor.style.display = 'block';
-      }
+      // La lista se despliega automáticamente ya que se le añadió contenido.
     }
 
     function resetearEstadoEdicion() {
@@ -938,6 +939,7 @@
 
         resetearEstadoEdicion();
         
+        // Dispara los eventos de blur para recargar las listas dependientes
         document.getElementById("dependencia").dispatchEvent(new Event('blur'));
         document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
         
@@ -1288,6 +1290,7 @@
       });
 
       document.addEventListener('click', (e) => {
+        // Asegura que al hacer clic fuera de un campo, se cierren las sugerencias.
         if (!e.target.closest('.campo')) {
             document.querySelectorAll('.sugerencias').forEach(s => s.innerHTML = "");
         }
