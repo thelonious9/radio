@@ -417,84 +417,67 @@
     <label for="usuario" data-required="true">Usuario:</label>
     <div class="campo">
       <input type="text" id="usuario" name="usuario" required>
-      <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')">
-      <label for="checkUsuario">🔒</label>
+      <input type="checkbox" id="checkUsuario" tabindex="-1" onchange="alternarBloqueo('usuario')"> <label for="checkUsuario">🔒</label>
     </div>
     
     <label for="fecha" data-required="true">Fecha:</label>
     <div class="campo">
       <input type="date" id="fecha" name="fecha" required>
-      <input type="checkbox" id="checkFecha" onchange="alternarBloqueo('fecha')">
-      <label for="checkFecha">🔒</label>
+      <input type="checkbox" id="checkFecha" tabindex="-1" onchange="alternarBloqueo('fecha')"> <label for="checkFecha">🔒</label>
     </div>
 
     <label for="radiodifusora" data-required="true">Radiodifusora:</label>
     <div class="campo">
       <input type="text" id="radiodifusora" name="radiodifusora" autocomplete="off" required>
-      <button type="button" onclick="mostrarSugerencias('radiodifusora','sugRadiodifusora')">🔽</button>
-      <input type="checkbox" id="checkRadiodifusora" onchange="alternarBloqueo('radiodifusora')">
-      <label for="checkRadiodifusora">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('radiodifusora','sugRadiodifusora')">🔽</button> <input type="checkbox" id="checkRadiodifusora" tabindex="-1" onchange="alternarBloqueo('radiodifusora')"> <label for="checkRadiodifusora">🔒</label>
       <div id="sugRadiodifusora" class="sugerencias"></div>
     </div>
 
     <label for="titular" data-required="true">Titular:</label>
     <div class="campo">
       <input type="text" id="titular" name="titular" required>
-      <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')">
-      <label for="checkTitular">🔒</label>
+      <input type="checkbox" id="checkTitular" tabindex="-1" onchange="alternarBloqueo('titular')"> <label for="checkTitular">🔒</label>
     </div>
 
     <label for="autor">Autor:</label>
     <div class="campo">
       <input type="text" id="autor" name="autor" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button>
-      <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')">
-      <label for="checkAutor">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button> <input type="checkbox" id="checkAutor" tabindex="-1" onchange="alternarBloqueo('autor')"> <label for="checkAutor">🔒</label>
       <div id="sugAutor" class="sugerencias"></div>
     </div>
 
     <label for="programa">Programa:</label>
     <div class="campo">
       <input type="text" id="programa" name="programa" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button>
-      <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
-      <label for="checkPrograma">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button> <input type="checkbox" id="checkPrograma" tabindex="-1" onchange="alternarBloqueo('programa')"> <label for="checkPrograma">🔒</label>
       <div id="sugPrograma" class="sugerencias"></div>
     </div>
 
     <label for="dependencia">Dependencia:</label>
     <div class="campo">
       <input type="text" id="dependencia" name="dependencia" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('dependencia','sugDep')">🔽</button>
-      <input type="checkbox" id="checkDependencia" onchange="alternarBloqueo('dependencia')">
-      <label for="checkDependencia">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('dependencia','sugDep')">🔽</button> <input type="checkbox" id="checkDependencia" tabindex="-1" onchange="alternarBloqueo('dependencia')"> <label for="checkDependencia">🔒</label>
       <div id="sugDep" class="sugerencias"></div>
     </div>
 
     <label for="organismo">Organismo:</label>
     <div class="campo">
       <input type="text" id="organismo" name="organismo" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('organismo','sugOrg')">🔽</button>
-      <input type="checkbox" id="checkOrganismo" onchange="alternarBloqueo('organismo')">
-      <label for="checkOrganismo">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('organismo','sugOrg')">🔽</button> <input type="checkbox" id="checkOrganismo" tabindex="-1" onchange="alternarBloqueo('organismo')"> <label for="checkOrganismo">🔒</label>
       <div id="sugOrg" class="sugerencias"></div>
     </div>
 
     <label for="genero">Género:</label>
     <div class="campo">
       <input type="text" id="genero" name="genero" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('genero','sugGenero')">🔽</button>
-      <input type="checkbox" id="checkGenero" onchange="alternarBloqueo('genero')">
-      <label for="checkGenero">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('genero','sugGenero')">🔽</button> <input type="checkbox" id="checkGenero" tabindex="-1" onchange="alternarBloqueo('genero')"> <label for="checkGenero">🔒</label>
       <div id="sugGenero" class="sugerencias"></div>
     </div>
 
     <label for="canal">Canal:</label>
     <div class="campo">
       <input type="text" id="canal" name="canal" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('canal','sugCanal')">🔽</button>
-      <input type="checkbox" id="checkCanal" onchange="alternarBloqueo('canal')">
-      <label for="checkCanal">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('canal','sugCanal')">🔽</button> <input type="checkbox" id="checkCanal" tabindex="-1" onchange="alternarBloqueo('canal')"> <label for="checkCanal">🔒</label>
       <div id="sugCanal" class="sugerencias"></div>
     </div>
 
@@ -503,27 +486,21 @@
       <input type="text" id="tema" name="tema" autocomplete="off">
       
       
-      <button type="button" onclick="mostrarSugerencias('tema','sugTema')">🔽</button>
-      <input type="checkbox" id="checkTema" onchange="alternarBloqueo('tema')">
-      <label for="checkTema">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('tema','sugTema')">🔽</button> <input type="checkbox" id="checkTema" tabindex="-1" onchange="alternarBloqueo('tema')"> <label for="checkTema">🔒</label>
       <div id="sugTema" class="sugerencias"></div>
     </div>
 
     <label for="estatus">Estatus:</label>
     <div class="campo">
       <input type="text" id="estatus" name="estatus" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('estatus','sugEstatus')">🔽</button>
-      <input type="checkbox" id="checkEstatus" onchange="alternarBloqueo('estatus')">
-      <label for="checkEstatus">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('estatus','sugEstatus')">🔽</button> <input type="checkbox" id="checkEstatus" tabindex="-1" onchange="alternarBloqueo('estatus')"> <label for="checkEstatus">🔒</label>
       <div id="sugEstatus" class="sugerencias"></div>
     </div>
 
     <label for="municipio">Municipio:</label>
     <div class="campo">
       <input type="text" id="municipio" name="municipio" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('municipio','sugMunicipio')">🔽</button>
-      <input type="checkbox" id="checkMunicipio" onchange="alternarBloqueo('municipio')">
-      <label for="checkMunicipio">🔒</label>
+      <button type="button" tabindex="-1" onclick="mostrarSugerencias('municipio','sugMunicipio')">🔽</button> <input type="checkbox" id="checkMunicipio" tabindex="-1" onchange="alternarBloqueo('municipio')"> <label for="checkMunicipio">🔒</label>
       <div id="sugMunicipio" class="sugerencias"></div>
     </div>
 
@@ -738,7 +715,12 @@
             campo.value = items[indice].textContent; // Selecciona con Enter
             contenedor.innerHTML = "";
             if (callback) callback(campo.value);
-            campo.blur(); // Quita el foco para completar la acción
+            // Enfoca el siguiente elemento para seguir la navegación después de la selección
+            const focusableElements = Array.from(document.querySelectorAll('input:not([tabindex="-1"]), button:not([tabindex="-1"]), select:not([tabindex="-1"])'));
+            const currentIndex = focusableElements.indexOf(campo);
+            if (currentIndex !== -1 && currentIndex < focusableElements.length - 1) {
+                focusableElements[currentIndex + 1].focus();
+            }
           }
         }
       });
