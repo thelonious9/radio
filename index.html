@@ -544,92 +544,129 @@
     
     <div class="actions-group">
       <button id="btnExportar" onclick="exportarCSV()">
-        <i class="fa-solid fa-file-csv"></i> Exportar a hoja de cálculo
+        <i class="fa-solid fa-file-csv"></i> Exportar CSV
       </button>
-      
       <button id="btnTelegram" onclick="enviarTelegram()">
         <i class="fa-brands fa-telegram"></i> Enviar por Telegram
-      </button> 
-      
-      <button id="btnBorrarTodo" onclick="borrarTodo()">
-        <i class="fa-solid fa-trash-can"></i> Borrar Todas
+      </button>
+      <button id="btnBorrarTodo" onclick="borrarTodasLasNotas()">
+        <i class="fa-solid fa-eraser"></i> Borrar Todas
       </button>
     </div>
   </div>
-  <div id="erroresCarga" class="error-carga"></div>
-  
+
   <div class="buscador-container">
-      <i class="fas fa-search buscador-icon"></i>
-      <input type="text" id="buscador" placeholder="Buscar en la tabla (Titular, Autor, etc.)">
+      <span class="buscador-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <input type="text" id="buscador" placeholder="Buscar por palabra clave...">
   </div>
-  
-  <h2>Notas capturadas</h2>
+
+  <h2>Notas Capturadas</h2>
   <table id="tablaNotas">
-    <thead>
-      <tr>
-        <th data-col="ordenCaptura"><div class="sortable-header"># <span class="sort-icon"></span></div></th>
-        <th data-col="usuario"><div class="sortable-header">Usuario <span class="sort-icon"></span></div></th>
-        <th data-col="fecha"><div class="sortable-header">Fecha <span class="sort-icon"></span></div></th>
-        <th data-col="radiodifusora"><div class="sortable-header">Radiodifusora <span class="sort-icon"></span></div></th>
-        <th data-col="titular"><div class="sortable-header">Titular <span class="sort-icon"></span></div></th>
-        <th data-col="autor"><div class="sortable-header">Autor <span class="sort-icon"></span></div></th>
-        <th data-col="programa"><div class="sortable-header">Programa <span class="sort-icon"></span></div></th>
-        <th data-col="dependencia"><div class="sortable-header">Dependencia <span class="sort-icon"></span></div></th>
-        <th data-col="organismo"><div class="sortable-header">Organismo <span class="sort-icon"></span></div></th>
-        <th data-col="genero"><div class="sortable-header">Género <span class="sort-icon"></span></div></th>
-        <th data-col="canal"><div class="sortable-header">Canal <span class="sort-icon"></span></div></th>
-        <th data-col="tema"><div class="sortable-header">Tema <span class="sort-icon"></span></div></th>
-        <th data-col="estatus"><div class="sortable-header">Estatus <span class="sort-icon"></span></div></th>
-        <th data-col="municipio"><div class="sortable-header">Municipio <span class="sort-icon"></span></div></th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
+      <thead>
+        <tr>
+          <th data-col="ordenCaptura" style="min-width: 50px;">
+            <div class="sortable-header">#<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="usuario">
+            <div class="sortable-header">Usuario<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="fecha" style="min-width: 100px;">
+            <div class="sortable-header">Fecha<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="radiodifusora">
+            <div class="sortable-header">Radiodifusora<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="titular">
+            <div class="sortable-header">Titular<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="autor">
+            <div class="sortable-header">Autor<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="programa">
+            <div class="sortable-header">Programa<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="dependencia">
+            <div class="sortable-header">Dependencia<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="organismo">
+            <div class="sortable-header">Organismo<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="genero">
+            <div class="sortable-header">Género<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="canal">
+            <div class="sortable-header">Canal<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="tema">
+            <div class="sortable-header">Tema<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="estatus">
+            <div class="sortable-header">Estatus<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="municipio">
+            <div class="sortable-header">Municipio<span class="sort-icon"></span></div>
+          </th>
+          <th data-col="acciones">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        </tbody>
   </table>
-  <br>
 
   <script>
+    // --- VARIABLES GLOBALES ---
+    const camposDeDatos = [
+      "ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa",
+      "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"
+    ];
     let notas = [];
+    let nextOrdenCaptura = 1; 
     let filaEnEdicion = null;
-    let nextOrdenCaptura = 1;
-    
-    // CAMPOS PARA RADIO
-    const camposDeDatos = ["ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
-    
-    // ENCABEZADOS
     const encabezadosTabla = {
-        "ordenCaptura": "#", "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor", 
-        "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género", 
-        "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "acciones": "Acciones"
+      "ordenCaptura": "#",
+      "usuario": "Usuario",
+      "fecha": "Fecha",
+      "radiodifusora": "Radiodifusora",
+      "titular": "Titular",
+      "autor": "Autor",
+      "programa": "Programa",
+      "dependencia": "Dependencia",
+      "organismo": "Organismo",
+      "genero": "Género",
+      "canal": "Canal",
+      "tema": "Tema",
+      "estatus": "Estatus",
+      "municipio": "Municipio",
+      "acciones": "Acciones"
     };
-    
-    let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' }; 
+    let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' };
 
-    // RUTAS RELATIVAS
+    // RUTAS RELATIVAS (Asegúrate de que estos archivos CSV existan en la misma carpeta)
     const urls = {
       dependencias: "./Dependencia.csv",
-      radiodifusoras: "./Radiodifusora.csv", 
+      radiodifusoras: "./Radiodifusora.csv",
       generos: "./Genero.csv",
       estatus: "./Estatus.csv",
       temas: "./Tema.csv",
       municipios: "./Municipio.csv",
-      autores: "./Autor.csv" 
+      autores: "./Autor.csv"
     };
 
     // RUTA DE DESPLIEGUE DE TU GOOGLE APPS SCRIPT
     // *** ESTA ES LA URL PROPORCIONADA POR TI PARA LA PRUEBA ***
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjR-Fs3IF_y5wGI/exec"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjR-Fs3IF_y5wGI/exec";
 
     // CONFIGURACIÓN TELEGRAM
-    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
-    const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
-    
+    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAkL_G1-X6LdL4F6g67456";
+    const TELEGRAM_CHAT_ID = "@capsmonitoreo";
+
+    // --- UTILERIAS ---
     function findKeyCaseInsensitive(map, value) {
         if (!value) return null;
         const lowerValue = value.toLowerCase();
         for (const key in map) {
             if (key.toLowerCase() === lowerValue) {
-                return key; 
+                return key;
             }
         }
         return null;
@@ -637,250 +674,59 @@
 
     async function cargarCSV(url) {
       try {
-        const urlConCacheBuster = `${url}?t=${new Date().getTime()}`;
-        const res = await fetch(urlConCacheBuster);
-        
-        const contentType = res.headers.get("content-type");
-        if (contentType && !contentType.includes("text/csv") && !contentType.includes("text/plain")) {
-            if (contentType.includes("text/html")) {
-                throw new Error(`Contenido HTML inesperado. Revise ruta: ${url}`);
-            }
-        }
-        
-        const buffer = await res.arrayBuffer(); 
-        const decoder = new TextDecoder('utf-8'); 
-        const texto = decoder.decode(buffer); 
-        return texto.split('\n').map(linea => linea.split(','));
-      } catch (e) {
-        document.getElementById("erroresCarga").innerText += `Error al cargar ${url}: ${e.message}\n`;
-        return [];
+          // Añadir cache buster para asegurar la carga de la versión más reciente
+          const urlConCacheBuster = `${url}?t=${new Date().getTime()}`;
+          const res = await fetch(urlConCacheBuster);
+          const contentType = res.headers.get("content-type");
+          if (contentType && !contentType.includes("text/csv") && !contentType.includes("text/plain")) {
+              if (contentType.includes("text/html")) {
+                  throw new Error(`Contenido HTML inesperado. Revise ruta: ${url}`);
+              }
+          }
+          const buffer = await res.arrayBuffer();
+          const decoder = new TextDecoder('utf-8');
+          const texto = decoder.decode(buffer);
+          // Procesa el texto CSV: separa por línea, limpia espacios, toma solo el primer valor de cada línea,
+          // filtra valores vacíos y duplciados, y ordena.
+          return texto.split('\n')
+              .map(linea => linea.trim())
+              .filter(linea => linea.length > 0)
+              .map(linea => linea.split(',')[0].trim())
+              .filter((valor, indice, self) => valor.length > 0 && self.indexOf(valor) === indice)
+              .sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+      } catch (error) {
+          console.error(`Error al cargar CSV de ${url}:`, error);
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'error-carga';
+          errorDiv.textContent = `❌ Error al cargar datos de ${url}. Revisa la consola para más detalles.`;
+          document.body.insertBefore(errorDiv, document.querySelector('h2'));
+          return []; 
       }
-    }
-    
-    function limpiarFilasCSV(filas) {
-      if (!filas || filas.length === 0) return [];
-      filas[0][0] = filas[0][0].replace(/^\uFEFF/, "");
-      const encabezado = filas[0].map(c => (c || "").toLowerCase()).join(",");
-      const tieneEncabezado = encabezado.includes("dependencia") || encabezado.includes("radiodifusora") || encabezado.includes("género");
-      if (tieneEncabezado) filas = filas.slice(1);
-      return filas.map(r => r.map(c => (c || "").replace(/<[^>]+>/g, "").trim())).filter(r => r[0]);
-    }
-
-    async function cargarMapa(url) {
-      const filas = limpiarFilasCSV(await cargarCSV(url));
-      const map = {};
-      filas.forEach(([clave, valor]) => {
-        if (!clave) return;
-        map[clave] = map[clave] || new Set();
-        if (valor) map[clave].add(valor);
-      });
-      const claves = Object.keys(map).sort((a, b) => a.localeCompare(b, 'es'));
-      const mapArrays = {};
-      claves.forEach(k => mapArrays[k] = Array.from(map[k]).sort((a, b) => a.localeCompare(b, 'es')));
-      return { claves, map: mapArrays };
     }
 
     async function cargarLista(url) {
-      const filas = limpiarFilasCSV(await cargarCSV(url));
-      return Array.from(new Set(filas.map(r => r[0]))).sort((a, b) => a.localeCompare(b, 'es'));
+        const lista = await cargarCSV(url);
+        return lista;
     }
 
-    function autocompletar(idCampo, idSugerencias, lista, callback) {
-      const campo = document.getElementById(idCampo);
-      const contenedor = document.getElementById(idSugerencias);
-      campo.dataset.lista = JSON.stringify(lista);
-      let indice = -1;
-
-      campo.addEventListener("input", () => {
-        const valor = campo.value.toLowerCase().trim();
-        contenedor.innerHTML = "";
-        indice = -1;
-        if (!valor) return;
-        const sugerencias = lista.filter(item => item.toLowerCase().includes(valor));
-        sugerencias.forEach((s, i) => {
-          const div = document.createElement("div");
-          div.textContent = s;
-          div.className = "sugerencia";
-          div.dataset.index = i;
-          div.onclick = () => {
-            campo.value = s;
-            contenedor.innerHTML = "";
-            if (callback) callback(s);
-          };
-          contenedor.appendChild(div);
-        });
-      });
-
-      campo.addEventListener("keydown", e => {
-        const items = contenedor.querySelectorAll(".sugerencia");
-        if (items.length === 0) return;
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          indice = (indice + 1) % items.length;
-          resaltar(items, indice);
-        } else if (e.key === "ArrowUp") {
-          e.preventDefault();
-          indice = (indice - 1 + items.length) % items.length;
-          resaltar(items, indice);
-        } else if (e.key === "Enter") {
-          e.preventDefault(); // Previene el envío del formulario
-          if (indice >= 0 && items[indice]) {
-            campo.value = items[indice].textContent;
-            contenedor.innerHTML = "";
-            if (callback) callback(campo.value);
-          }
-        } else if (e.key === "Tab") { // <--- LÓGICA AGREGADA: Selección con Tab
-          if (indice >= 0 && items[indice]) {
-            e.preventDefault(); // Previene el cambio de foco predeterminado de Tab
-            campo.value = items[indice].textContent;
-            contenedor.innerHTML = "";
-            if (callback) callback(campo.value);
-          }
-        }
-      });
-
-      campo.addEventListener("focus", () => {
-        document.querySelectorAll('.sugerencias').forEach(sug => {
-            if (sug.id !== idSugerencias) {
-                sug.innerHTML = "";
-            }
-        });
-      });
-      
-      campo.addEventListener("blur", () => {
-          setTimeout(() => {
-              if (!contenedor.contains(document.activeElement)) {
-                  contenedor.innerHTML = "";
-              }
-          }, 150); 
-      });
-
-      function resaltar(items, i) {
-        items.forEach(el => el.classList.remove("resaltado"));
-        items[i].classList.add("resaltado");
-      }
-    }
-    
-    function mostrarSugerencias(idCampo, idSugerencias) {
-      const campo = document.getElementById(idCampo);
-      const contenedor = document.getElementById(idSugerencias);
-      document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = "");
-
-      const lista = campo.dataset.lista ? JSON.parse(campo.dataset.lista) : [];
-      contenedor.innerHTML = "";
-      lista.forEach((s, i) => {
-        const div = document.createElement("div");
-        div.textContent = s;
-        div.className = "sugerencia";
-        div.dataset.index = i;
-        div.onclick = () => {
-          campo.value = s;
-          contenedor.innerHTML = "";
-          if (idCampo === 'radiodifusora') {
-              document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
-          }
-          if (idCampo === 'dependencia') {
-              document.getElementById("dependencia").dispatchEvent(new Event('blur'));
-          }
-        };
-        contenedor.appendChild(div);
-      });
-      if (lista.length > 0) {
-        contenedor.style.display = 'block';
-      }
-    }
-
-    function resetearEstadoEdicion() {
-        filaEnEdicion = null;
-        document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-        document.getElementById('btnEliminar').style.display = 'none';
-        document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
-    }
+    // --- PERSISTENCIA Y ESTADO ---
 
     function guardarNotas() {
-        localStorage.setItem('notasCapturadas', JSON.stringify(notas));
-        localStorage.setItem('nextOrdenCaptura', nextOrdenCaptura);
-    }
-
-    function borrarTodo() {
-        if (confirm("¿Estás seguro de que quieres BORRAR TODAS las notas capturadas? Esta acción es irreversible.")) {
-            notas = []; 
-            nextOrdenCaptura = 1;
-            localStorage.removeItem('notasCapturadas'); 
-            renderizarTabla(); 
-            resetearEstadoEdicion();
-        }
-    }
-    
-    function borrarNota() {
-        if (filaEnEdicion !== null) {
-            const confirmar = confirm(`¿Eliminar nota #${notas[filaEnEdicion].ordenCaptura}?`);
-            if (confirmar) {
-                notas.splice(filaEnEdicion, 1);
-                guardarNotas();
-                ordenarTabla(ordenActual.columna, true); 
-                document.querySelector("form").reset(); 
-                resetearEstadoEdicion(); 
-            }
-        }
-    }
-
-    function contieneCamposVacios(nota) {
-        const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura'); 
-        for (const campo of camposARevisar) {
-            if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function renderizarTabla() {
-        const tablaBody = document.getElementById("tablaNotas").querySelector("tbody");
-        tablaBody.innerHTML = '';
-        
-        notas.forEach((nota, indice) => {
-            const tr = document.createElement("tr");
-            tr.dataset.index = notas.indexOf(nota);
-
-            if (contieneCamposVacios(nota)) {
-                tr.classList.add('alerta-vacio');
-            }
-
-            camposDeDatos.forEach(campo => {
-                const td = document.createElement("td");
-                td.textContent = nota[campo];
-                td.setAttribute('data-label', encabezadosTabla[campo]);
-                tr.appendChild(td);
-            });
-            
-            const tdAcciones = document.createElement("td");
-            tdAcciones.setAttribute('data-label', encabezadosTabla['acciones']);
-            const btnEditar = document.createElement("button");
-            btnEditar.textContent = "Editar";
-            btnEditar.classList.add('btn-accion-tabla'); 
-            btnEditar.onclick = function() { editarNota(tr); };
-            tdAcciones.appendChild(btnEditar);
-            tr.appendChild(tdAcciones);
-
-            tablaBody.appendChild(tr);
-        });
-        
-        // Vuelve a aplicar el filtro después de renderizar (útil para cuando se edita/guarda)
-        filtrarTabla();
+      localStorage.setItem('notasCapturadas', JSON.stringify(notas));
+      localStorage.setItem('nextOrdenCaptura', nextOrdenCaptura.toString());
     }
 
     function cargarNotasGuardadas() {
         const datosJSON = localStorage.getItem('notasCapturadas');
         const ordenJSON = localStorage.getItem('nextOrdenCaptura');
-        
         if (ordenJSON) nextOrdenCaptura = parseInt(ordenJSON, 10);
-
+        
         if (datosJSON) {
             try {
                 notas = JSON.parse(datosJSON);
+                // Asegura que todas las notas tienen ordenCaptura 
                 notas.forEach(nota => {
-                    if (!nota.ordenCaptura) nota.ordenCaptura = nextOrdenCaptura++; 
+                    if (!nota.ordenCaptura) nota.ordenCaptura = nextOrdenCaptura++;
                 });
                 ordenarTabla(ordenActual.columna, true);
             } catch (e) {
@@ -888,141 +734,434 @@
                 notas = [];
             }
         } else {
-            actualizarIndicadoresOrden();
+            actualizarIndicadoresOrden(); 
         }
     }
+
+    function resetearEstadoEdicion() {
+      filaEnEdicion = null;
+      document.querySelectorAll('#tablaNotas tr').forEach(tr => tr.classList.remove('editando'));
+      document.getElementById('btnEliminar').style.display = 'none';
+      document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+    }
+
+    // --- FORMULARIO Y BLOQUEO ---
 
     function alternarBloqueo(idCampo) {
         const campo = document.getElementById(idCampo);
         const checkboxId = `check${idCampo.charAt(0).toUpperCase() + idCampo.slice(1)}`;
         const checkbox = document.getElementById(checkboxId);
         
-        campo.readOnly = checkbox.checked;
-        campo.classList.toggle("bloqueado", checkbox.checked);
-        
-        localStorage.setItem(`bloqueado_${idCampo}`, checkbox.checked);
+        const isBloqueado = checkbox.checked;
+
+        if (isBloqueado) {
+            campo.classList.add('bloqueado');
+            campo.setAttribute('readonly', 'readonly');
+            localStorage.setItem(`bloqueado_${idCampo}`, 'true');
+        } else {
+            campo.classList.remove('bloqueado');
+            campo.removeAttribute('readonly');
+            localStorage.removeItem(`bloqueado_${idCampo}`);
+        }
     }
 
-    function editarNota(tr) {
-        const indice = parseInt(tr.dataset.index);
-        const nota = notas[indice];
+    // --- AUTOCOMPLETAR/SUGERENCIAS ---
 
-        camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
-            document.getElementById(id).value = nota[id];
+    function autocompletar(idCampo, idSugerencias, lista) {
+        const campo = document.getElementById(idCampo);
+        const contenedor = document.getElementById(idSugerencias);
+        campo.dataset.lista = JSON.stringify(lista); 
+        let indice = -1;
+
+        function handleSelection(valorSeleccionado) {
+            // Lógica adicional si se requiere al seleccionar una sugerencia.
+        }
+
+        campo.addEventListener("input", () => {
+            const valor = campo.value.toLowerCase().trim();
+            contenedor.innerHTML = "";
+            indice = -1;
+            if (!valor) return;
+
+            const sugerencias = lista.filter(item => item.toLowerCase().includes(valor));
+            sugerencias.forEach((s, i) => {
+                const div = document.createElement("div");
+                div.textContent = s;
+                div.className = "sugerencia";
+                div.dataset.index = i;
+                div.onclick = () => {
+                    campo.value = s;
+                    contenedor.innerHTML = "";
+                    handleSelection(s); 
+                };
+                contenedor.appendChild(div);
+            });
         });
 
-        resetearEstadoEdicion();
-        
-        document.getElementById("dependencia").dispatchEvent(new Event('blur'));
-        document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
-        
-        filaEnEdicion = indice; 
-        document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Actualizar Nota';
-        document.getElementById('btnEliminar').style.display = 'inline-block';
-        
-        document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
-        tr.classList.add('editando');
-        window.scrollTo(0, 0);
+        campo.addEventListener("keydown", e => {
+            const items = contenedor.querySelectorAll(".sugerencia");
+            if (items.length === 0) return;
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                indice = (indice + 1) % items.length;
+                resaltar(items, indice);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                indice = (indice - 1 + items.length) % items.length;
+                resaltar(items, indice);
+            } else if (e.key === "Enter" || e.key === "Tab") { 
+                // Aquí usamos Enter y Tab para seleccionar la sugerencia.
+                // En el caso de Enter, se previene el comportamiento de navegación general.
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                }
+                
+                if (indice >= 0 && items[indice]) {
+                    const valorSeleccionado = items[indice].textContent;
+                    campo.value = valorSeleccionado;
+                    contenedor.innerHTML = "";
+                    handleSelection(valorSeleccionado); 
+                } else {
+                    // Si no hay selección resaltada, se cierra el menú de sugerencias.
+                    contenedor.innerHTML = "";
+                }
+            }
+        });
+
+        campo.addEventListener("focus", () => {
+            document.querySelectorAll('.sugerencias').forEach(sug => {
+                if (sug.id !== idSugerencias) {
+                    sug.innerHTML = "";
+                }
+            });
+        });
+
+        campo.addEventListener("blur", (e) => {
+            setTimeout(() => {
+                if (!contenedor.contains(document.activeElement)) {
+                    contenedor.innerHTML = "";
+                }
+            }, 150);
+        });
+
+        function resaltar(items, i) {
+            items.forEach(el => el.classList.remove("resaltado"));
+            items[i].classList.add("resaltado");
+            items[i].scrollIntoView({ block: 'nearest' });
+        }
     }
 
-    function generarNombreArchivoCSV() {
-        const usuario = document.getElementById('usuario').value.trim() || 'Desconocido';
-        const usuarioLimpio = usuario.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, ''); 
-        const fechaHoy = new Date().toISOString().slice(0, 10); 
-        return `${usuarioLimpio}_${fechaHoy}.csv`;
+    function mostrarSugerencias(idCampo, idSugerencias) {
+        const campo = document.getElementById(idCampo);
+        const contenedor = document.getElementById(idSugerencias);
+        document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = ""); 
+        
+        const lista = campo.dataset.lista ? JSON.parse(campo.dataset.lista) : [];
+        contenedor.innerHTML = "";
+        
+        lista.forEach((s, i) => {
+            const div = document.createElement("div");
+            div.textContent = s;
+            div.className = "sugerencia";
+            div.dataset.index = i;
+            div.onclick = () => {
+                campo.value = s;
+                contenedor.innerHTML = "";
+            };
+            contenedor.appendChild(div);
+        });
+
+        if(campo.value) {
+            campo.dispatchEvent(new Event('input'));
+        }
     }
+
+    // --- TABLA Y ACCIONES DE NOTAS ---
+
+    function editarNota(fila) {
+      resetearEstadoEdicion();
+
+      fila.classList.add('editando');
+      filaEnEdicion = parseInt(fila.dataset.index, 10);
+
+      const notaAEditar = notas[filaEnEdicion];
+      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+        document.getElementById(id).value = notaAEditar[id] || '';
+      });
+
+      document.getElementById('btnEliminar').style.display = 'inline-block';
+      document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Actualizar';
+      document.getElementById('titular').focus();
+    }
+
+    function borrarNota() {
+      if (filaEnEdicion !== null) {
+        const confirmar = confirm(`¿Estás seguro de eliminar la nota #${notas[filaEnEdicion].ordenCaptura} - "${notas[filaEnEdicion].titular}"?`);
+        if (confirmar) {
+          notas.splice(filaEnEdicion, 1); 
+          guardarNotas();
+          ordenarTabla(ordenActual.columna, true); 
+          document.querySelector("form").reset();
+          resetearEstadoEdicion();
+          
+          camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+             if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
+                 localStorage.removeItem(id); 
+             }
+          });
+        }
+      }
+    }
+    
+    // Define los campos obligatorios para la validación
+    function contieneCamposVacios(nota) {
+        const camposObligatorios = ['usuario', 'fecha', 'radiodifusora', 'titular']; 
+        const camposFaltantes = [];
+
+        for (const campo of camposObligatorios) {
+            if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
+                const labelElement = document.querySelector(`label[for="${campo}"]`);
+                camposFaltantes.push(labelElement ? labelElement.textContent.replace(':', '').trim() : campo);
+            }
+        }
+        return camposFaltantes;
+    }
+
+
+    function renderizarTabla() {
+      const tablaBody = document.getElementById("tablaNotas").querySelector("tbody");
+      tablaBody.innerHTML = '';
+      
+      const filtro = document.getElementById('buscador').value.toLowerCase();
+      const notasFiltradas = notas.filter(nota => {
+          if (!filtro) return true; 
+
+          return camposDeDatos.some(campo => {
+              if (campo === 'ordenCaptura' || campo === 'acciones') return false;
+              const valor = (nota[campo] || '').toString().toLowerCase();
+              return valor.includes(filtro);
+          });
+      });
+
+      notasFiltradas.forEach((nota, indice) => {
+        const tr = document.createElement("tr");
+        tr.dataset.index = notas.indexOf(nota); 
+        
+        const camposFaltantes = contieneCamposVacios(nota);
+        if (camposFaltantes.length > 0) {
+            tr.classList.add('alerta-vacio');
+        }
+
+        camposDeDatos.forEach(campo => {
+          const td = document.createElement("td");
+          td.textContent = nota[campo];
+          td.setAttribute('data-label', encabezadosTabla[campo]);
+          tr.appendChild(td);
+        });
+
+        const tdAcciones = document.createElement("td");
+        tdAcciones.setAttribute('data-label', encabezadosTabla['acciones']);
+        const btnEditar = document.createElement("button");
+        btnEditar.textContent = "Editar";
+        btnEditar.classList.add('btn-accion-tabla');
+        btnEditar.onclick = function() {
+          editarNota(tr);
+        };
+        tdAcciones.appendChild(btnEditar);
+        tr.appendChild(tdAcciones);
+        tablaBody.appendChild(tr);
+      });
+    }
+
+    function filtrarTabla() {
+        renderizarTabla();
+    }
+
+
+    function ordenarTabla(columna, forzarDireccion = false) {
+      let direccion = ordenActual.direccion;
+
+      if (!forzarDireccion) {
+          if (ordenActual.columna === columna) {
+              direccion = direccion === 'asc' ? 'desc' : 'asc';
+          } else {
+              direccion = 'asc';
+          }
+      } else {
+          direccion = ordenActual.direccion; 
+      }
+
+      notas.sort((notaA, notaB) => {
+          const valA = notaA[columna];
+          const valB = notaB[columna];
+          let comparacion = 0;
+
+          if (columna === 'ordenCaptura') {
+              comparacion = valA - valB;
+          } else if (columna === 'fecha') {
+              const dateA = new Date(valA + 'T00:00:00');
+              const dateB = new Date(valB + 'T00:00:00');
+              if (dateA < dateB) comparacion = -1;
+              if (dateA > dateB) comparacion = 1;
+          } else {
+              comparacion = (valA || '').toString().localeCompare((valB || '').toString(), 'es', { sensitivity: 'base' });
+          }
+
+          return direccion === 'asc' ? comparacion : -comparacion;
+      });
+
+      ordenActual = { columna, direccion };
+      actualizarIndicadoresOrden();
+      renderizarTabla();
+    }
+
+
+    function actualizarIndicadoresOrden() {
+      document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
+        const headerDiv = th.querySelector('.sortable-header');
+        const iconSpan = th.querySelector('.sort-icon');
+        const col = th.dataset.col;
+
+        headerDiv.classList.remove('sorted');
+        iconSpan.innerHTML = '';
+
+        if (col === ordenActual.columna) {
+          headerDiv.classList.add('sorted');
+          iconSpan.innerHTML = ordenActual.direccion === 'asc' ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+        } else {
+          iconSpan.innerHTML = '<i class="fas fa-sort"></i>';
+        }
+      });
+    }
+
+    // --- ACCIONES GLOBALES ---
 
     function generarCSVContenido() {
-      const cabeceras = ["#", "Usuario", "Fecha", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
-      const filas = [cabeceras];
+      const datosParaExportar = notas.slice(); 
       
-      notas.forEach(nota => {
-        const fila = camposDeDatos.map(key => {
-            let valor = nota[key] || '';
-            // CSV: Envuelve en comillas y escapa las comillas dobles
-            return `"${valor.toString().replace(/"/g, '""')}"`; 
+      const encabezados = camposDeDatos.filter(c => c !== 'acciones').map(key => `"${encabezadosTabla[key].replace(/"/g, '""')}"`);
+      const filas = [encabezados];
+
+      datosParaExportar.forEach(nota => {
+        const fila = camposDeDatos.filter(c => c !== 'acciones').map(campo => {
+          let valor = nota[campo] || '';
+          valor = valor.toString().replace(/"/g, '""'); 
+          return `"${valor}"`;
         });
         filas.push(fila);
       });
-      
-      // Añade el BOM (\uFEFF) para compatibilidad con acentos en Excel
+
       return "\uFEFF" + filas.map(f => f.join(",")).join("\n");
     }
 
+    function generarNombreArchivoCSV() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); 
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `Reporte_Notas_Radio_${yyyy}${mm}${dd}.csv`;
+    }
+
     function exportarCSV() {
-        if (notas.length === 0) { alert("No hay notas para exportar."); return; }
-        
-        const csvContenido = generarCSVContenido();
-        const nombreArchivo = generarNombreArchivoCSV();
-        
-        const blob = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = nombreArchivo;
-        document.body.appendChild(a); 
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+      if (notas.length === 0) {
+        alert("No hay notas para exportar.");
+        return;
+      }
+
+      const csvContenido = generarCSVContenido();
+      const nombreArchivo = generarNombreArchivoCSV();
+
+      const blob = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nombreArchivo;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     async function enviarTelegram() {
-        if (notas.length === 0) {
-             alert("No hay notas para enviar por Telegram.");
-             return;
-        }
+      if (notas.length === 0) {
+        alert("No hay notas para enviar por Telegram.");
+        return;
+      }
+      
+      const URL_TELEGRAM = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`;
+      
+      try {
+        const btn = document.getElementById('btnTelegram');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
 
-        const URL_TELEGRAM = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`; 
+        const csvContenido = generarCSVContenido();
+        const blobCSV = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
+        const nombreArchivoTelegram = generarNombreArchivoCSV();
+
+        const formData = new FormData();
+        formData.append('chat_id', TELEGRAM_CHAT_ID);
+        formData.append('document', blobCSV, nombreArchivoTelegram);
+        formData.append('caption', `📋 Reporte de notas de Radio (${nombreArchivoTelegram}) enviado automáticamente.`);
+
+        const response = await fetch(URL_TELEGRAM, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
         
-        try {
-            document.getElementById('btnTelegram').disabled = true;
-            document.getElementById('btnTelegram').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
-
-            const csvContenido = generarCSVContenido();
-            const blobCSV = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
-            const nombreArchivoTelegram = generarNombreArchivoCSV();
-
-            const formData = new FormData();
-            formData.append('chat_id', TELEGRAM_CHAT_ID);
-            formData.append('document', blobCSV, nombreArchivoTelegram); 
-            formData.append('caption', `📋 Reporte de notas de Radio (${nombreArchivoTelegram}) enviado automáticamente.`);
-
-            const response = await fetch(URL_TELEGRAM, {
-                method: 'POST',
-                body: formData 
-            });
-
-            const result = await response.json();
-
-            if (response.ok && result.ok) {
-                alert(`¡CSV '${nombreArchivoTelegram}' enviado con éxito al canal ${TELEGRAM_CHAT_ID}!`);
-            } else {
-                console.error("Error Telegram:", result);
-                alert(`Error Telegram: ${result.description}`);
-            }
-
-        } catch (error) {
-            console.error("Error conexión:", error);
-            alert("Error al intentar comunicarse con Telegram. Revisa la consola.");
-        } finally {
-            document.getElementById('btnTelegram').disabled = false;
-            document.getElementById('btnTelegram').innerHTML = '<i class="fa-brands fa-telegram"></i> Enviar por Telegram';
+        if (response.ok && result.ok) {
+          alert(`¡CSV '${nombreArchivoTelegram}' enviado con éxito al canal ${TELEGRAM_CHAT_ID}!`);
+        } else {
+          console.error("Error Telegram:", result);
+          alert(`Error Telegram: ${result.description || "Error desconocido"}`);
         }
+      } catch (error) {
+        console.error("Error conexión:", error);
+        alert("Error al intentar comunicarse con Telegram. Revisa la consola.");
+      } finally {
+        document.getElementById('btnTelegram').disabled = false;
+        document.getElementById('btnTelegram').innerHTML = '<i class="fa-brands fa-telegram"></i> Enviar por Telegram';
+      }
+    }
+
+
+    function borrarTodasLasNotas() {
+      if (notas.length === 0) {
+        alert("No hay notas para borrar.");
+        return;
+      }
+      const confirmar = confirm(`¿Estás seguro de eliminar PERMANENTEMENTE ${notas.length} notas capturadas? Esta acción no se puede deshacer.`);
+      if (confirmar) {
+        notas = [];
+        nextOrdenCaptura = 1;
+        guardarNotas();
+        ordenarTabla(ordenActual.columna, true); 
+        document.querySelector("form").reset();
+        resetearEstadoEdicion();
+        
+        camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+             if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
+                 localStorage.removeItem(id); 
+             }
+        });
+        alert("Todas las notas han sido eliminadas.");
+      }
     }
     
-    /**
-     * Función para enviar la sugerencia de tema a Google App Script
-     */
     async function enviarSugerenciaTema() {
         const input = document.getElementById('inputSugerenciaTema');
         const tema = input.value.trim();
-        const btn = document.getElementById('btnSugerirTema');
         const mensajeDiv = document.getElementById('mensajeSugerencia');
-        mensajeDiv.textContent = '';
-        
-        if (tema === "") {
+        const btn = document.getElementById('btnSugerirTema');
+
+        mensajeDiv.textContent = ''; 
+
+        if (!tema) {
             mensajeDiv.style.color = 'yellow';
-            mensajeDiv.textContent = "Por favor, escribe una sugerencia de tema.";
+            mensajeDiv.textContent = 'Escribe una sugerencia de tema.';
             input.focus();
             return;
         }
@@ -1031,46 +1170,41 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
 
-            const payload = { tema: tema };
+            const payload = {
+                action: 'sugerirTema', 
+                tema: tema
+            };
 
             const response = await fetch(GAS_URL, {
                 method: 'POST',
-                // Modo CORS para solicitudes a App Script
-                mode: 'cors', 
-                cache: 'no-cache',
+                mode: 'cors',
                 headers: {
-                    // Importante: App Script funciona mejor con 'text/plain' cuando el cuerpo es JSON
-                    'Content-Type': 'text/plain;charset=utf-8' 
+                    'Content-Type': 'application/x-www-form-urlencoded' 
                 },
-                // El cuerpo debe ser una cadena JSON
-                body: JSON.stringify(payload) 
+                body: new URLSearchParams(payload)
             });
 
-            // App Script devuelve un JSON de texto. Lo leemos y parseamos
             const textResponse = await response.text();
-            
-            // Intenta parsear la respuesta
             let result;
+
             try {
                 result = JSON.parse(textResponse);
             } catch (e) {
-                 // Si falla el parseo, el App Script puede haber devuelto un texto simple o un error HTML
                 mensajeDiv.style.color = 'red';
                 mensajeDiv.textContent = `❌ Error: Respuesta inesperada del script. Revisa el código de tu App Script.`;
                 console.error("Error al parsear la respuesta JSON:", e, "Respuesta recibida:", textResponse);
                 return;
             }
-            
+
             if (result && result.estado === "ok") {
                 mensajeDiv.style.color = 'lightgreen';
                 mensajeDiv.textContent = `✅ Sugerencia enviada: "${tema}"`;
-                input.value = ''; // Limpiar campo
+                input.value = ''; 
             } else {
                 mensajeDiv.style.color = 'red';
                 mensajeDiv.textContent = `❌ Error al guardar en Hoja de Cálculo: ${result.error || "Error desconocido"}`;
                 console.error("Error App Script:", result);
             }
-            
         } catch (error) {
             mensajeDiv.style.color = 'red';
             mensajeDiv.textContent = `❌ Error de conexión. Revisa la consola (F12) para detalles de red y verifica que tu App Script esté desplegado correctamente.`;
@@ -1080,225 +1214,163 @@
             btn.innerHTML = '<i class="fa-solid fa-lightbulb"></i> Sugerir Tema';
         }
     }
-    
-    /**
-     * Función Sugerir Tema (Simple, basada en lógica JS)
-     * Se mantiene en el código por si se requiere, aunque se eliminó el botón de la UI.
-     */
-    function sugerirTemaSimple() {
-        const titular = document.getElementById('titular').value.trim();
-        const temaField = document.getElementById('tema');
-        
-        if (!titular) {
-            alert("Por favor, escriba primero un Titular para generar la sugerencia de Tema.");
-            temaField.focus();
-            return;
-        }
 
-        let temaSugerido = '';
-        const titularLower = titular.toLowerCase();
 
-        if (titularLower.includes('salud') || titularLower.includes('vacuna') || titularLower.includes('covid')) {
-            temaSugerido = "Salud y Bienestar";
-        } else if (titularLower.includes('seguridad') || titularLower.includes('policía') || titularLower.includes('cárcel')) {
-            temaSugerido = "Seguridad Pública";
-        } else if (titularLower.includes('escuela') || titularLower.includes('educación') || titularLower.includes('universidad')) {
-            temaSugerido = "Educación";
-        } else if (titularLower.includes('infraestructura') || titularLower.includes('carretera') || titularLower.includes('puente')) {
-            temaSugerido = "Infraestructura";
-        } else {
-             alert(`Función Sugerir Tema: No se pudo generar una sugerencia automática para el Titular: "${titular}".`);
-             return;
-        }
-        
-        if (confirm(`Titular: "${titular}"\n\nSugerencia de Tema: "${temaSugerido}"\n\n¿Desea usar este tema? (El tema actual será reemplazado).`)) {
-            temaField.value = temaSugerido;
-            localStorage.setItem('tema', temaSugerido); 
-        }
-    }
+    // --- INICIALIZACIÓN ---
 
-    function ordenarTabla(columna, esInicial = false) {
-        if (!columna) return;
-        let direccion = 'asc';
-        if (ordenActual.columna === columna && !esInicial) {
-            direccion = ordenActual.direccion === 'asc' ? 'desc' : 'asc';
-        } else if (esInicial && columna === 'ordenCaptura') {
-            direccion = 'desc';
-        }
-
-        notas.sort((a, b) => {
-            const valA = a[columna] || '';
-            const valB = b[columna] || '';
-            let comparacion = 0;
-            
-            if (columna === 'ordenCaptura') comparacion = valA - valB;
-            else if (columna === 'fecha') {
-                const dateA = new Date(valA + 'T00:00:00');
-                const dateB = new Date(valB + 'T00:00:00');
-                if (dateA < dateB) comparacion = -1;
-                if (dateA > dateB) comparacion = 1;
-            } else {
-                comparacion = valA.toString().localeCompare(valB.toString(), 'es', { sensitivity: 'base' });
-            }
-            return direccion === 'asc' ? comparacion : -comparacion;
-        });
-
-        ordenActual = { columna, direccion };
-        actualizarIndicadoresOrden();
-        renderizarTabla();
-    }
-
-    function actualizarIndicadoresOrden() {
-        document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
-            const headerDiv = th.querySelector('.sortable-header');
-            const iconSpan = th.querySelector('.sort-icon');
-            const col = th.dataset.col;
-            headerDiv.classList.remove('sorted');
-            iconSpan.innerHTML = ''; 
-            if (col === ordenActual.columna) {
-                headerDiv.classList.add('sorted');
-                iconSpan.innerHTML = ordenActual.direccion === 'asc' ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
-            } else {
-                iconSpan.innerHTML = '<i class="fas fa-sort"></i>';
-            }
-        });
-    }
-
-    // --- FUNCIÓN: BÚSQUEDA EN TIEMPO REAL ---
-    function filtrarTabla() {
-        const input = document.getElementById('buscador');
-        const filtro = input.value.toLowerCase();
-        const filas = document.getElementById('tablaNotas').querySelectorAll('tbody tr');
-        
-        filas.forEach(tr => {
-            let encontrado = false;
-            for (let i = 0; i < tr.cells.length - 1; i++) {
-                const textoCelda = tr.cells[i].textContent || tr.cells[i].innerText;
-                if (textoCelda.toLowerCase().includes(filtro)) {
-                    encontrado = true;
-                    break;
-                }
-            }
-            tr.style.display = encontrado ? "" : "none";
-        });
-    }
-
-    // --- Eventos ---
-    document.addEventListener("DOMContentLoaded", async () => {
-      let orgMap, programaMap; 
-
-      const depData = await cargarMapa(urls.dependencias);
-      orgMap = depData.map;
-      autocompletar("dependencia", "sugDep", depData.claves, dep => {
-        autocompletar("organismo", "sugOrg", orgMap[dep] || []);
-      });
-      
-      const radioData = await cargarMapa(urls.radiodifusoras);
-      programaMap = radioData.map;
-      autocompletar("radiodifusora", "sugRadiodifusora", radioData.claves, radio => {
-        const programas = programaMap[radio] || [];
-        autocompletar("programa", "sugPrograma", programas); 
-        if (programas.length === 1) document.getElementById("programa").value = programas[0];
-      });
-      
-      // Blur events
-      document.getElementById("dependencia").addEventListener("blur", (e) => {
-          const val = e.target.value.trim();
-          const key = findKeyCaseInsensitive(orgMap, val);
-          if (key) { e.target.value = key; autocompletar("organismo", "sugOrg", orgMap[key] || []); }
-          else autocompletar("organismo", "sugOrg", []);
-      });
-      
-      document.getElementById("radiodifusora").addEventListener("blur", (e) => {
-          const val = e.target.value.trim();
-          const key = findKeyCaseInsensitive(programaMap, val);
-          if (key) { 
-              e.target.value = key; 
-              const progs = programaMap[key] || [];
-              autocompletar("programa", "sugPrograma", progs);
-              if (progs.length === 1) document.getElementById("programa").value = progs[0];
-          } else {
-              autocompletar("programa", "sugPrograma", []);
-          }
-      });
-      
-      // Initialize dependent empty
-      autocompletar("organismo", "sugOrg", []); 
-      autocompletar("programa", "sugPrograma", []); 
-
+    window.onload = async () => {
+      // 1. Cargar datos CSV para autocompletar
+      autocompletar("dependencia", "sugDep", await cargarLista(urls.dependencias));
+      autocompletar("radiodifusora", "sugRadiodifusora", await cargarLista(urls.radiodifusoras));
       autocompletar("genero", "sugGenero", await cargarLista(urls.generos));
       autocompletar("estatus", "sugEstatus", await cargarLista(urls.estatus));
       autocompletar("tema", "sugTema", await cargarLista(urls.temas));
       autocompletar("municipio", "sugMunicipio", await cargarLista(urls.municipios));
-      autocompletar("autor", "sugAutor", await cargarLista(urls.autores)); 
+      autocompletar("autor", "sugAutor", await cargarLista(urls.autores));
       autocompletar("canal", "sugCanal", await cargarLista("./Canal.csv")); 
       
-      // --- Listener para el buscador en tiempo real ---
-      document.getElementById('buscador').addEventListener('input', filtrarTabla); 
+      // 2. Listener para el buscador en tiempo real
+      document.getElementById('buscador').addEventListener('input', filtrarTabla);
 
-      // Persistence & Locks
+      // 3. Persistencia y Bloqueo de campos
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
-        const campo = document.getElementById(id);
-        if (localStorage.getItem(id)) campo.value = localStorage.getItem(id);
-        campo.addEventListener("input", () => localStorage.setItem(id, campo.value));
-        
-        const chk = document.getElementById(`check${id.charAt(0).toUpperCase() + id.slice(1)}`);
-        if (chk) {
-            chk.checked = localStorage.getItem(`bloqueado_${id}`) === 'true';
-            alternarBloqueo(id);
-        }
+          const campo = document.getElementById(id);
+
+          // Cargar valor persistente
+          if (localStorage.getItem(id)) {
+              campo.value = localStorage.getItem(id);
+          }
+
+          // Guardar valor al cambiar (Persistencia)
+          campo.addEventListener("input", () => {
+              localStorage.setItem(id, campo.value);
+          });
+          
+          // Aplicar estado de bloqueo si estaba bloqueado
+          const chk = document.getElementById(`check${id.charAt(0).toUpperCase() + id.slice(1)}`);
+          if (chk) {
+              if (localStorage.getItem(`bloqueado_${id}`) === 'true') {
+                  chk.checked = true;
+                  alternarBloqueo(id); 
+              }
+          }
+      });
+
+      // 4. Cargar y renderizar notas
+      cargarNotasGuardadas();
+      renderizarTabla();
+      
+      // 5. Inicializar listeners de cabeceras de tabla para ordenar
+      document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
+          if (th.dataset.col !== 'acciones') { 
+              th.querySelector('.sortable-header').onclick = () => ordenarTabla(th.dataset.col);
+          }
       });
       
-      cargarNotasGuardadas();
+      // 6. Listener para el envío del formulario (Guardar/Actualizar)
+      document.querySelector("form").addEventListener("submit", e => {
+          e.preventDefault();
+          
+          const nuevaNota = {};
+          camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+              nuevaNota[id] = document.getElementById(id).value.trim();
+          });
+          
+          // 1. Validar que no faltan campos obligatorios
+          const camposFaltantes = contieneCamposVacios(nuevaNota);
 
-      document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
-          th.addEventListener('click', () => ordenarTabla(th.dataset.col));
-      });
-
-      document.querySelector("form").addEventListener('reset', () => {
+          if (camposFaltantes.length > 0) {
+              alert(`🚨 Por favor, llene los siguientes campos obligatorios: \n\n${camposFaltantes.join(', ')}`);
+              return; 
+          }
+          
+          // 2. Guardar/Actualizar nota
+          if (filaEnEdicion !== null) {
+              nuevaNota.ordenCaptura = notas[filaEnEdicion].ordenCaptura;
+              notas[filaEnEdicion] = nuevaNota;
+              resetearEstadoEdicion();
+          } else {
+              nuevaNota.ordenCaptura = nextOrdenCaptura++; 
+              notas.push(nuevaNota);
+          }
+          
+          guardarNotas();
+          ordenarTabla(ordenActual.columna, true); 
+          
+          // 3. Limpiar campos NO bloqueados y eliminar su persistencia
+          camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+              if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
+                  document.getElementById(id).value = ''; 
+                  localStorage.removeItem(id); 
+              }
+          });
+          
+          // 4. Devolver el foco al campo Titular para nueva nota
           setTimeout(() => {
               document.getElementById('titular').focus();
               resetearEstadoEdicion(); 
           }, 10);
       });
 
+      // 7. Listener para cerrar sugerencias al hacer click fuera
       document.addEventListener('click', (e) => {
-        if (!e.target.closest('.campo')) {
+        if (!e.target.closest('.campo') && !e.target.closest('.sugerencias')) {
             document.querySelectorAll('.sugerencias').forEach(s => s.innerHTML = "");
         }
       });
-    });
 
-    document.querySelector("form").addEventListener("submit", e => {
-      e.preventDefault();
-      const nuevaNota = {};
-      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
-        nuevaNota[id] = document.getElementById(id).value.trim();
-      });
-
-      if (filaEnEdicion !== null) {
-          notas[filaEnEdicion] = {...nuevaNota, ordenCaptura: notas[filaEnEdicion].ordenCaptura};
-          resetearEstadoEdicion();
-      } else {
-          nuevaNota.ordenCaptura = nextOrdenCaptura++; 
-          notas.push(nuevaNota);
+      // 8. Inicializar la fecha al día de hoy si no está bloqueada
+      const inputFecha = document.getElementById('fecha');
+      const checkFecha = document.getElementById('checkFecha');
+      if (inputFecha && checkFecha) {
+        if (localStorage.getItem(`bloqueado_fecha`) !== 'true' && !inputFecha.value) {
+            const today = new Date().toISOString().split('T')[0];
+            inputFecha.value = today;
+            localStorage.setItem('fecha', today);
+        }
       }
+
+      // 9. Manejo de atajos y navegación (Nuevo)
+      const orderedInputIds = [
+          "usuario", "fecha", "radiodifusora", "titular", "autor", "programa",
+          "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"
+      ];
       
-      guardarNotas();
-      ordenarTabla(ordenActual.columna, true); 
-      
-      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
-          if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
-              document.getElementById(id).value = '';
-              localStorage.removeItem(id); 
+      document.addEventListener('keydown', e => {
+          // Atajo: Ctrl + Q para Guardar
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q') {
+              e.preventDefault(); 
+              document.querySelector("form").dispatchEvent(new Event('submit', { cancelable: true })); 
+              return;
+          }
+
+          // Navegación: Enter para pasar al siguiente campo (solo si estamos en un input de la lista)
+          if (e.key === 'Enter') {
+              const activeElement = document.activeElement;
+              const activeId = activeElement.id;
+              const currentIndex = orderedInputIds.indexOf(activeId);
+
+              // 1. Prevenir la acción por defecto del Enter (Guardado del formulario)
+              if (activeElement.form) {
+                  e.preventDefault();
+              }
+
+              // 2. Si estamos en un campo de la lista y no es el último, mover el foco.
+              if (currentIndex !== -1) {
+                  const nextIndex = currentIndex + 1;
+                  if (nextIndex < orderedInputIds.length) {
+                      document.getElementById(orderedInputIds[nextIndex]).focus();
+                  } else {
+                      // Si es el último input, pasar al botón Guardar
+                      document.getElementById('btnGuardar').focus();
+                  }
+              } else if (activeId === 'btnGuardar') {
+                   // Si está en Guardar, entonces sí se envía el formulario
+                   document.querySelector("form").dispatchEvent(new Event('submit', { cancelable: true }));
+              }
           }
       });
-      document.getElementById('titular').focus();
-    });
+    };
   </script>
-
-  <footer>
-    © 2025 Francisco, El Bizcocho de Montecristo Villeda. Todos los derechos reservados.
-  </footer>
 </body>
 </html>
