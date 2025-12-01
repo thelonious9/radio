@@ -621,7 +621,7 @@
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjR-Fs3IF_y5wGI/exec"; 
 
     // CONFIGURACIÓN TELEGRAM
-    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
+    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAbL_G1-X6LdL4Fv6fkV4"; 
     const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
     
     function findKeyCaseInsensitive(map, value) {
@@ -722,23 +722,11 @@
           e.preventDefault();
           indice = (indice - 1 + items.length) % items.length;
           resaltar(items, indice);
-        } else if (e.key === "Enter" || e.key === "Tab") { // FIX: Agregado Tab y lógica para seleccionar única sugerencia
-            
-          let itemToSelect = null;
-          
-          // 1. Prioriza el elemento resaltado (navegación con flechas)
+        } else if (e.key === "Enter") {
+          e.preventDefault();
           if (indice >= 0 && items[indice]) {
-              itemToSelect = items[indice];
-          // 2. Si no hay nada resaltado, selecciona si hay una única sugerencia
-          } else if (items.length === 1) {
-              itemToSelect = items[0];
-          }
-
-          if (itemToSelect) {
-            e.preventDefault(); // Previene envío de formulario (Enter) o salto de campo (Tab)
-            campo.value = itemToSelect.textContent;
+            campo.value = items[indice].textContent;
             contenedor.innerHTML = "";
-            indice = -1; // Reset index después de seleccionar
             if (callback) callback(campo.value);
           }
         }
@@ -1299,6 +1287,25 @@
           }
       });
       document.getElementById('titular').focus();
+    });
+    
+    // --- Atajo de teclado (Ctrl+Q para Guardar) ---
+    document.addEventListener('keydown', (e) => {
+        // Verificar si es Ctrl+Q (o Cmd+Q en Mac)
+        if ((e.ctrlKey || e.metaKey) && e.key === 'q') {
+            e.preventDefault(); // Prevenir el comportamiento por defecto del navegador (e.g., cerrar pestaña)
+            
+            const form = document.querySelector("form");
+            
+            // Verificamos si el formulario es válido (campos requeridos llenos)
+            if (form.checkValidity()) {
+                 // Disparamos el evento submit, lo que activará la lógica de guardado/actualización.
+                 form.dispatchEvent(new Event('submit', { cancelable: true }));
+            } else {
+                 // Si el formulario no es válido, mostramos los mensajes de error de validación
+                 form.reportValidity(); 
+            }
+        }
     });
   </script>
 
