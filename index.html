@@ -86,6 +86,15 @@
         align-self: center;
         color: var(--color-light-text);
     }
+    
+    /* --- INDICADOR DE CAMPO REQUERIDO --- */
+    label[data-required="true"]::after {
+        content: "*";
+        color: var(--color-danger);
+        margin-left: 5px;
+        font-weight: 700;
+    }
+
     .campo {
       position: relative;
       display: flex;
@@ -405,21 +414,21 @@
         <img src="./logo.png" alt="Logotipo del Formulario">
     </div>
 
-    <label for="usuario">Usuario:</label>
+    <label for="usuario" data-required="true">Usuario:</label>
     <div class="campo">
       <input type="text" id="usuario" name="usuario" required>
       <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')">
       <label for="checkUsuario">🔒</label>
     </div>
     
-    <label for="fecha">Fecha:</label>
+    <label for="fecha" data-required="true">Fecha:</label>
     <div class="campo">
       <input type="date" id="fecha" name="fecha" required>
       <input type="checkbox" id="checkFecha" onchange="alternarBloqueo('fecha')">
       <label for="checkFecha">🔒</label>
     </div>
 
-    <label for="radiodifusora">Radiodifusora:</label>
+    <label for="radiodifusora" data-required="true">Radiodifusora:</label>
     <div class="campo">
       <input type="text" id="radiodifusora" name="radiodifusora" autocomplete="off" required>
       <button type="button" onclick="mostrarSugerencias('radiodifusora','sugRadiodifusora')">🔽</button>
@@ -428,7 +437,7 @@
       <div id="sugRadiodifusora" class="sugerencias"></div>
     </div>
 
-    <label for="titular">Titular:</label>
+    <label for="titular" data-required="true">Titular:</label>
     <div class="campo">
       <input type="text" id="titular" name="titular" required>
       <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')">
@@ -532,6 +541,8 @@
       </button>
     </div>
   </form>
+  
+  <div id="mensajeExito" style="color: lightgreen; font-weight: bold; font-size: 1rem; text-align: center; margin: 10px auto; max-width: 900px;"></div>
 
   <div class="sugerencia-y-acciones">
     <div class="sugerencia-grupo">
@@ -605,7 +616,7 @@
     
     let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' }; 
 
-    // RUTAS RELATIVAS
+    // RUTAS RELATIVAS (Asume que los CSV están en la misma carpeta)
     const urls = {
       dependencias: "./Dependencia.csv",
       radiodifusoras: "./Radiodifusora.csv", 
@@ -617,7 +628,6 @@
     };
 
     // RUTA DE DESPLIEGUE DE TU GOOGLE APPS SCRIPT
-    // *** ESTA ES LA URL PROPORCIONADA POR TI PARA LA PRUEBA ***
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjR-Fs3IF_y5wGI/exec"; 
 
     // CONFIGURACIÓN TELEGRAM
@@ -725,9 +735,10 @@
         } else if (e.key === "Enter") {
           e.preventDefault();
           if (indice >= 0 && items[indice]) {
-            campo.value = items[indice].textContent;
+            campo.value = items[indice].textContent; // Selecciona con Enter
             contenedor.innerHTML = "";
             if (callback) callback(campo.value);
+            campo.blur(); // Quita el foco para completar la acción
           }
         }
       });
@@ -769,11 +780,9 @@
         div.onclick = () => {
           campo.value = s;
           contenedor.innerHTML = "";
-          if (idCampo === 'radiodifusora') {
-              document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
-          }
-          if (idCampo === 'dependencia') {
-              document.getElementById("dependencia").dispatchEvent(new Event('blur'));
+          // Dispara el evento 'blur' para activar el autocompletado dependiente inmediatamente
+          if (idCampo === 'radiodifusora' || idCampo === 'dependencia') {
+              campo.dispatchEvent(new Event('blur'));
           }
         };
         contenedor.appendChild(div);
@@ -818,14 +827,20 @@
         }
     }
 
+    /** * Función que revisa si los campos OBLIGATORIOS están vacíos.
+     * Retorna una lista con los nombres de los campos que faltan.
+     */
     function contieneCamposVacios(nota) {
-        const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura'); 
-        for (const campo of camposARevisar) {
+        const camposObligatorios = ['usuario', 'fecha', 'radiodifusora', 'titular'];
+        const camposFaltantes = [];
+        
+        camposObligatorios.forEach(campo => {
             if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
-                return true;
+                // Capitaliza el nombre del campo para el mensaje de error
+                camposFaltantes.push(encabezadosTabla[campo]); 
             }
-        }
-        return false;
+        });
+        return camposFaltantes;
     }
 
     function renderizarTabla() {
@@ -836,7 +851,7 @@
             const tr = document.createElement("tr");
             tr.dataset.index = notas.indexOf(nota);
 
-            if (contieneCamposVacios(nota)) {
+            if (contieneCamposVacios(nota).length > 0) {
                 tr.classList.add('alerta-vacio');
             }
 
@@ -894,6 +909,11 @@
         campo.classList.toggle("bloqueado", checkbox.checked);
         
         localStorage.setItem(`bloqueado_${idCampo}`, checkbox.checked);
+        
+        // Persistencia inmediata si se acaba de desbloquear, para evitar pérdida de valor
+        if (!checkbox.checked) {
+             localStorage.setItem(idCampo, campo.value);
+        }
     }
 
     function editarNota(tr) {
@@ -906,6 +926,7 @@
 
         resetearEstadoEdicion();
         
+        // Dispara los blur para cargar los autocompletados dependientes
         document.getElementById("dependencia").dispatchEvent(new Event('blur'));
         document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
         
@@ -1074,42 +1095,6 @@
         }
     }
     
-    /**
-     * Función Sugerir Tema (Simple, basada en lógica JS)
-     * Se mantiene en el código por si se requiere, aunque se eliminó el botón de la UI.
-     */
-    function sugerirTemaSimple() {
-        const titular = document.getElementById('titular').value.trim();
-        const temaField = document.getElementById('tema');
-        
-        if (!titular) {
-            alert("Por favor, escriba primero un Titular para generar la sugerencia de Tema.");
-            temaField.focus();
-            return;
-        }
-
-        let temaSugerido = '';
-        const titularLower = titular.toLowerCase();
-
-        if (titularLower.includes('salud') || titularLower.includes('vacuna') || titularLower.includes('covid')) {
-            temaSugerido = "Salud y Bienestar";
-        } else if (titularLower.includes('seguridad') || titularLower.includes('policía') || titularLower.includes('cárcel')) {
-            temaSugerido = "Seguridad Pública";
-        } else if (titularLower.includes('escuela') || titularLower.includes('educación') || titularLower.includes('universidad')) {
-            temaSugerido = "Educación";
-        } else if (titularLower.includes('infraestructura') || titularLower.includes('carretera') || titularLower.includes('puente')) {
-            temaSugerido = "Infraestructura";
-        } else {
-             alert(`Función Sugerir Tema: No se pudo generar una sugerencia automática para el Titular: "${titular}".`);
-             return;
-        }
-        
-        if (confirm(`Titular: "${titular}"\n\nSugerencia de Tema: "${temaSugerido}"\n\n¿Desea usar este tema? (El tema actual será reemplazado).`)) {
-            temaField.value = temaSugerido;
-            localStorage.setItem('tema', temaSugerido); 
-        }
-    }
-
     function ordenarTabla(columna, esInicial = false) {
         if (!columna) return;
         let direccion = 'asc';
@@ -1165,7 +1150,8 @@
         
         filas.forEach(tr => {
             let encontrado = false;
-            for (let i = 0; i < tr.cells.length - 1; i++) {
+            // Solo revisa las primeras N columnas (datos), excluyendo la columna de acciones
+            for (let i = 0; i < tr.cells.length - 1; i++) { 
                 const textoCelda = tr.cells[i].textContent || tr.cells[i].innerText;
                 if (textoCelda.toLowerCase().includes(filtro)) {
                     encontrado = true;
@@ -1191,10 +1177,11 @@
       autocompletar("radiodifusora", "sugRadiodifusora", radioData.claves, radio => {
         const programas = programaMap[radio] || [];
         autocompletar("programa", "sugPrograma", programas); 
+        // Llenado automático si solo hay un programa
         if (programas.length === 1) document.getElementById("programa").value = programas[0];
       });
       
-      // Blur events
+      // Blur events (para autocompletado dependiente)
       document.getElementById("dependencia").addEventListener("blur", (e) => {
           const val = e.target.value.trim();
           const key = findKeyCaseInsensitive(orgMap, val);
@@ -1229,7 +1216,13 @@
       // --- Listener para el buscador en tiempo real ---
       document.getElementById('buscador').addEventListener('input', filtrarTabla); 
 
-      // Persistence & Locks
+      // Auto-set Date to Today if not persisted
+      const fechaInput = document.getElementById('fecha');
+      if (!localStorage.getItem('fecha')) { 
+          fechaInput.value = new Date().toISOString().slice(0, 10);
+      }
+      
+      // Persistence & Locks initialization
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
         const campo = document.getElementById(id);
         if (localStorage.getItem(id)) campo.value = localStorage.getItem(id);
@@ -1248,8 +1241,20 @@
           th.addEventListener('click', () => ordenarTabla(th.dataset.col));
       });
 
+      // LÓGICA DE LIMPIEZA: Desbloquea todos los campos
       document.querySelector("form").addEventListener('reset', () => {
           setTimeout(() => {
+              // Itera sobre todos los campos para desactivar el bloqueo
+              camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+                const chk = document.getElementById(`check${id.charAt(0).toUpperCase() + id.slice(1)}`);
+                if (chk) {
+                    if (chk.checked) {
+                        chk.checked = false; // Desactiva el checkbox
+                    }
+                    alternarBloqueo(id); // Desbloquea el campo, remueve la clase y actualiza localStorage
+                }
+              });
+              
               document.getElementById('titular').focus();
               resetearEstadoEdicion(); 
           }, 10);
@@ -1264,12 +1269,22 @@
 
     document.querySelector("form").addEventListener("submit", e => {
       e.preventDefault();
+      const esEdicion = filaEnEdicion !== null;
       const nuevaNota = {};
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
         nuevaNota[id] = document.getElementById(id).value.trim();
       });
 
-      if (filaEnEdicion !== null) {
+      // 1. Validar campos obligatorios
+      const camposFaltantes = contieneCamposVacios(nuevaNota);
+
+      if (camposFaltantes.length > 0) {
+          alert(`🚨 Por favor, llene los siguientes campos obligatorios:\n\n${camposFaltantes.join(', ')}`);
+          return; // Detiene el proceso de guardado/actualización
+      }
+      
+      // 2. Guardar/Actualizar nota
+      if (esEdicion) {
           notas[filaEnEdicion] = {...nuevaNota, ordenCaptura: notas[filaEnEdicion].ordenCaptura};
           resetearEstadoEdicion();
       } else {
@@ -1280,6 +1295,13 @@
       guardarNotas();
       ordenarTabla(ordenActual.columna, true); 
       
+      // 3. Mostrar mensaje de éxito
+      const mensaje = esEdicion ? 'Nota actualizada con éxito.' : 'Nota guardada con éxito.';
+      const mensajeDiv = document.getElementById('mensajeExito');
+      mensajeDiv.textContent = mensaje;
+      setTimeout(() => { mensajeDiv.textContent = ''; }, 3000); 
+
+      // 4. Limpiar campos NO bloqueados y eliminar su persistencia
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
           if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
               document.getElementById(id).value = '';
