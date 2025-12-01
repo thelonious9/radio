@@ -596,6 +596,9 @@
     // CAMPOS PARA RADIO
     const camposDeDatos = ["ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
     
+    // CAMPOS EN ORDEN PARA LA NAVEGACIÓN CON ENTER (excluye ordenCaptura)
+    const inputOrder = camposDeDatos.filter(c => c !== 'ordenCaptura');
+    
     // ENCABEZADOS
     const encabezadosTabla = {
         "ordenCaptura": "#", "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor", 
@@ -618,7 +621,7 @@
 
     // RUTA DE DESPLIEGUE DE TU GOOGLE APPS SCRIPT
     // *** ESTA ES LA URL PROPORCIONADA POR TI PARA LA PRUEBA ***
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjR-Fs3IF_y5wGI/exec"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjr-Fs3IF_y5wGI/exec"; 
 
     // CONFIGURACIÓN TELEGRAM
     const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAbL_G1-X6LdL4Fv6fkV4"; 
@@ -706,28 +709,53 @@
             campo.value = s;
             contenedor.innerHTML = "";
             if (callback) callback(s);
+            // Al hacer clic, simular el salto al siguiente campo
+            const currentId = campo.id;
+            const currentIndex = inputOrder.indexOf(currentId);
+            if (currentIndex !== -1 && currentIndex + 1 < inputOrder.length) {
+                document.getElementById(inputOrder[currentIndex + 1]).focus();
+            } else if (currentId === inputOrder[inputOrder.length - 1]) {
+                document.getElementById('btnGuardar').focus();
+            }
           };
           contenedor.appendChild(div);
         });
       });
 
       campo.addEventListener("keydown", e => {
-        const items = contenedor.querySelectorAll(".sugerencia");
+        const items = contenedor.querySelectorAll(".sugerencia');
         if (items.length === 0) return;
         if (e.key === "ArrowDown") {
           e.preventDefault();
           indice = (indice + 1) % items.length;
           resaltar(items, indice);
+          // Scroll to keep the highlighted item visible
+          if (items[indice]) {
+            items[indice].scrollIntoView({ block: 'nearest' });
+          }
         } else if (e.key === "ArrowUp") {
           e.preventDefault();
           indice = (indice - 1 + items.length) % items.length;
           resaltar(items, indice);
+          // Scroll to keep the highlighted item visible
+          if (items[indice]) {
+            items[indice].scrollIntoView({ block: 'nearest' });
+          }
         } else if (e.key === "Enter") {
           e.preventDefault();
           if (indice >= 0 && items[indice]) {
             campo.value = items[indice].textContent;
             contenedor.innerHTML = "";
             if (callback) callback(campo.value);
+            
+            // --- FIX: Saltamos al siguiente input después de seleccionar con Enter ---
+            const currentId = campo.id;
+            const currentIndex = inputOrder.indexOf(currentId);
+            if (currentIndex !== -1 && currentIndex + 1 < inputOrder.length) {
+                document.getElementById(inputOrder[currentIndex + 1]).focus();
+            } else if (currentId === inputOrder[inputOrder.length - 1]) {
+                document.getElementById('btnGuardar').focus();
+            }
           }
         }
       });
@@ -819,13 +847,17 @@
     }
 
     function contieneCamposVacios(nota) {
-        const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura'); 
-        for (const campo of camposARevisar) {
-            if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
-                return true;
+        const camposARevisar = inputOrder; // Ahora solo revisamos los de inputOrder
+        const camposFaltantes = [];
+        
+        camposARevisar.forEach(campo => {
+            if (document.getElementById(campo).required && (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === ''))) {
+                // Buscamos el label para mostrar un nombre amigable
+                const label = document.querySelector(`label[for="${campo}"]`);
+                camposFaltantes.push(label ? label.textContent.replace(':', '').trim() : campo);
             }
-        }
-        return false;
+        });
+        return camposFaltantes;
     }
 
     function renderizarTabla() {
@@ -836,7 +868,7 @@
             const tr = document.createElement("tr");
             tr.dataset.index = notas.indexOf(nota);
 
-            if (contieneCamposVacios(nota)) {
+            if (contieneCamposVacios(nota).length > 0) {
                 tr.classList.add('alerta-vacio');
             }
 
@@ -900,7 +932,7 @@
         const indice = parseInt(tr.dataset.index);
         const nota = notas[indice];
 
-        camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+        inputOrder.forEach(id => {
             document.getElementById(id).value = nota[id];
         });
 
@@ -1230,7 +1262,7 @@
       document.getElementById('buscador').addEventListener('input', filtrarTabla); 
 
       // Persistence & Locks
-      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+      inputOrder.forEach(id => {
         const campo = document.getElementById(id);
         if (localStorage.getItem(id)) campo.value = localStorage.getItem(id);
         campo.addEventListener("input", () => localStorage.setItem(id, campo.value));
@@ -1264,10 +1296,19 @@
 
     document.querySelector("form").addEventListener("submit", e => {
       e.preventDefault();
+      
       const nuevaNota = {};
-      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+      inputOrder.forEach(id => {
         nuevaNota[id] = document.getElementById(id).value.trim();
       });
+      
+      // 1. Verificación de campos obligatorios
+      // Usamos el checkValidity() del formulario para disparar los mensajes de error
+      const form = document.querySelector("form");
+      if (!form.checkValidity()) {
+          // El navegador mostrará los mensajes de error.
+          return;
+      }
 
       if (filaEnEdicion !== null) {
           notas[filaEnEdicion] = {...nuevaNota, ordenCaptura: notas[filaEnEdicion].ordenCaptura};
@@ -1280,7 +1321,7 @@
       guardarNotas();
       ordenarTabla(ordenActual.columna, true); 
       
-      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+      inputOrder.forEach(id => {
           if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
               document.getElementById(id).value = '';
               localStorage.removeItem(id); 
@@ -1289,11 +1330,11 @@
       document.getElementById('titular').focus();
     });
     
-    // --- Atajo de teclado (Ctrl+Q para Guardar) ---
+    // --- Atajo de teclado (Ctrl+Q para Guardar) y Navegación (Enter) ---
     document.addEventListener('keydown', (e) => {
-        // Verificar si es Ctrl+Q (o Cmd+Q en Mac)
+        // 1. Lógica Ctrl+Q para Guardar
         if ((e.ctrlKey || e.metaKey) && e.key === 'q') {
-            e.preventDefault(); // Prevenir el comportamiento por defecto del navegador (e.g., cerrar pestaña)
+            e.preventDefault(); 
             
             const form = document.querySelector("form");
             
@@ -1304,6 +1345,45 @@
             } else {
                  // Si el formulario no es válido, mostramos los mensajes de error de validación
                  form.reportValidity(); 
+            }
+            return; // Salimos después de manejar Ctrl+Q
+        }
+
+        // 2. Lógica de Navegación con Enter (como si fuera Tab)
+        if (e.key === 'Enter') {
+            const activeElement = document.activeElement;
+            const isInput = activeElement.tagName === 'INPUT' && activeElement.type !== 'checkbox' && activeElement.type !== 'submit';
+            
+            // Si el elemento activo es un INPUT
+            if (isInput) {
+                 // Verificamos si hay sugerencias visibles.
+                 // Si hay sugerencias, el Enter es manejado dentro de autocompletar, así que no intervenimos aquí.
+                 const isSuggestionsVisible = activeElement.nextElementSibling && activeElement.nextElementSibling.classList.contains('sugerencias') && activeElement.nextElementSibling.children.length > 0;
+                
+                if (!isSuggestionsVisible) {
+                    e.preventDefault(); 
+                    
+                    const currentId = activeElement.id;
+                    const currentIndex = inputOrder.indexOf(currentId);
+                    
+                    if (currentIndex !== -1) {
+                        const nextIndex = currentIndex + 1;
+                        if (nextIndex < inputOrder.length) {
+                            // Saltar al siguiente input
+                            document.getElementById(inputOrder[nextIndex]).focus();
+                        } else {
+                            // Si es el último, enfocar el botón Guardar
+                            document.getElementById('btnGuardar').focus();
+                        }
+                    } else if (currentId === 'buscador') {
+                         // Si se presiona Enter en el buscador, enfocar el primer campo
+                         document.getElementById(inputOrder[0]).focus();
+                    }
+                }
+            } else if (activeElement.id === 'btnGuardar') {
+                 // Si se presiona Enter en el botón Guardar, hacer submit
+                 e.preventDefault();
+                 document.querySelector("form").dispatchEvent(new Event('submit', { cancelable: true }));
             }
         }
     });
