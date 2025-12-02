@@ -4,13 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
   <title>Sistema de Captura de Notas</title>
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  
   <style>
     /* Importación de Google Fonts para Roboto */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
     /* --- PALETA DE COLORES FINAL --- */
     :root {
       --color-fondo-pagina: #31302F;       /* Oscuro Suave */
@@ -78,7 +75,6 @@
         opacity: 0.9;
     }
     /* FIN ESTILOS LOGOTIPO */
-
     label {
         font-weight: 700;
         align-self: center;
@@ -161,7 +157,6 @@
         flex-grow: 0;
         width: auto;
     }
-
     button {
       padding: 10px 15px;
       border: none;
@@ -172,7 +167,6 @@
       color: var(--color-light-text);
       margin-right: 5px;
     }
-    
     /* Botón Guardar/Actualizar (Principal) */
     #btnGuardar {
         background-color: var(--color-primary);
@@ -181,7 +175,6 @@
         background-color: var(--color-primary-hover);
         transform: translateY(-1px);
     }
-    
     /* NUEVO: Botón de Eliminar (color destructivo) */
     #btnEliminar {
         background-color: #dc3545; 
@@ -191,7 +184,6 @@
         background-color: #c82333;
         transform: translateY(-1px);
     }
-
     /* Botón Limpiar (Secundario) */
     #btnLimpiar {
         background-color: var(--color-secondary);
@@ -200,7 +192,6 @@
         background-color: var(--color-secondary-hover);
         transform: translateY(-1px);
     }
-    
     /* Botón desplegable (🔽) */
     .campo button[type="button"] {
         background-color: var(--color-secondary);
@@ -210,20 +201,17 @@
     .campo button[type="button"]:hover {
         background-color: var(--color-secondary-hover);
     }
-
     /* Iconos dentro de botones */
     button i {
         margin-right: 8px;
         font-size: 1.1em;
     }
-    
     /* --- ESTILOS DEL BUSCADOR (NUEVO) --- */
     .buscador-container {
       position: relative;
       margin-bottom: 15px;
       max-width: 400px; /* Ancho máximo para que no ocupe toda la pantalla en PC */
     }
-    
     #buscador {
       width: 100%;
       padding: 10px 10px 10px 40px; /* Padding izquierdo extra para el icono */
@@ -235,13 +223,11 @@
       box-sizing: border-box; 
       transition: all 0.2s ease;
     }
-
     #buscador:focus {
       outline: none;
       border-color: var(--color-primary);
       box-shadow: 0 0 0 0.2rem rgba(111, 9, 9, 0.25);
     }
-
     .buscador-icon {
       position: absolute;
       left: 12px;
@@ -250,7 +236,6 @@
       color: var(--color-secondary);
       font-size: 1.1rem;
     }
-
     /* --- TABLA --- */
     h2 {
         margin-top: 40px;
@@ -312,7 +297,6 @@
       color: var(--color-light-text);
       text-align: center;
     }
-
     /* --- ESTILOS DE ORDENAMIENTO (SORTING) --- */
     .sortable-header {
       cursor: pointer;
@@ -333,7 +317,6 @@
     .sorted.alerta-vacio .sort-icon {
         color: var(--color-dark-text); /* Asegurar contraste en la alerta */
     }
-    
     /* --- GRUPO DE ACCIONES BAJO LA TABLA --- */
     .actions-group {
         display: flex;
@@ -344,7 +327,6 @@
         align-items: center;
         flex-wrap: wrap; /* Para responsive */
     }
-    
     /* Botón Exportar (Ahora es el Exportar CSV local) */
     #btnExportar {
         background-color: var(--color-fondo-form);
@@ -352,7 +334,6 @@
     #btnExportar:hover {
         background-color: var(--color-secondary);
     }
-    
     /* Botón Telegram */
     #btnTelegram {
         background-color: #0088cc; /* Color Telegram */
@@ -360,7 +341,6 @@
     #btnTelegram:hover {
         background-color: #0077b3; 
     }
-    
     /* Botón Borrar Todo (Destructivo) */
     #btnBorrarTodo {
         background-color: var(--color-primary); 
@@ -369,7 +349,6 @@
         background-color: var(--color-primary-hover); 
         transform: translateY(-1px);
     }
-    
     /* Ajuste para el botón Editar */
     .btn-accion-tabla {
         padding: 8px 12px;
@@ -379,7 +358,6 @@
     .btn-accion-tabla:hover {
         background-color: var(--color-secondary-hover);
     }
-
     /* --- ESTILOS RESPONSIVE (MÓVIL) --- */
     @media (max-width: 768px) {
         body { padding: 10px; }
@@ -390,7 +368,6 @@
         .button-group-form button { width: 32%; margin-right: 0; }
         .actions-group { flex-direction: column; align-items: stretch; }
         .actions-group button { width: 100%; margin-bottom: 10px; }
-        
         table, thead, tbody, th, td, tr { display: block; }
         thead tr { position: absolute; top: -9999px; left: -9999px; }
         tr { border: 1px solid var(--color-secondary); margin-bottom: 10px; }
@@ -428,26 +405,22 @@
     <img src="./logo.png" alt="Logotipo institucional">
     <h1>Sistema de Captura de Notas</h1>
   </header>
-
   <form>
     <div class="form-logo-container">
         <img src="./logo.png" alt="Logotipo del Formulario"> 
     </div>
-
     <label for="usuario">Usuario:</label>
     <div class="campo">
       <input type="text" id="usuario" name="usuario" required>
       <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')">
       <label for="checkUsuario">🔒</label>
     </div>
-    
     <label for="fecha">Fecha:</label>
     <div class="campo">
       <input type="date" id="fecha" name="fecha" required>
       <input type="checkbox" id="checkFecha" onchange="alternarBloqueo('fecha')">
       <label for="checkFecha">🔒</label>
     </div>
-
     <label for="medio">Medio:</label>
     <div class="campo">
       <input type="text" id="medio" name="medio" autocomplete="off" required>
@@ -456,14 +429,12 @@
       <label for="checkMedio">🔒</label>
       <div id="sugMedio" class="sugerencias"></div>
     </div>
-
     <label for="titular">Titular:</label>
     <div class="campo">
       <input type="text" id="titular" name="titular" required>
       <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')">
       <label for="checkTitular">🔒</label>
     </div>
-
     <label for="firma">Firma:</label>
     <div class="campo">
       <input type="text" id="firma" name="firma" autocomplete="off">
@@ -472,14 +443,12 @@
       <label for="checkFirma">🔒</label>
       <div id="sugFirma" class="sugerencias"></div>
     </div>
-
     <label for="pagina">Página:</label>
     <div class="campo">
       <input type="text" id="pagina" name="pagina">
       <input type="checkbox" id="checkPagina" onchange="alternarBloqueo('pagina')">
       <label for="checkPagina">🔒</label>
     </div>
-
     <label for="dependencia">Dependencia:</label>
     <div class="campo">
       <input type="text" id="dependencia" name="dependencia" autocomplete="off">
@@ -488,7 +457,6 @@
       <label for="checkDependencia">🔒</label>
       <div id="sugDep" class="sugerencias"></div>
     </div>
-
     <label for="organismo">Organismo:</label>
     <div class="campo">
       <input type="text" id="organismo" name="organismo" autocomplete="off">
@@ -497,7 +465,6 @@
       <label for="checkOrganismo">🔒</label>
       <div id="sugOrg" class="sugerencias"></div>
     </div>
-
     <label for="genero">Género:</label>
     <div class="campo">
       <input type="text" id="genero" name="genero" autocomplete="off">
@@ -506,7 +473,6 @@
       <label for="checkGenero">🔒</label>
       <div id="sugGenero" class="sugerencias"></div>
     </div>
-
     <label for="canal">Canal:</label>
     <div class="campo">
       <input type="text" id="canal" name="canal" autocomplete="off">
@@ -515,7 +481,6 @@
       <label for="checkCanal">🔒</label>
       <div id="sugCanal" class="sugerencias"></div>
     </div>
-
     <label for="tema">Tema:</label>
     <div class="campo">
       <input type="text" id="tema" name="tema" autocomplete="off">
@@ -524,7 +489,6 @@
       <label for="checkTema">🔒</label>
       <div id="sugTema" class="sugerencias"></div>
     </div>
-
     <label for="estatus">Estatus:</label>
     <div class="campo">
       <input type="text" id="estatus" name="estatus" autocomplete="off">
@@ -533,7 +497,6 @@
       <label for="checkEstatus">🔒</label>
       <div id="sugEstatus" class="sugerencias"></div>
     </div>
-
     <label for="municipio">Municipio:</label>
     <div class="campo">
       <input type="text" id="municipio" name="municipio" autocomplete="off">
@@ -542,22 +505,18 @@
       <label for="checkMunicipio">🔒</label>
       <div id="sugMunicipio" class="sugerencias"></div>
     </div>
-
     <div class="button-group-form">
       <button type="submit" id="btnGuardar">
         <i class="fa-solid fa-floppy-disk"></i> Guardar
       </button>
-
       <button type="button" id="btnEliminar" style="display: none;" onclick="eliminarNotaEnEdicion()">
         <i class="fa-solid fa-trash-can"></i> Eliminar
       </button>
-
       <button type="reset" id="btnLimpiar">
         <i class="fa-solid fa-broom"></i> Limpiar
       </button>
     </div>
   </form>
-
   <div class="actions-group">
     <button id="btnExportar" onclick="exportarCSV()">
       <i class="fa-solid fa-file-csv"></i> Exportar Hoja de Cálculo (CSV)
@@ -569,16 +528,12 @@
       <i class="fa-solid fa-trash-can"></i> Borrar Todas
     </button>
   </div>
-  
   <div id="erroresCarga" class="error-carga"></div>
-
   <h2>Notas capturadas</h2>
-
   <div class="buscador-container">
     <i class="fa-solid fa-magnifying-glass buscador-icon"></i>
     <input type="text" id="buscador" placeholder="Buscar por titular, medio, municipio...">
   </div>
-
   <table id="tablaNotas">
     <thead>
       <tr>
@@ -602,7 +557,6 @@
     <tbody></tbody>
   </table>
   <br>
-
   <script>
     let notas = [];
     let filaEnEdicion = null;
@@ -614,10 +568,8 @@
         "pagina": "Página", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género", 
         "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "acciones": "Acciones"
     };
-    
     // Ordenamiento por defecto a 'ordenCaptura' descendente (más reciente primero)
     let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' }; 
-
     // MODIFICADO: Agregada la URL para Firmas
     const urls = {
       dependencias: "https://thelonious9.github.io/capturanotas/Dependencia.csv",
@@ -628,7 +580,6 @@
       municipios: "https://thelonious9.github.io/capturanotas/Municipio.csv",
       firmas: "https://thelonious9.github.io/capturanotas/Firma.csv" // Nueva URL
     };
-    
     function findKeyCaseInsensitive(map, value) {
         if (!value) return null;
         const lowerValue = value.toLowerCase();
@@ -639,7 +590,6 @@
         }
         return null;
     }
-
     async function cargarCSV(url) {
       try {
         const urlConCacheBuster = `${url}?t=${new Date().getTime()}`;
@@ -653,7 +603,6 @@
         return [];
       }
     }
-    
     function limpiarFilasCSV(filas) {
       if (!filas || filas.length === 0) return [];
       filas[0][0] = filas[0][0].replace(/^\uFEFF/, "");
@@ -663,7 +612,6 @@
       if (tieneEncabezado) filas = filas.slice(1);
       return filas.map(r => r.map(c => (c || "").replace(/<[^>]+>/g, "").trim())).filter(r => r[0]);
     }
-
     async function cargarMapa(url) {
       const filas = limpiarFilasCSV(await cargarCSV(url));
       const map = {};
@@ -677,18 +625,15 @@
       claves.forEach(k => mapArrays[k] = Array.from(map[k]).sort((a, b) => a.localeCompare(b, 'es')));
       return { claves, map: mapArrays };
     }
-
     async function cargarLista(url) {
       const filas = limpiarFilasCSV(await cargarCSV(url));
       return Array.from(new Set(filas.map(r => r[0]))).sort((a, b) => a.localeCompare(b, 'es'));
     }
-
     function autocompletar(idCampo, idSugerencias, lista, callback) {
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
       campo.dataset.lista = JSON.stringify(lista);
       let indice = -1;
-
       campo.addEventListener("input", () => {
         const valor = campo.value.toLowerCase().trim();
         contenedor.innerHTML = "";
@@ -708,9 +653,27 @@
           contenedor.appendChild(div);
         });
       });
-
       campo.addEventListener("keydown", e => {
         const items = contenedor.querySelectorAll(".sugerencia");
+        // NUEVA FUNCIONALIDAD: Si solo hay una sugerencia y se presiona Enter o Tab
+        if (items.length === 1 && (e.key === "Enter" || e.key === "Tab")) {
+          e.preventDefault();
+          const valor = items[0].textContent;
+          campo.value = valor;
+          contenedor.innerHTML = "";
+          if (callback) callback(valor);
+          campo.dispatchEvent(new Event('blur'));
+          // Mover el foco al siguiente campo
+          const form = document.querySelector('form');
+          const focusable = Array.from(form.querySelectorAll('input[type="text"]:not([tabindex="-1"]), input[type="date"]:not([tabindex="-1"])'));
+          const index = focusable.indexOf(e.target);
+          if (index > -1 && index < focusable.length - 1) {
+            focusable[index + 1].focus();
+          } else if (index === focusable.length - 1) {
+            document.getElementById('titular').focus();
+          }
+          return;
+        }
         if (items.length === 0) return;
         if (e.key === "ArrowDown") {
           e.preventDefault();
@@ -726,10 +689,10 @@
             campo.value = items[indice].textContent;
             contenedor.innerHTML = "";
             if (callback) callback(campo.value);
+            campo.dispatchEvent(new Event('blur'));
           }
         }
       });
-
       campo.addEventListener("focus", () => {
         document.querySelectorAll('.sugerencias').forEach(sug => {
             if (sug.id !== idSugerencias) {
@@ -737,7 +700,6 @@
             }
         });
       });
-
       campo.addEventListener("blur", () => {
           // Pequeño retardo para permitir el clic en la sugerencia
           setTimeout(() => {
@@ -747,18 +709,15 @@
               }
           }, 150); 
       });
-
       function resaltar(items, i) {
         items.forEach(el => el.classList.remove("resaltado"));
         items[i].classList.add("resaltado");
       }
     }
-
     function mostrarSugerencias(idCampo, idSugerencias) {
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
       document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = "");
-
       const lista = campo.dataset.lista ? JSON.parse(campo.dataset.lista) : [];
       contenedor.innerHTML = "";
       lista.forEach((s, i) => {
@@ -773,64 +732,68 @@
         contenedor.appendChild(div);
       });
     }
-
     function guardarNotas() {
         localStorage.setItem('notasCapturadas', JSON.stringify(notas));
     }
-    
     // NUEVA FUNCIÓN: Resetea el estado visual de edición
     function resetearEstadoEdicion() {
         const btnGuardar = document.getElementById('btnGuardar');
         const btnEliminar = document.getElementById('btnEliminar');
-
         if (btnGuardar) btnGuardar.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
         if (btnEliminar) btnEliminar.style.display = 'none'; // Ocultar botón de eliminar
-
+        
+        // DESBLOQUEAR TODOS LOS CAMPOS
+        camposDeDatos.forEach(id => {
+          const chk = document.getElementById(`check${id.charAt(0).toUpperCase() + id.slice(1)}`);
+          if (chk && chk.checked) {
+            chk.checked = false;
+            alternarBloqueo(id);
+          }
+        });
+        
         document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
         filaEnEdicion = null;
     }
-
     function borrarTodo() {
         if (confirm("¿Estás seguro de que quieres BORRAR TODAS las notas capturadas? Esta acción es irreversible.")) {
             notas = []; 
             nextOrdenCaptura = 1; // Reiniciar el contador de orden
             localStorage.removeItem('notasCapturadas'); 
-            
             resetearEstadoEdicion(); // Resetear estado de edición
+            
+            // DESBLOQUEAR TODOS LOS CAMPOS
+            camposDeDatos.forEach(id => {
+              const chk = document.getElementById(`check${id.charAt(0).toUpperCase() + id.slice(1)}`);
+              if (chk && chk.checked) {
+                chk.checked = false;
+                alternarBloqueo(id);
+              }
+            });
             
             renderizarTabla(); 
         }
     }
-
     // FUNCIÓN DE BORRADO CONTEXTUAL
     function eliminarNotaEnEdicion() {
         if (filaEnEdicion === null || filaEnEdicion >= notas.length) return;
-
         const notaAEliminar = notas[filaEnEdicion];
-
         if (confirm(`¿Estás seguro de que deseas ELIMINAR la nota N°${notaAEliminar.ordenCaptura} (Titular: ${notaAEliminar.titular || 'sin titular'})? Esta acción es irreversible.`)) {
             // Eliminar la nota del array
             notas.splice(filaEnEdicion, 1);
-            
             // Guardar cambios
             guardarNotas();
-            
             // Limpiar formulario y resetear estado de edición
             document.querySelector("form").reset(); 
             resetearEstadoEdicion();
-
             // Re-renderizar la tabla (mantiene el orden actual)
             ordenarTabla(ordenActual.columna, true); 
-            
             alert("La nota ha sido eliminada con éxito.");
         }
     }
-
     // FUNCIÓN: Verifica si una nota tiene campos vacíos (excepto ordenCaptura)
     function contieneCamposVacios(nota) {
         // Excluimos el campo de orden de captura de la verificación
         const camposARevisar = camposDeDatos.filter(campo => campo !== 'ordenCaptura'); 
-        
         for (const campo of camposARevisar) {
             // Si el valor es nulo, indefinido o solo espacios en blanco, retornamos true
             if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
@@ -839,36 +802,29 @@
         }
         return false;
     }
-
     function renderizarTabla() {
         const tablaBody = document.getElementById("tablaNotas").querySelector("tbody");
         tablaBody.innerHTML = '';
-        
         // Filtro previo si hay búsqueda activa
         const terminoBusqueda = document.getElementById('buscador').value.toLowerCase();
-
         notas.forEach((nota, indice) => {
             const tr = document.createElement("tr");
             tr.dataset.index = notas.indexOf(nota); 
-
             // ** RESALTAR SI HAY CAMPOS VACÍOS **
             if (contieneCamposVacios(nota)) {
                 tr.classList.add('alerta-vacio');
             }
-
             // Columna No. (ordenCaptura)
             const tdOrden = document.createElement("td");
             tdOrden.textContent = nota.ordenCaptura;
             tdOrden.setAttribute('data-label', encabezadosTabla['ordenCaptura']);
             tr.appendChild(tdOrden);
-
             camposDeDatos.forEach(campo => {
                 const td = document.createElement("td");
                 td.textContent = nota[campo];
                 td.setAttribute('data-label', encabezadosTabla[campo]);
                 tr.appendChild(td);
             });
-            
             const tdAcciones = document.createElement("td");
             tdAcciones.setAttribute('data-label', encabezadosTabla['acciones']);
             const btnEditar = document.createElement("button");
@@ -877,9 +833,7 @@
             btnEditar.onclick = function() { editarNota(tr); };
             tdAcciones.appendChild(btnEditar);
             tr.appendChild(tdAcciones);
-
             tablaBody.appendChild(tr);
-
             // APLICAR FILTRO DE BÚSQUEDA AL RENDERIZAR
             if (terminoBusqueda) {
                 const textoFila = tr.textContent.toLowerCase();
@@ -889,7 +843,6 @@
             }
         });
     }
-
     function cargarNotasGuardadas() {
         const datosJSON = localStorage.getItem('notasCapturadas');
         if (datosJSON) {
@@ -906,11 +859,8 @@
                         }
                     }
                 });
-                
                 if (maxOrden > 0) guardarNotas(); 
-                
                 nextOrdenCaptura = maxOrden + 1; 
-                
                 // Aplicar orden por defecto: ordenCaptura descendente
                 ordenarTabla(ordenActual.columna, true); 
             } catch (e) {
@@ -921,49 +871,37 @@
             actualizarIndicadoresOrden();
         }
     }
-
     function alternarBloqueo(idCampo) {
         const campo = document.getElementById(idCampo);
         const checkboxId = `check${idCampo.charAt(0).toUpperCase() + idCampo.slice(1)}`;
         const checkbox = document.getElementById(checkboxId);
-        
         campo.readOnly = checkbox.checked;
         campo.classList.toggle("bloqueado", checkbox.checked);
-        
         localStorage.setItem(`bloqueado_${idCampo}`, checkbox.checked);
     }
-
     function editarNota(tr) {
         const indice = parseInt(tr.dataset.index);
         const nota = notas[indice];
-
         camposDeDatos.forEach(id => {
             document.getElementById(id).value = nota[id];
         });
-        
         // Disparar eventos para actualizar sugerencias de Organismo/Canal/Firma
         document.getElementById("dependencia").dispatchEvent(new Event('blur'));
         document.getElementById("medio").dispatchEvent(new Event('blur'));
-        
         // Pequeño hack para asegurar que el valor de firma se rellene después de cargar las sugerencias
         setTimeout(() => {
              document.getElementById("firma").value = nota["firma"];
         }, 100);
-
         filaEnEdicion = indice; 
         document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Actualizar Nota';
         document.getElementById('btnEliminar').style.display = 'inline-block'; // MOSTRAR botón de eliminar
-        
         document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
         tr.classList.add('editando');
-        
         window.scrollTo(0, 0);
     }
-    
     function generarCSVContenido() {
       const cabeceras = ["No.", "Usuario", "Fecha", "Medio", "Titular", "Firma", "Página", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"]; 
       const filas = [cabeceras];
-      
       notas.forEach(nota => {
         const fila = [nota.ordenCaptura || ''].concat(camposDeDatos.map(key => {
             let valor = nota[key] || '';
@@ -972,11 +910,9 @@
         }));
         filas.push(fila);
       });
-      
       // Retorna el contenido CSV como una cadena de texto (incluye BOM para UTF-8)
       return "\uFEFF" + filas.map(f => f.join(",")).join("\n");
     }
-
     /**
      * Genera el nombre de archivo basado en el usuario y la fecha actual.
      */
@@ -986,7 +922,6 @@
         const fechaHoy = new Date().toISOString().slice(0, 10); 
         return `${usuarioLimpio}_${fechaHoy}.csv`;
     }
-
     /**
      * Descarga el archivo CSV localmente con el nombre personalizado.
      */
@@ -995,14 +930,11 @@
             alert("No hay notas para exportar.");
             return;
         }
-
         const csvContenido = generarCSVContenido();
         const nombreArchivo = generarNombreArchivoCSV();
-        
         const blob = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        
         a.href = url;
         a.download = nombreArchivo;
         document.body.appendChild(a); 
@@ -1010,7 +942,6 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
-
     /**
      * Envía el contenido CSV directamente a la API de Telegram como documento al canal @capsmonitoreo.
      */
@@ -1019,47 +950,37 @@
              alert("No hay notas para enviar por Telegram.");
              return;
         }
-
         // 🚨 CONFIGURACIÓN - ¡CONFIGURADO PARA TU CANAL!
         const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
         const TELEGRAM_CHAT_ID = "@capsmonitoreo"; // <-- CANAL CONFIGURADO
         // -----------------------------------------------------------
-
         const URL_TELEGRAM = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`; 
-        
         try {
             document.getElementById('btnTelegram').disabled = true;
             document.getElementById('btnTelegram').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
-
             const csvContenido = generarCSVContenido();
             const blobCSV = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
-            
             // USANDO EL NOMBRE DE ARCHIVO PERSONALIZADO
             const nombreArchivoTelegram = generarNombreArchivoCSV();
-
             const formData = new FormData();
             formData.append('chat_id', TELEGRAM_CHAT_ID);
             formData.append('document', blobCSV, nombreArchivoTelegram); 
             formData.append('caption', `📋 Reporte de notas (${nombreArchivoTelegram}) enviado automáticamente.`);
-
             const response = await fetch(URL_TELEGRAM, {
                 method: 'POST',
                 body: formData 
             });
-
             const result = await response.json();
-
             if (response.ok && result.ok) {
                 alert(`¡CSV '${nombreArchivoTelegram}' enviado con éxito al canal ${TELEGRAM_CHAT_ID}!`);
             } else {
                 console.error("Error de la API de Telegram:", result);
                 let mensajeError = `Error al enviar el archivo a Telegram: ${result.description || 'Consulta la consola.'}`;
                 if (result.description.includes('chat not found') || result.description.includes('bot is not a member')) {
-                    mensajeError += "\n\n⚠️ Verifica: ¿Agregaste el bot al canal como ADMINISTRADOR con permiso de envío?";
+                    mensajeError += "\n⚠️ Verifica: ¿Agregaste el bot al canal como ADMINISTRADOR con permiso de envío?";
                 }
                 alert(mensajeError);
             }
-
         } catch (error) {
             console.error("Error de conexión:", error);
             alert("Error al intentar comunicarse con Telegram. Revisa la consola (net::ERR_CONNECTION_TIMED_OUT) y las credenciales.");
@@ -1068,14 +989,10 @@
             document.getElementById('btnTelegram').innerHTML = '<i class="fa-brands fa-telegram"></i> Enviar por Telegram';
         }
     }
-
-
     // FUNCIÓN: Ordena el array de notas
     function ordenarTabla(columna, esInicial = false) {
         if (!columna) return;
-
         let direccion = 'asc';
-        
         // Si se hace clic en la misma columna y no es la carga inicial, se invierte la dirección
         if (ordenActual.columna === columna && !esInicial) {
             direccion = ordenActual.direccion === 'asc' ? 'desc' : 'asc';
@@ -1083,12 +1000,10 @@
              // Si es la carga inicial, se usa 'desc' para ordenCaptura
              direccion = 'desc'; 
         }
-
         notas.sort((a, b) => {
             const valA = a[columna] || '';
             const valB = b[columna] || '';
             let comparacion = 0;
-
             if (columna === 'fecha') {
                 // Comparación de fechas
                 const dateA = new Date(valA + 'T00:00:00');
@@ -1105,25 +1020,20 @@
                 // Comparación alfabética con soporte español
                 comparacion = valA.localeCompare(valB, 'es', { sensitivity: 'base' });
             }
-
             return direccion === 'asc' ? comparacion : -comparacion;
         });
-
         ordenActual = { columna, direccion };
         actualizarIndicadoresOrden();
         renderizarTabla();
     }
-
     // FUNCIÓN: Actualiza los iconos de la cabecera de la tabla
     function actualizarIndicadoresOrden() {
         document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
             const headerDiv = th.querySelector('.sortable-header');
             const iconSpan = th.querySelector('.sort-icon');
             const col = th.dataset.col;
-
             headerDiv.classList.remove('sorted');
             iconSpan.innerHTML = ''; 
-
             if (col === ordenActual.columna) {
                 headerDiv.classList.add('sorted');
                 // Flecha arriba (asc) o abajo (desc)
@@ -1136,13 +1046,11 @@
             }
         });
     }
-
     // ⭐⭐ FUNCIÓN RE-ACTIVADA: Lógica del buscador ⭐⭐
     function filtrarTabla() {
         const input = document.getElementById('buscador');
         const filtro = input.value.toLowerCase();
         const filas = document.getElementById('tablaNotas').querySelectorAll('tbody tr');
-        
         filas.forEach(tr => {
             let encontrado = false;
             // Itera sobre todas las celdas (incluyendo la de orden y excluyendo la de acciones si hay)
@@ -1150,7 +1058,6 @@
                 const textoCelda = tr.cells[i].textContent || tr.cells[i].innerText;
                 // Excluir la columna de Acciones del filtro de texto para evitar falsos positivos
                 if (tr.cells[i].getAttribute('data-label') === 'Acciones') continue; 
-                
                 if (textoCelda.toLowerCase().includes(filtro)) {
                     encontrado = true;
                     break;
@@ -1160,28 +1067,22 @@
             tr.style.display = encontrado ? "" : "none";
         });
     }
-
     // --- Eventos ---
-
     document.addEventListener("DOMContentLoaded", async () => {
       let orgMap, canalMap, firmaMap;
-
       // 1. Cargar Dependencias y Organismos
       const depData = await cargarMapa(urls.dependencias);
       orgMap = depData.map;
       autocompletar("dependencia", "sugDep", depData.claves, dep => {
         autocompletar("organismo", "sugOrg", orgMap[dep] || []);
       });
-
       // 2. Cargar Firmas (NUEVO BLOQUE)
       const firmaData = await cargarMapa(urls.firmas);
       firmaMap = firmaData.map;
       autocompletar("firma", "sugFirma", []); // Inicializar vacío
-
       // 3. Cargar Medios y vincular con Canal y Firma
       const medioData = await cargarMapa(urls.medios);
       canalMap = medioData.map;
-
       autocompletar("medio", "sugMedio", medioData.claves, medio => {
         // A) Actualizar Canales
         const canales = canalMap[medio] || [];
@@ -1189,19 +1090,16 @@
         if (canales.length === 1) {
           document.getElementById("canal").value = canales[0];
         }
-
         // B) Actualizar Firmas
         const firmas = firmaMap[medio] || [];
         autocompletar("firma", "sugFirma", firmas);
         // Limpiamos el campo firma si cambiamos de medio para evitar inconsistencias
         document.getElementById("firma").value = ""; 
       });
-      
       document.getElementById("dependencia").addEventListener("blur", (e) => {
           const campo = e.target;
           const depValue = campo.value.trim();
           const foundKey = findKeyCaseInsensitive(orgMap, depValue);
-
           if (foundKey) {
               campo.value = foundKey;
               autocompletar("organismo", "sugOrg", orgMap[foundKey] || []);
@@ -1209,76 +1107,59 @@
               autocompletar("organismo", "sugOrg", []);
           }
       });
-      
       // Evento Blur para Medio (ACTUALIZADO)
       document.getElementById("medio").addEventListener("blur", (e) => {
           const campo = e.target;
           const medioValue = campo.value.trim();
           const foundKey = findKeyCaseInsensitive(canalMap, medioValue);
-
           if (foundKey) {
               campo.value = foundKey;
-              
               // Actualizar Canales
               const canales = canalMap[foundKey] || [];
               autocompletar("canal", "sugCanal", canales);
               if (canales.length === 1) {
                 document.getElementById("canal").value = canales[0];
               }
-
               // Actualizar Firmas
               const firmas = firmaMap[foundKey] || []; 
               autocompletar("firma", "sugFirma", firmas);
-
           } else {
               // Si no hay match, limpiar sugerencias de ambos
               autocompletar("canal", "sugCanal", []);
               autocompletar("firma", "sugFirma", []);
           }
       });
-      
       // ⭐⭐ VINCULACIÓN DEL BUSCADOR (RE-ACTIVADA) ⭐⭐
       document.getElementById('buscador').addEventListener('input', filtrarTabla); 
-
       // Se elimina el bloque anterior que usaba 'keyup' fuera del DOMContentLoaded para evitar duplicidad y mejorar la respuesta.
-      
       autocompletar("organismo", "sugOrg", []); 
       autocompletar("canal", "sugCanal", []);
-
       autocompletar("genero", "sugGenero", await cargarLista(urls.generos));
       autocompletar("estatus", "sugEstatus", await cargarLista(urls.estatus));
       autocompletar("tema", "sugTema", await cargarLista(urls.temas));
       autocompletar("municipio", "sugMunicipio", await cargarLista(urls.municipios));
-
       // Persistencia
       camposDeDatos.forEach(id => {
         const campo = document.getElementById(id);
-        
         if (localStorage.getItem(id)) campo.value = localStorage.getItem(id);
-        
         campo.addEventListener("input", () => {
           localStorage.setItem(id, campo.value);
         });
-
         const checkboxId = `check${id.charAt(0).toUpperCase() + id.slice(1)}`;
         const checkbox = document.getElementById(checkboxId);
         const isBlocked = localStorage.getItem(`bloqueado_${id}`) === 'true';
-
         if (checkbox) {
             checkbox.checked = isBlocked;
             alternarBloqueo(id);
         }
       });
-      
       cargarNotasGuardadas();
-
       // Listener para ordenar al hacer clic en las cabeceras
       document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
           th.addEventListener('click', () => {
               ordenarTabla(th.dataset.col);
           });
       });
-
       // Foco al titular y reseteo de estado al limpiar el formulario
       document.querySelector("form").addEventListener('reset', () => {
           setTimeout(() => {
@@ -1286,46 +1167,73 @@
               resetearEstadoEdicion(); // Resetear estado de edición
           }, 10);
       });
-
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.campo')) {
             document.querySelectorAll('.sugerencias').forEach(sug => sug.innerHTML = "");
         }
       });
+      
+      // NUEVA FUNCIONALIDAD: Navegación con Enter/Tab entre campos
+      document.addEventListener("keydown", (e) => {
+        // Manejar Enter en campos de texto
+        if (e.key === "Enter" && e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'date')) {
+          const contenedorSugerencias = e.target.parentNode.querySelector('.sugerencias');
+          const items = contenedorSugerencias ? contenedorSugerencias.querySelectorAll('.sugerencia') : [];
+          
+          // Si hay más de una sugerencia visible, no hacer nada (dejar que el autocompletar maneje el Enter)
+          if (items.length > 1) return;
+          
+          e.preventDefault();
+          const form = document.querySelector('form');
+          const focusable = Array.from(form.querySelectorAll('input[type="text"]:not([tabindex="-1"]), input[type="date"]:not([tabindex="-1"])'));
+          const index = focusable.indexOf(e.target);
+          
+          if (index > -1 && index < focusable.length - 1) {
+            focusable[index + 1].focus();
+          } else if (index === focusable.length - 1) {
+            document.getElementById('titular').focus();
+          }
+        }
+        
+        // Manejar Tab
+        if (e.key === "Tab" && e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'date')) {
+          const form = document.querySelector('form');
+          const focusable = Array.from(form.querySelectorAll('input[type="text"]:not([tabindex="-1"]), input[type="date"]:not([tabindex="-1"])'));
+          const index = focusable.indexOf(e.target);
+          
+          if (index > -1 && index < focusable.length - 1) {
+            setTimeout(() => {
+              focusable[index + 1].focus();
+            }, 0);
+            e.preventDefault();
+          }
+        }
+      });
     });
-
     document.querySelector("form").addEventListener("submit", e => {
       e.preventDefault();
-      
       const nuevaNota = {};
       camposDeDatos.forEach(id => {
         nuevaNota[id] = document.getElementById(id).value.trim();
       });
-
       if (filaEnEdicion !== null) {
           // Actualiza la nota: mantiene el ordenCaptura original
           notas[filaEnEdicion] = {...nuevaNota, ordenCaptura: notas[filaEnEdicion].ordenCaptura};
-          
           // Resetear el estado de edición al terminar la actualización
           resetearEstadoEdicion();
-          
       } else {
           // Agrega la nueva nota: asigna e incrementa el contador
           nuevaNota.ordenCaptura = nextOrdenCaptura++; 
           notas.push(nuevaNota);
-          
           // Asegurar que el botón de eliminar esté oculto si se agrega una nota nueva
           document.getElementById('btnEliminar').style.display = 'none';
       }
-      
       guardarNotas();
       // Se mantiene el orden actual (que por defecto es 'ordenCaptura' descendente)
       ordenarTabla(ordenActual.columna, true); 
-      
       camposDeDatos.forEach(id => {
           const campo = document.getElementById(id);
           const isBlocked = localStorage.getItem(`bloqueado_${id}`) === 'true';
-          
           if (!isBlocked) {
               campo.value = '';
               localStorage.removeItem(id); 
@@ -1333,11 +1241,9 @@
               localStorage.setItem(id, campo.value);
           }
       });
-
       document.getElementById('titular').focus();
     });
   </script>
-
   <footer>
     © 2025 Francisco el Bizcocho de Montecristo Villeda. Todos los derechos reservados.
   </footer>
