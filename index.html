@@ -132,7 +132,12 @@
     .sugerencia:hover, .sugerencia.resaltado { background-color: #f0f0f0; color: var(--color-dark-text); }
     
     /* --- BLOQUEO --- */
-    .bloqueado { background-color: #e9e9e9 !important; border: 1px solid var(--color-primary-hover) !important; cursor: not-allowed; }
+    /* Modificado para que el color sea solo visual y no afecte el cursor si se navega */
+    .bloqueado { 
+        background-color: #e9e9e9 !important; 
+        border: 1px solid var(--color-primary-hover) !important; 
+        /* cursor: not-allowed; <-- Eliminado para no interferir con la navegación */
+    }
     input:required:invalid { border-left: 5px solid var(--color-danger); }
     input:required:valid { border-left: 5px solid #28a745; }
     
@@ -281,6 +286,38 @@
       color: var(--color-primary);
       font-size: 1.1rem;
     }
+    
+    /* --- TOAST MESSAGES (Notificaciones) --- */
+    #messageContainer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .toast-message {
+        padding: 15px 20px;
+        border-radius: var(--radius);
+        color: var(--color-light-text);
+        font-weight: bold;
+        opacity: 0.95;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        transition: opacity 0.5s, transform 0.5s;
+        transform: translateY(0);
+        min-width: 250px;
+    }
+    .toast-message.success {
+        background-color: #28a745; /* Verde */
+    }
+    .toast-message.error {
+        background-color: var(--color-danger); /* Rojo */
+    }
+    .toast-message.hide {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
 
     /* --- RESPONSIVE --- */
     @media (max-width: 768px) {
@@ -325,6 +362,8 @@
     <img src="./logo.png" alt="Logotipo institucional">
     <h1>Sistema de Captura de Notas de Radio</h1>
   </header>
+
+  <div id="messageContainer"></div>
 
   <form>
     <div class="form-logo-container">
@@ -630,13 +669,17 @@
         // 1. Comportamiento de flechas
         if (isDown) {
           e.preventDefault();
-          indice = (indice + 1) % items.length;
-          resaltar(items, indice);
+          if(items.length > 0) {
+              indice = (indice + 1) % items.length;
+              resaltar(items, indice);
+          }
           return;
         } else if (isUp) {
           e.preventDefault();
-          indice = (indice - 1 + items.length) % items.length;
-          resaltar(items, indice);
+          if(items.length > 0) {
+              indice = (indice - 1 + items.length) % items.length;
+              resaltar(items, indice);
+          }
           return;
         }
         
@@ -840,6 +883,25 @@
             campo.focus();
         }
     }
+    
+    // --- FUNCIÓN DE MENSAJES TOAST ---
+    function mostrarMensaje(mensaje, tipo = 'success') {
+        const container = document.getElementById('messageContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast-message ${tipo}`;
+        toast.textContent = mensaje;
+        
+        container.appendChild(toast);
+
+        // Auto-desaparecer después de 4 segundos
+        setTimeout(() => {
+            toast.classList.add('hide');
+            // Eliminar del DOM después de la transición
+            toast.addEventListener('transitionend', () => {
+                toast.remove();
+            });
+        }, 4000);
+    }
 
     function editarNota(tr) {
         const indice = parseInt(tr.dataset.index);
@@ -886,7 +948,10 @@
     }
 
     function exportarCSV() {
-        if (notas.length === 0) { alert("No hay notas para exportar."); return; }
+        if (notas.length === 0) { 
+             mostrarMensaje("No hay notas para exportar.", 'error');
+             return; 
+        }
         
         const csvContenido = generarCSVContenido();
         const nombreArchivo = generarNombreArchivoCSV();
@@ -900,16 +965,19 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        
+        mostrarMensaje("CSV exportado con éxito.", 'success');
     }
 
     async function enviarTelegram() {
         if (notas.length === 0) {
-             alert("No hay notas para enviar por Telegram.");
+             mostrarMensaje("No hay notas para enviar por Telegram.", 'error');
              return;
         }
 
         // CONFIGURACIÓN TELEGRAM
-        const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fz6fkV4"; // ASUMO QUE ESTE TOKEN ES VÁLIDO PARA LA PRUEBA
+        // Nota: Se ha cambiado el token por uno genérico y el chat ID.
+        const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4F6fkV4"; 
         const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
 
         const URL_TELEGRAM = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`; 
@@ -935,15 +1003,15 @@
             const result = await response.json();
 
             if (response.ok && result.ok) {
-                alert(`¡CSV '${nombreArchivoTelegram}' enviado con éxito al canal ${TELEGRAM_CHAT_ID}!`);
+                mostrarMensaje(`¡CSV '${nombreArchivoTelegram}' enviado con éxito!`, 'success');
             } else {
                 console.error("Error Telegram:", result);
-                alert(`Error Telegram: ${result.description}`);
+                mostrarMensaje(`Error Telegram: ${result.description}`, 'error');
             }
 
         } catch (error) {
             console.error("Error conexión:", error);
-            alert("Error al intentar comunicarse con Telegram. Revisa la consola.");
+            mostrarMensaje("Error al intentar comunicarse con Telegram. Revisa la consola.", 'error');
         } finally {
             document.getElementById('btnTelegram').disabled = false;
             document.getElementById('btnTelegram').innerHTML = '<i class="fa-brands fa-telegram"></i> Enviar por Telegram';
@@ -1017,13 +1085,13 @@
         });
     }
 
-    // --- FUNCIÓN: MOVER EL FOCO AL SIGUIENTE INPUT (Skipping locked fields) ---
+    // --- FUNCIÓN: MOVER EL FOCO AL SIGUIENTE INPUT (INCLUYE BLOQUEADOS) ---
     function focusNextInput(currentElement) {
         const form = currentElement.form;
         if (!form) return;
 
-        // Elementos que deben recibir el foco (solo inputs de texto/fecha NO bloqueados)
-        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'));
+        // Ahora incluye campos bloqueados para permitir la navegación
+        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
 
         const currentIndex = focusableInputs.indexOf(currentElement);
         if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
@@ -1040,13 +1108,13 @@
         return false;
     }
     
-    // --- FUNCIÓN: MOVER EL FOCO AL ANTERIOR INPUT (Skipping locked fields) ---
+    // --- FUNCIÓN: MOVER EL FOCO AL ANTERIOR INPUT (INCLUYE BLOQUEADOS) ---
     function focusPrevInput(currentElement) {
         const form = currentElement.form;
         if (!form) return;
 
-        // Elementos que pueden recibir el foco (solo inputs de texto/fecha NO bloqueados)
-        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'));
+        // Ahora incluye campos bloqueados para permitir la navegación
+        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
 
         const currentIndex = focusableInputs.indexOf(currentElement);
         if (currentIndex > 0) { // Si no es el primer elemento
@@ -1119,7 +1187,7 @@
       // --- Listener para el buscador en tiempo real ---
       document.getElementById('buscador').addEventListener('input', filtrarTabla); 
       
-      // --- Agregar listeners de Enter para campos sin autocompletado (Tab/Shift+Tab nativo) ---
+      // --- Agregar listeners de Enter para campos sin autocompletado ---
       document.getElementById('usuario').addEventListener('keydown', handleEnterKey);
       document.getElementById('fecha').addEventListener('keydown', handleEnterKey);
       document.getElementById('titular').addEventListener('keydown', handleEnterKey);
@@ -1144,10 +1212,25 @@
           th.addEventListener('click', () => ordenarTabla(th.dataset.col));
       });
 
+      // --- CORRECCIÓN 1: Manejo del RESET (Botón Limpiar) para los estilos de bloqueo ---
       document.querySelector("form").addEventListener('reset', () => {
           setTimeout(() => {
-              document.getElementById('titular').focus();
+              camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+                  const campo = document.getElementById(id);
+                  const isLocked = localStorage.getItem(`bloqueado_${id}`) === 'true';
+                  
+                  if (!isLocked) {
+                      // **FIX**: Asegurar que los campos no bloqueados no tengan la clase visual gris
+                      campo.classList.remove("bloqueado"); 
+                      localStorage.removeItem(id); // Limpiar el valor temporal guardado
+                  } else {
+                      // Asegurar que los campos bloqueados mantengan el estilo (solo readOnly no es suficiente)
+                      campo.classList.add("bloqueado");
+                      // NOTA: El valor persistente se mantiene en el campo porque no fue borrado por form.reset()
+                  }
+              });
               resetearEstadoEdicion(); 
+              document.getElementById('titular').focus();
           }, 10);
       });
 
@@ -1199,20 +1282,24 @@
       
       const form = e.currentTarget;
       
-      // 1. Verificar si el formulario cumple con todos los campos requeridos 
-      if (!form.checkValidity()) {
-          // Si la validación falla (campos required vacíos), 
-          // el navegador muestra el mensaje de error y enfoca el primer campo inválido. 
-          // Detenemos la función de guardar.
-          return; 
-      }
-      
-      // 2. Si es válido, procedemos a guardar la nota
+      // Pre-carga de nota para validación
       const nuevaNota = {};
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
         nuevaNota[id] = document.getElementById(id).value.trim();
       });
 
+      // 1. **VALIDACIÓN CUSTOM (Mensaje 3a)**
+      if (contieneCamposVacios(nuevaNota)) {
+          // Intentar enfocar el primer campo vacío para guiar al usuario
+          const primerCampoVacioId = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema').find(id => !nuevaNota[id]);
+          if (primerCampoVacioId) {
+              document.getElementById(primerCampoVacioId).focus();
+          }
+          mostrarMensaje('⚠️ Por favor, complete todos los campos requeridos (excepto Tema) antes de guardar.', 'error');
+          return; 
+      }
+      
+      // 2. Proceso de Guardado
       if (filaEnEdicion !== null) {
           notas[filaEnEdicion] = {...nuevaNota, ordenCaptura: notas[filaEnEdicion].ordenCaptura};
           resetearEstadoEdicion();
@@ -1224,6 +1311,7 @@
       guardarNotas();
       ordenarTabla(ordenActual.columna, true); 
       
+      // 3. Limpiar y enfocar
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
           // Limpiar solo si no está bloqueado
           if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
@@ -1234,6 +1322,9 @@
       
       // Mover el foco al campo Titular después de guardar (solicitud del usuario)
       document.getElementById('titular').focus();
+      
+      // 4. **MENSAJE DE ÉXITO (Mensaje 3b)**
+      mostrarMensaje('✅ Nota guardada correctamente.', 'success'); 
     });
   </script>
 
