@@ -592,6 +592,31 @@
       return Array.from(new Set(filas.map(r => r[0]))).sort((a, b) => a.localeCompare(b, 'es'));
     }
 
+    // --- NUEVA FUNCIÓN: MOVER EL FOCO AL SIGUIENTE INPUT (Skipping locked fields) ---
+    function focusNextInput(currentElement) {
+        const form = currentElement.form;
+        if (!form) return;
+
+        // Elementos que deben recibir el foco (solo inputs de texto/fecha NO bloqueados)
+        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'))
+                                     .filter(input => input.style.display !== 'none');
+
+        const currentIndex = focusableInputs.indexOf(currentElement);
+        if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
+            focusableInputs[currentIndex + 1].focus();
+            return true;
+        }
+        
+        // Si es el último, intenta enfocar el botón de guardar
+        if (currentIndex === focusableInputs.length - 1) {
+            document.getElementById('btnGuardar').focus();
+            return true;
+        }
+        
+        return false;
+    }
+
+
     function autocompletar(idCampo, idSugerencias, lista, callback) {
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
@@ -604,6 +629,12 @@
         indice = -1;
         if (!valor) return;
         const sugerencias = lista.filter(item => item.toLowerCase().includes(valor));
+        
+        // Comprobación de sugerencia única
+        if (sugerencias.length === 1 && sugerencias[0].toLowerCase() === valor) {
+             // Si el texto coincide exactamente con la única sugerencia, no hacer nada para permitir el enter/tab
+        }
+
         sugerencias.forEach((s, i) => {
           const div = document.createElement("div");
           div.textContent = s;
@@ -613,6 +644,7 @@
             campo.value = s;
             contenedor.innerHTML = "";
             if (callback) callback(s);
+            focusNextInput(campo); // Mueve el foco después de la selección con click
           };
           contenedor.appendChild(div);
         });
@@ -620,6 +652,37 @@
 
       campo.addEventListener("keydown", e => {
         const items = contenedor.querySelectorAll(".sugerencia");
+        const valor = campo.value.toLowerCase().trim();
+        const sugerenciasFiltradas = lista.filter(item => item.toLowerCase().includes(valor));
+
+        // --- MODIFICACIÓN DE NAVEGACIÓN Y AUTOSELECCIÓN (Enter/Tab) ---
+        if (e.key === "Enter" || e.key === "Tab") {
+            e.preventDefault(); 
+            
+            // 1. Si hay una sugerencia resaltada (navegada con flechas), la selecciona.
+            if (indice >= 0 && items[indice]) {
+                campo.value = items[indice].textContent;
+                contenedor.innerHTML = "";
+                if (callback) callback(campo.value);
+                focusNextInput(campo);
+                return;
+            }
+            
+            // 2. Si solo queda una sugerencia, la selecciona.
+            if (sugerenciasFiltradas.length === 1) {
+                campo.value = sugerenciasFiltradas[0];
+                contenedor.innerHTML = "";
+                if (callback) callback(campo.value);
+                focusNextInput(campo);
+                return;
+            }
+            
+            // 3. Si no hay sugerencias o no aplica auto-selección, simplemente salta al siguiente campo.
+            focusNextInput(campo);
+            return; 
+        }
+        // --- FIN MODIFICACIÓN ---
+
         if (items.length === 0) return;
         if (e.key === "ArrowDown") {
           e.preventDefault();
@@ -629,14 +692,7 @@
           e.preventDefault();
           indice = (indice - 1 + items.length) % items.length;
           resaltar(items, indice);
-        } else if (e.key === "Enter") {
-          e.preventDefault();
-          if (indice >= 0 && items[indice]) {
-            campo.value = items[indice].textContent;
-            contenedor.innerHTML = "";
-            if (callback) callback(campo.value);
-          }
-        }
+        } 
       });
 
       campo.addEventListener("focus", () => {
@@ -676,12 +732,11 @@
         div.onclick = () => {
           campo.value = s;
           contenedor.innerHTML = "";
-          if (idCampo === 'radiodifusora') {
-              document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
+          // Disparar blur para actualizar campos dependientes
+          if (idCampo === 'radiodifusora' || idCampo === 'dependencia') {
+              campo.dispatchEvent(new Event('blur'));
           }
-          if (idCampo === 'dependencia') {
-              document.getElementById("dependencia").dispatchEvent(new Event('blur'));
-          }
+          focusNextInput(campo); // Mueve el foco después de la selección con click
         };
         contenedor.appendChild(div);
       });
@@ -697,6 +752,20 @@
         document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
     }
 
+    // --- NUEVA FUNCIÓN: DESBLOQUEAR TODOS LOS CAMPOS ---
+    function desbloquearTodos() {
+        camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+            const chk = document.getElementById(`check${id.charAt(0).toUpperCase() + id.slice(1)}`);
+            if (chk) {
+                if (chk.checked) {
+                    chk.checked = false; 
+                    alternarBloqueo(id);
+                }
+            }
+            localStorage.removeItem(id); // Limpiar también el valor persistente
+        });
+    }
+
     function guardarNotas() {
         localStorage.setItem('notasCapturadas', JSON.stringify(notas));
         localStorage.setItem('nextOrdenCaptura', nextOrdenCaptura);
@@ -707,6 +776,8 @@
             notas = []; 
             nextOrdenCaptura = 1;
             localStorage.removeItem('notasCapturadas'); 
+            desbloquearTodos(); // <--- LLAMADA A LA NUEVA FUNCIÓN
+            document.querySelector("form").reset(); // Limpia los inputs del formulario
             renderizarTabla(); 
             resetearEstadoEdicion();
         }
@@ -801,6 +872,13 @@
         campo.classList.toggle("bloqueado", checkbox.checked);
         
         localStorage.setItem(`bloqueado_${idCampo}`, checkbox.checked);
+
+        // Actualizar el tabindex del campo para que no sea enfocable si está bloqueado
+        if (checkbox.checked) {
+             campo.setAttribute('tabindex', '-1');
+        } else {
+             campo.removeAttribute('tabindex');
+        }
     }
 
     function editarNota(tr) {
@@ -959,7 +1037,7 @@
         });
     }
 
-    // --- NUEVA FUNCIÓN: BÚSQUEDA EN TIEMPO REAL ---
+    // --- FUNCIÓN: BÚSQUEDA EN TIEMPO REAL ---
     function filtrarTabla() {
         const input = document.getElementById('buscador');
         const filtro = input.value.toLowerCase();
@@ -982,6 +1060,13 @@
     // --- Eventos ---
     document.addEventListener("DOMContentLoaded", async () => {
       let orgMap, programaMap; 
+
+      // --- CONFIGURACIÓN DE TABINDEX PARA SALTAR ELEMENTOS ---
+      // Asigna tabindex="-1" a botones de sugerencia y checkboxes para saltarlos en la navegación normal con Tab.
+      document.querySelectorAll('button[type="button"], input[type="checkbox"]').forEach(el => {
+          el.setAttribute('tabindex', '-1');
+      });
+
 
       const depData = await cargarMapa(urls.dependencias);
       orgMap = depData.map;
@@ -1051,7 +1136,8 @@
           th.addEventListener('click', () => ordenarTabla(th.dataset.col));
       });
 
-      document.querySelector("form").addEventListener('reset', () => {
+      document.querySelector("form").addEventListener('reset', (e) => {
+          desbloquearTodos(); // <--- LLAMADA A LA NUEVA FUNCIÓN: Desbloquea campos
           setTimeout(() => {
               document.getElementById('titular').focus();
               resetearEstadoEdicion(); 
@@ -1063,10 +1149,27 @@
             document.querySelectorAll('.sugerencias').forEach(s => s.innerHTML = "");
         }
       });
+      
+      // --- NUEVO LISTENER GLOBAL PARA CTRL+Q ---
+      document.addEventListener('keydown', (e) => {
+          // Verifica Ctrl+Q (o Cmd+Q en Mac)
+          if ((e.ctrlKey || e.metaKey) && (e.key === 'q' || e.key === 'Q')) {
+              e.preventDefault(); 
+              document.getElementById('btnGuardar').click();
+          }
+      });
+      // --- FIN NUEVO LISTENER GLOBAL ---
     });
 
     document.querySelector("form").addEventListener("submit", e => {
       e.preventDefault();
+      
+      // Validación básica antes de guardar
+      if (!document.querySelector("form").checkValidity()) {
+          alert("Por favor, rellena todos los campos obligatorios.");
+          return;
+      }
+      
       const nuevaNota = {};
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
         nuevaNota[id] = document.getElementById(id).value.trim();
