@@ -132,11 +132,10 @@
     .sugerencia:hover, .sugerencia.resaltado { background-color: #f0f0f0; color: var(--color-dark-text); }
     
     /* --- BLOQUEO --- */
-    /* Modificado para que el color sea solo visual y no afecte el cursor si se navega */
+    /* Modificado: Se eliminó 'cursor: not-allowed;' para permitir la navegación con Tab */
     .bloqueado { 
         background-color: #e9e9e9 !important; 
         border: 1px solid var(--color-primary-hover) !important; 
-        /* cursor: not-allowed; <-- Eliminado para no interferir con la navegación */
     }
     input:required:invalid { border-left: 5px solid var(--color-danger); }
     input:required:valid { border-left: 5px solid #28a745; }
@@ -559,7 +558,7 @@
     
     let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' }; 
 
-    // RUTAS RELATIVAS
+    // RUTAS RELATIVAS (Asegúrate de que estos archivos estén en el mismo directorio)
     const urls = {
       dependencias: "./Dependencia.csv",
       radiodifusoras: "./Radiodifusora.csv", 
@@ -685,8 +684,9 @@
         
         // 2. Comportamiento de Enter/Tab
         if (isEnter || isTab) {
-            e.preventDefault(); // Prevenir el submit/comportamiento nativo de foco
-
+            // Nota: Se elimina la prevención de default en Tab para que el navegador maneje el cambio de foco, 
+            // pero se mantiene la lógica de selección de sugerencia.
+            
             const focusFunction = isTab && e.shiftKey ? focusPrevInput : focusNextInput;
             let valorSeleccionado = null;
             
@@ -705,9 +705,12 @@
                 if (callback) callback(campo.value);
             }
             
-            // D. Limpia sugerencias y mueve el foco (adelante o atrás)
+            // D. Limpia sugerencias y mueve el foco (solo si es Enter)
             contenedor.innerHTML = "";
-            focusFunction(campo);
+            if (isEnter) {
+                 e.preventDefault(); // Prevenir el submit en caso de Enter
+                 focusFunction(campo);
+            }
         }
       });
 
@@ -975,8 +978,7 @@
              return;
         }
 
-        // CONFIGURACIÓN TELEGRAM
-        // Nota: Se ha cambiado el token por uno genérico y el chat ID.
+        // CONFIGURACIÓN TELEGRAM (REEMPLAZA con tu BOT_TOKEN y CHAT_ID real)
         const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4F6fkV4"; 
         const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
 
@@ -1085,12 +1087,12 @@
         });
     }
 
-    // --- FUNCIÓN: MOVER EL FOCO AL SIGUIENTE INPUT (INCLUYE BLOQUEADOS) ---
+    // --- FUNCIÓN CORREGIDA: MOVER EL FOCO AL SIGUIENTE INPUT (INCLUYE BLOQUEADOS) ---
     function focusNextInput(currentElement) {
         const form = currentElement.form;
         if (!form) return;
 
-        // Ahora incluye campos bloqueados para permitir la navegación
+        // **CORRECCIÓN:** Selecciona todos los inputs de texto y fecha, sin excepción de [readonly].
         const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
 
         const currentIndex = focusableInputs.indexOf(currentElement);
@@ -1099,7 +1101,7 @@
             return true;
         }
         
-        // Si es el último, intenta enfocar el botón de guardar
+        // Si es el último input, intenta enfocar el botón de guardar
         if (currentIndex === focusableInputs.length - 1) {
             document.getElementById('btnGuardar').focus();
             return true;
@@ -1108,12 +1110,12 @@
         return false;
     }
     
-    // --- FUNCIÓN: MOVER EL FOCO AL ANTERIOR INPUT (INCLUYE BLOQUEADOS) ---
+    // --- FUNCIÓN CORREGIDA: MOVER EL FOCO AL ANTERIOR INPUT (INCLUYE BLOQUEADOS) ---
     function focusPrevInput(currentElement) {
         const form = currentElement.form;
         if (!form) return;
 
-        // Ahora incluye campos bloqueados para permitir la navegación
+        // **CORRECCIÓN:** Selecciona todos los inputs de texto y fecha, sin excepción de [readonly].
         const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
 
         const currentIndex = focusableInputs.indexOf(currentElement);
@@ -1212,7 +1214,7 @@
           th.addEventListener('click', () => ordenarTabla(th.dataset.col));
       });
 
-      // --- CORRECCIÓN 1: Manejo del RESET (Botón Limpiar) para los estilos de bloqueo ---
+      // --- CORRECCIÓN: Manejo del RESET (Botón Limpiar) para los estilos de bloqueo ---
       document.querySelector("form").addEventListener('reset', () => {
           setTimeout(() => {
               camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
@@ -1224,9 +1226,8 @@
                       campo.classList.remove("bloqueado"); 
                       localStorage.removeItem(id); // Limpiar el valor temporal guardado
                   } else {
-                      // Asegurar que los campos bloqueados mantengan el estilo (solo readOnly no es suficiente)
+                      // Asegurar que los campos bloqueados mantengan el estilo
                       campo.classList.add("bloqueado");
-                      // NOTA: El valor persistente se mantiene en el campo porque no fue borrado por form.reset()
                   }
               });
               resetearEstadoEdicion(); 
@@ -1288,7 +1289,7 @@
         nuevaNota[id] = document.getElementById(id).value.trim();
       });
 
-      // 1. **VALIDACIÓN CUSTOM (Mensaje 3a)**
+      // 1. VALIDACIÓN CUSTOM (Mensaje de error si faltan campos)
       if (contieneCamposVacios(nuevaNota)) {
           // Intentar enfocar el primer campo vacío para guiar al usuario
           const primerCampoVacioId = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema').find(id => !nuevaNota[id]);
@@ -1320,10 +1321,10 @@
           }
       });
       
-      // Mover el foco al campo Titular después de guardar (solicitud del usuario)
+      // Mover el foco al campo Titular después de guardar
       document.getElementById('titular').focus();
       
-      // 4. **MENSAJE DE ÉXITO (Mensaje 3b)**
+      // 4. MENSAJE DE ÉXITO
       mostrarMensaje('✅ Nota guardada correctamente.', 'success'); 
     });
   </script>
