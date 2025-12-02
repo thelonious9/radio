@@ -627,7 +627,7 @@
         const isUp = e.key === "ArrowUp";
         const isDown = e.key === "ArrowDown";
         
-        // Comportamiento de flechas
+        // 1. Comportamiento de flechas
         if (isDown) {
           e.preventDefault();
           indice = (indice + 1) % items.length;
@@ -640,33 +640,31 @@
           return;
         }
         
-        // Comportamiento de Enter/Tab
+        // 2. Comportamiento de Enter/Tab
         if (isEnter || isTab) {
-            e.preventDefault(); // Prevenir el comportamiento nativo por defecto
+            e.preventDefault(); // Prevenir el submit/comportamiento nativo de foco
 
+            const focusFunction = isTab && e.shiftKey ? focusPrevInput : focusNextInput;
             let valorSeleccionado = null;
             
-            // 1. Si hay una sugerencia resaltada (usando flechas)
+            // A. Prioridad: Sugerencia resaltada (usando flechas)
             if (indice >= 0 && items[indice]) {
                 valorSeleccionado = items[indice].textContent;
-            } else if (isTab) {
-                // 2. Si no hay resaltada, pero hay una *coincidencia exacta*
-                const valorActual = campo.value.trim();
-                const sugerencias = JSON.parse(campo.dataset.lista || '[]').filter(item => item.trim() === valorActual);
-                if (sugerencias.length === 1) {
-                    valorSeleccionado = sugerencias[0];
-                }
-            }
+            } 
+            // B. Selección de Sugerencia Única Visible
+            else if (items.length === 1) {
+                valorSeleccionado = items[0].textContent;
+            } 
             
+            // C. Aplicar selección si existe
             if (valorSeleccionado) {
-                // Selecciona el valor y ejecuta el callback (para campos dependientes)
                 campo.value = valorSeleccionado;
                 if (callback) callback(campo.value);
             }
             
-            // Limpia sugerencias y mueve el foco al siguiente campo
+            // D. Limpia sugerencias y mueve el foco (adelante o atrás)
             contenedor.innerHTML = "";
-            focusNextInput(campo);
+            focusFunction(campo);
         }
       });
 
@@ -911,7 +909,7 @@
         }
 
         // CONFIGURACIÓN TELEGRAM
-        const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4F6fkV4"; // ASUMO QUE ESTE TOKEN ES VÁLIDO PARA LA PRUEBA
+        const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fz6fkV4"; // ASUMO QUE ESTE TOKEN ES VÁLIDO PARA LA PRUEBA
         const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
 
         const URL_TELEGRAM = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`; 
@@ -1042,6 +1040,23 @@
         return false;
     }
     
+    // --- FUNCIÓN: MOVER EL FOCO AL ANTERIOR INPUT (Skipping locked fields) ---
+    function focusPrevInput(currentElement) {
+        const form = currentElement.form;
+        if (!form) return;
+
+        // Elementos que pueden recibir el foco (solo inputs de texto/fecha NO bloqueados)
+        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'));
+
+        const currentIndex = focusableInputs.indexOf(currentElement);
+        if (currentIndex > 0) { // Si no es el primer elemento
+            focusableInputs[currentIndex - 1].focus();
+            return true;
+        }
+        
+        return false;
+    }
+    
     // --- FUNCIÓN HELPER para Enter en inputs sin autocompletado ---
     function handleEnterKey(e) {
         if (e.key === "Enter") {
@@ -1065,6 +1080,7 @@
       autocompletar("radiodifusora", "sugRadiodifusora", radioData.claves, radio => {
         const programas = programaMap[radio] || [];
         autocompletar("programa", "sugPrograma", programas); 
+        // Si solo hay un programa al seleccionar la radio, lo auto-rellenamos.
         if (programas.length === 1) document.getElementById("programa").value = programas[0];
       });
       
@@ -1103,7 +1119,7 @@
       // --- Listener para el buscador en tiempo real ---
       document.getElementById('buscador').addEventListener('input', filtrarTabla); 
       
-      // --- Agregar listeners de Enter para campos sin autocompletado ---
+      // --- Agregar listeners de Enter para campos sin autocompletado (Tab/Shift+Tab nativo) ---
       document.getElementById('usuario').addEventListener('keydown', handleEnterKey);
       document.getElementById('fecha').addEventListener('keydown', handleEnterKey);
       document.getElementById('titular').addEventListener('keydown', handleEnterKey);
