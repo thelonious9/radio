@@ -627,48 +627,46 @@
         const isUp = e.key === "ArrowUp";
         const isDown = e.key === "ArrowDown";
         
-        if (items.length === 0) {
-            if (isEnter) {
-                // Si no hay sugerencias y es Enter, movemos el foco.
-                e.preventDefault(); 
-                focusNextInput(campo);
-            }
-            return;
-        }
-        
+        // Comportamiento de flechas
         if (isDown) {
           e.preventDefault();
           indice = (indice + 1) % items.length;
           resaltar(items, indice);
+          return;
         } else if (isUp) {
           e.preventDefault();
           indice = (indice - 1 + items.length) % items.length;
           resaltar(items, indice);
-        } else if (isEnter || isTab) {
-          if (indice >= 0 && items[indice]) {
-            // Caso 1: Selección de sugerencia resaltada (Enter o Tab)
-            e.preventDefault(); // Prevenir submit/cambio de foco por Tab nativo
-            campo.value = items[indice].textContent;
-            if (callback) callback(campo.value);
+          return;
+        }
+        
+        // Comportamiento de Enter/Tab
+        if (isEnter || isTab) {
+            e.preventDefault(); // Prevenir el comportamiento nativo por defecto
+
+            let valorSeleccionado = null;
+            
+            // 1. Si hay una sugerencia resaltada (usando flechas)
+            if (indice >= 0 && items[indice]) {
+                valorSeleccionado = items[indice].textContent;
+            } else if (isTab) {
+                // 2. Si no hay resaltada, pero hay una *coincidencia exacta*
+                const valorActual = campo.value.trim();
+                const sugerencias = JSON.parse(campo.dataset.lista || '[]').filter(item => item.trim() === valorActual);
+                if (sugerencias.length === 1) {
+                    valorSeleccionado = sugerencias[0];
+                }
+            }
+            
+            if (valorSeleccionado) {
+                // Selecciona el valor y ejecuta el callback (para campos dependientes)
+                campo.value = valorSeleccionado;
+                if (callback) callback(campo.value);
+            }
+            
+            // Limpia sugerencias y mueve el foco al siguiente campo
             contenedor.innerHTML = "";
             focusNextInput(campo);
-          } else if (isEnter) {
-             // Caso 2: Enter sin sugerencia resaltada visible (solo si hay texto)
-             e.preventDefault(); 
-             contenedor.innerHTML = "";
-             focusNextInput(campo);
-          } else if (isTab) {
-            // Caso 3: Tab sin sugerencia resaltada. Ocultar y dejar que Tab haga su trabajo.
-            contenedor.innerHTML = "";
-            // Si hay exactamente una coincidencia, auto-rellenarla y mover el foco.
-            const valor = campo.value.toLowerCase().trim();
-            const sugerencias = lista.filter(item => item.toLowerCase() === valor);
-            if (sugerencias.length === 1 && campo.value !== sugerencias[0]) {
-                campo.value = sugerencias[0];
-                if (callback) callback(campo.value);
-                focusNextInput(campo); 
-            }
-          }
         }
       });
 
@@ -691,6 +689,8 @@
       function resaltar(items, i) {
         items.forEach(el => el.classList.remove("resaltado"));
         items[i].classList.add("resaltado");
+        // Scroll para asegurar que la sugerencia esté visible
+        items[i].parentElement.scrollTop = items[i].offsetTop - items[i].parentElement.offsetTop;
       }
     }
     
@@ -709,11 +709,9 @@
         div.onclick = () => {
           campo.value = s;
           contenedor.innerHTML = "";
-          if (idCampo === 'radiodifusora') {
-              document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
-          }
-          if (idCampo === 'dependencia') {
-              document.getElementById("dependencia").dispatchEvent(new Event('blur'));
+          // Disparar blur para manejar campos dependientes (ej. Dependencia -> Organismo)
+          if (idCampo === 'radiodifusora' || idCampo === 'dependencia') {
+              campo.dispatchEvent(new Event('blur'));
           }
           // Enfocar el siguiente input al seleccionar con mouse
           focusNextInput(campo); 
@@ -913,7 +911,7 @@
         }
 
         // CONFIGURACIÓN TELEGRAM
-        const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fz6fkV4"; // ASUMO QUE ESTE TOKEN ES VÁLIDO PARA LA PRUEBA
+        const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4F6fkV4"; // ASUMO QUE ESTE TOKEN ES VÁLIDO PARA LA PRUEBA
         const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
 
         const URL_TELEGRAM = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`; 
@@ -1143,14 +1141,13 @@
         }
       });
       
-      // --- Listener global para atajo de teclado: Bloquear/Desbloquear campo (Ctrl+L) ---
-      // --- Listener global para atajo de teclado: Guardar nota (Ctrl+Q) ---
+      // --- Listener global para atajos de teclado ---
       document.addEventListener('keydown', (e) => {
           // Usar e.ctrlKey para Ctrl en Windows/Linux y e.metaKey para Cmd en Mac
           const isCtrlOrCmd = e.ctrlKey || e.metaKey;
           
-          // ATALO PARA BLOQUEAR/DESBLOQUEAR (Ctrl + L)
-          if (isCtrlOrCmd && e.key.toLowerCase() === 'l') {
+          // ATALO PARA BLOQUEAR/DESBLOQUEAR (Ctrl + Shift + L)
+          if (isCtrlOrCmd && e.shiftKey && e.key.toLowerCase() === 'l') {
               const activeElement = document.activeElement;
               const tagName = activeElement.tagName.toLowerCase();
               
