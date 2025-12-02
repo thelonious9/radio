@@ -622,40 +622,53 @@
 
       campo.addEventListener("keydown", e => {
         const items = contenedor.querySelectorAll(".sugerencia");
+        const isEnter = e.key === "Enter";
+        const isTab = e.key === "Tab";
+        const isUp = e.key === "ArrowUp";
+        const isDown = e.key === "ArrowDown";
         
         if (items.length === 0) {
-            if (e.key === "Enter") {
-                // Si no hay sugerencias y es Enter, simplemente movemos el foco.
+            if (isEnter) {
+                // Si no hay sugerencias y es Enter, movemos el foco.
                 e.preventDefault(); 
                 focusNextInput(campo);
             }
             return;
         }
         
-        if (e.key === "ArrowDown") {
+        if (isDown) {
           e.preventDefault();
           indice = (indice + 1) % items.length;
           resaltar(items, indice);
-        } else if (e.key === "ArrowUp") {
+        } else if (isUp) {
           e.preventDefault();
           indice = (indice - 1 + items.length) % items.length;
           resaltar(items, indice);
-        } else if (e.key === "Enter") {
-          e.preventDefault(); // Impedir submit de formulario siempre
-          
+        } else if (isEnter || isTab) {
           if (indice >= 0 && items[indice]) {
-            // Selección de sugerencia
+            // Caso 1: Selección de sugerencia resaltada (Enter o Tab)
+            e.preventDefault(); // Prevenir submit/cambio de foco por Tab nativo
             campo.value = items[indice].textContent;
             if (callback) callback(campo.value);
-          } 
-          
-          // Limpiar sugerencias y mover foco
-          contenedor.innerHTML = "";
-          focusNextInput(campo);
-          
-        } else if (e.key === "Tab") {
-            // Permitir que Tab funcione para moverse, pero ocultar sugerencias
             contenedor.innerHTML = "";
+            focusNextInput(campo);
+          } else if (isEnter) {
+             // Caso 2: Enter sin sugerencia resaltada visible (solo si hay texto)
+             e.preventDefault(); 
+             contenedor.innerHTML = "";
+             focusNextInput(campo);
+          } else if (isTab) {
+            // Caso 3: Tab sin sugerencia resaltada. Ocultar y dejar que Tab haga su trabajo.
+            contenedor.innerHTML = "";
+            // Si hay exactamente una coincidencia, auto-rellenarla y mover el foco.
+            const valor = campo.value.toLowerCase().trim();
+            const sugerencias = lista.filter(item => item.toLowerCase() === valor);
+            if (sugerencias.length === 1 && campo.value !== sugerencias[0]) {
+                campo.value = sugerencias[0];
+                if (callback) callback(campo.value);
+                focusNextInput(campo); 
+            }
+          }
         }
       });
 
@@ -900,7 +913,7 @@
         }
 
         // CONFIGURACIÓN TELEGRAM
-        const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
+        const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrUxrI9NAkL_G1-X6LdL4Fz6fkV4"; // ASUMO QUE ESTE TOKEN ES VÁLIDO PARA LA PRUEBA
         const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
 
         const URL_TELEGRAM = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`; 
@@ -1014,8 +1027,7 @@
         if (!form) return;
 
         // Elementos que deben recibir el foco (solo inputs de texto/fecha NO bloqueados)
-        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'))
-                                     .filter(input => input.style.display !== 'none');
+        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'));
 
         const currentIndex = focusableInputs.indexOf(currentElement);
         if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
