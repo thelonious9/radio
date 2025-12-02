@@ -11,6 +11,7 @@
         /* Importación de Google Fonts para Roboto */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
+<<<<<<< HEAD
         /* --- PALETA DE COLORES FINAL --- */
         :root {
             --color-fondo-pagina: #31302F;       /* Oscuro Suave */
@@ -67,6 +68,364 @@
 
         .acciones-globales button {
             padding: 10px 15px;
+=======
+    /* --- PALETA DE COLORES ACTUALIZADA (Rojo, Blanco, Negro) --- */
+    :root {
+      --color-fondo-pagina: #1E1E1E;       /* Negro Oscuro (Fondo Principal) */
+      --color-fondo-form: #2C2C2C;         /* Gris Oscuro (Fondo del Formulario/Tabla) */
+      --color-primary: #D20A11;            /* Rojo Vivo (Botón Guardar/Encabezado Tabla) */
+      --color-primary-hover: #AA080C;      /* Rojo Oscuro (Hover) */
+      --color-secondary: #D20A11;          /* Rojo Vivo (Botón Limpiar/Iconos) */
+      --color-secondary-hover: #AA080C;    /* Rojo Oscuro (Hover) */
+      --color-danger: #AA080C;             /* Rojo para advertencias/eliminar */
+      --color-danger-hover: #D20A11;       /* Rojo Vivo */
+      --color-telegram: #0088cc;           
+      --color-telegram-hover: #0077b3;     
+      --color-dark-text: #1E1E1E;          /* Texto para inputs (fondo claro) */
+      --color-light-text: #FFFFFF;         /* Texto principal (fondo oscuro) */
+      --color-input-bg: #FFFFFF;           /* Fondo de los campos de texto: Blanco */
+      --color-alerta-vacio: #FFD700;       
+      --radius: 0.25rem;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--color-fondo-pagina);
+      color: var(--color-light-text);
+    }
+    h1 {
+      font-size: 1.8rem;
+      color: var(--color-light-text);
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      background-color: var(--color-fondo-form);
+      padding: 10px 20px 15px 20px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    header img {
+      height: 50px;
+      width: auto;
+    }
+    
+    /* --- FORMULARIO --- */
+    form {
+      display: grid;
+      grid-template-columns: auto 1fr auto 1fr;
+      gap: 15px 30px;
+      max-width: 900px;
+      margin: 0 auto 30px auto;
+      padding: 25px;
+      background-color: var(--color-fondo-form);
+      border-radius: var(--radius);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .form-logo-container {
+        grid-column: span 4; 
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--color-secondary);
+    }
+    .form-logo-container img {
+        height: 80px; 
+        width: auto; 
+        opacity: 0.9;
+    }
+    label {
+        font-weight: 700;
+        align-self: center;
+        color: var(--color-light-text);
+    }
+    .campo {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .campo > input[type="text"], 
+    .campo > input[type="date"] {
+      flex-grow: 1;
+      padding: 8px 10px;
+      border: 1px solid var(--color-primary-hover);
+      border-radius: var(--radius);
+      margin-right: 10px;
+      background-color: var(--color-input-bg);
+      color: var(--color-dark-text);
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    .campo > input[type="text"]:focus,
+    .campo > input[type="date"]:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 0.2rem rgba(210, 10, 17, 0.25);
+        outline: none;
+    }
+    /* El campo Titular (tercer par) pasa a ocupar todo el ancho */
+    form > label:nth-child(8), 
+    form > div:nth-child(9) { 
+        grid-column: span 4;
+    }
+    
+    /* --- SUGERENCIAS --- */
+    .sugerencias {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      border: 1px solid var(--color-primary-hover);
+      background: var(--color-input-bg);
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 100;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      color: var(--color-dark-text);
+    }
+    .sugerencia { padding: 8px 10px; cursor: pointer; }
+    .sugerencia:hover, .sugerencia.resaltado { background-color: #f0f0f0; color: var(--color-dark-text); }
+    
+    /* --- BLOQUEO --- */
+    .bloqueado { background-color: #e9e9e9 !important; border: 1px solid var(--color-primary-hover) !important; cursor: not-allowed; }
+    input:required:invalid { border-left: 5px solid var(--color-danger); }
+    input:required:valid { border-left: 5px solid #28a745; }
+    
+    /* --- BOTONES --- */
+    .button-group-form {
+        grid-column: span 4;
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+        justify-content: flex-end;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 700;
+      transition: background-color 0.2s ease, transform 0.1s;
+      color: var(--color-light-text);
+      margin-right: 5px;
+    }
+    #btnGuardar { background-color: var(--color-primary); }
+    #btnGuardar:hover { background-color: var(--color-primary-hover); transform: translateY(-1px); }
+    #btnLimpiar { background-color: var(--color-secondary); }
+    #btnLimpiar:hover { background-color: var(--color-secondary-hover); transform: translateY(-1px); }
+    #btnEliminar { background-color: var(--color-danger); }
+    #btnEliminar:hover { background-color: var(--color-danger-hover); transform: translateY(-1px); }
+    
+    .campo button[type="button"] { background-color: var(--color-secondary); padding: 8px; margin-right: 0; }
+    .campo button[type="button"]:hover { background-color: var(--color-secondary-hover); }
+    
+    button i { margin-right: 8px; font-size: 1.1em; }
+    
+    /* Eliminar el margin del icono para los botones pequeños dentro del campo */
+    .campo button i {
+        margin-right: 0; 
+    }
+    
+    /* --- ESTILOS PARA SUGERENCIA DE TEMA y ACCIONES GLOBALES (NUEVO) --- */
+    .sugerencia-y-acciones {
+        max-width: 900px;
+        margin: 0 auto 30px auto;
+        padding: 0 25px;
+        display: flex;
+        flex-direction: column; 
+        gap: 15px;
+    }
+    .sugerencia-grupo {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 10px;
+    }
+    #inputSugerenciaTema {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid var(--color-primary-hover);
+      border-radius: var(--radius);
+      background-color: var(--color-input-bg);
+      color: var(--color-dark-text);
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    #btnSugerirTema {
+        background-color: #38C71B; /* Verde para diferenciar */
+        white-space: nowrap;
+    }
+    #btnSugerirTema:hover {
+        background-color: #2F9C16;
+        transform: translateY(-1px);
+    }
+    
+    /* GRUPO DE ACCIONES GLOBALES */
+    .actions-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 0; /* Ajustado */
+        margin-bottom: 0; /* Ajustado */
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap; /* Permitir que los botones se envuelvan */
+    }
+    #btnExportar { background-color: #4A4A4A; } 
+    #btnExportar:hover { background-color: #616161; }
+    
+    #btnTelegram { background-color: var(--color-telegram); }
+    #btnTelegram:hover { background-color: var(--color-telegram-hover); }
+
+    #btnBorrarTodo { background-color: var(--color-primary); }
+    #btnBorrarTodo:hover { background-color: var(--color-primary-hover); transform: translateY(-1px); }
+
+    /* --- TABLA --- */
+    h2 {
+        margin-top: 40px;
+        color: var(--color-light-text);
+        border-bottom: 1px solid var(--color-secondary);
+        padding-bottom: 5px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 900px;
+      margin: 20px auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      background-color: var(--color-fondo-form);
+    }
+    
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #3A3A3A;
+      text-align: left;
+      color: var(--color-light-text);
+      font-size: 0.85rem;
+      max-width: 180px; 
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis; 
+    }
+    
+    #tablaNotas th[data-col="titular"], #tablaNotas td:nth-child(5) {
+        max-width: 250px; 
+    }
+    #tablaNotas th:last-child, #tablaNotas td:last-child {
+        max-width: 100px;
+        min-width: 100px;
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: clip; 
+    }
+    
+    th {
+      background-color: var(--color-primary);
+      color: var(--color-light-text);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+    }
+    tbody tr:nth-child(even) { background-color: #353535; } 
+    .editando { background-color: var(--color-primary-hover) !important; color: var(--color-light-text); }
+    .editando td { color: var(--color-light-text); }
+    .alerta-vacio { background-color: var(--color-alerta-vacio) !important; color: var(--color-dark-text) !important; }
+    .alerta-vacio td { color: var(--color-dark-text) !important; }
+    
+    .error-carga {
+      color: var(--color-danger);
+      font-weight: bold;
+      margin-top: 15px;
+      background-color: var(--color-input-bg);
+      padding: 10px;
+      border-radius: var(--radius);
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* --- SORTING --- */
+    .sortable-header { cursor: pointer; display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .sort-icon { margin-left: 5px; font-size: 0.8em; opacity: 0.5; }
+    .sorted .sort-icon { opacity: 1; color: var(--color-light-text); }
+    .sorted.alerta-vacio .sort-icon { color: var(--color-dark-text); }
+    
+    /* Botón Editar en Tabla */
+    .btn-accion-tabla {
+        padding: 8px 12px;
+        background-color: var(--color-secondary); 
+        color: var(--color-light-text); 
+    }
+    .btn-accion-tabla:hover { background-color: var(--color-secondary-hover); }
+
+    /* --- ESTILOS DEL BUSCADOR --- */
+    .buscador-container {
+      position: relative;
+      margin-bottom: 15px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 25px;
+    }
+    
+    #buscador {
+      width: 100%;
+      padding: 10px 10px 10px 40px; 
+      border: 1px solid var(--color-primary-hover);
+      border-radius: var(--radius);
+      background-color: var(--color-input-bg);
+      color: var(--color-dark-text);
+      font-size: 1rem;
+      box-sizing: border-box; 
+      transition: all 0.2s ease;
+    }
+
+    #buscador:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 0.2rem rgba(210, 10, 17, 0.25);
+    }
+
+    .buscador-icon {
+      position: absolute;
+      left: 37px; /* Ajuste para el padding del contenedor */
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-primary);
+      font-size: 1.1rem;
+    }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 768px) {
+        body { padding: 10px; }
+        header { flex-direction: column; align-items: flex-start; padding: 10px; }
+        form { grid-template-columns: 1fr; gap: 10px; padding: 15px; }
+        form > label, form > div, .form-logo-container { grid-column: span 1 !important; }
+        .button-group-form { justify-content: space-around; }
+        .button-group-form button { width: 32%; margin-right: 0; }
+        
+        .sugerencia-y-acciones { padding: 0 10px; }
+        .sugerencia-grupo { flex-direction: column; align-items: stretch; }
+        .sugerencia-grupo button { width: 100%; }
+        
+        /* Ajuste para actions-group en responsive */
+        .actions-group { flex-direction: column; align-items: stretch; gap: 10px; }
+        .actions-group button { width: 100%; margin-bottom: 0; }
+        
+        .buscador-container { padding: 0 10px; }
+        .buscador-icon { left: 22px; }
+
+        table, thead, tbody, th, td, tr { display: block; }
+        thead tr { position: absolute; top: -9999px; left: -9999px; }
+        tr { border: 1px solid #3A3A3A; margin-bottom: 10px; }
+        td { 
+>>>>>>> d127ff9add49b5c48e8b9e667613acb7caad01b6
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -106,6 +465,17 @@
 
         .campo {
             position: relative;
+<<<<<<< HEAD
+=======
+            padding-left: 50%;
+            text-align: right;
+            font-size: 0.9em;
+            color: var(--color-light-text);
+            max-width: 100% !important; 
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: clip !important;
+>>>>>>> d127ff9add49b5c48e8b9e667613acb7caad01b6
         }
         
         .obligatorio::before {
@@ -578,16 +948,211 @@
         </section>
     </div>
 
+<<<<<<< HEAD
 <script>
     // --- VARIABLES GLOBALES ---
+=======
+    <label for="usuario">Usuario:</label>
+    <div class="campo">
+      <input type="text" id="usuario" name="usuario" required>
+      <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')">
+      <label for="checkUsuario">🔒</label>
+    </div>
+    
+    <label for="fecha">Fecha:</label>
+    <div class="campo">
+      <input type="date" id="fecha" name="fecha" required>
+      <input type="checkbox" id="checkFecha" onchange="alternarBloqueo('fecha')">
+      <label for="checkFecha">🔒</label>
+    </div>
+
+    <label for="radiodifusora">Radiodifusora:</label>
+    <div class="campo">
+      <input type="text" id="radiodifusora" name="radiodifusora" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('radiodifusora','sugRadiodifusora')">🔽</button>
+      <input type="checkbox" id="checkRadiodifusora" onchange="alternarBloqueo('radiodifusora')">
+      <label for="checkRadiodifusora">🔒</label>
+      <div id="sugRadiodifusora" class="sugerencias"></div>
+    </div>
+
+    <label for="titular">Titular:</label>
+    <div class="campo">
+      <input type="text" id="titular" name="titular" required>
+      <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')">
+      <label for="checkTitular">🔒</label>
+    </div>
+
+    <label for="autor">Autor:</label>
+    <div class="campo">
+      <input type="text" id="autor" name="autor" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button>
+      <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')">
+      <label for="checkAutor">🔒</label>
+      <div id="sugAutor" class="sugerencias"></div>
+    </div>
+
+    <label for="programa">Programa:</label>
+    <div class="campo">
+      <input type="text" id="programa" name="programa" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button>
+      <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
+      <label for="checkPrograma">🔒</label>
+      <div id="sugPrograma" class="sugerencias"></div>
+    </div>
+
+    <label for="dependencia">Dependencia:</label>
+    <div class="campo">
+      <input type="text" id="dependencia" name="dependencia" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('dependencia','sugDep')">🔽</button>
+      <input type="checkbox" id="checkDependencia" onchange="alternarBloqueo('dependencia')">
+      <label for="checkDependencia">🔒</label>
+      <div id="sugDep" class="sugerencias"></div>
+    </div>
+
+    <label for="organismo">Organismo:</label>
+    <div class="campo">
+      <input type="text" id="organismo" name="organismo" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('organismo','sugOrg')">🔽</button>
+      <input type="checkbox" id="checkOrganismo" onchange="alternarBloqueo('organismo')">
+      <label for="checkOrganismo">🔒</label>
+      <div id="sugOrg" class="sugerencias"></div>
+    </div>
+
+    <label for="genero">Género:</label>
+    <div class="campo">
+      <input type="text" id="genero" name="genero" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('genero','sugGenero')">🔽</button>
+      <input type="checkbox" id="checkGenero" onchange="alternarBloqueo('genero')">
+      <label for="checkGenero">🔒</label>
+      <div id="sugGenero" class="sugerencias"></div>
+    </div>
+
+    <label for="canal">Canal:</label>
+    <div class="campo">
+      <input type="text" id="canal" name="canal" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('canal','sugCanal')">🔽</button>
+      <input type="checkbox" id="checkCanal" onchange="alternarBloqueo('canal')">
+      <label for="checkCanal">🔒</label>
+      <div id="sugCanal" class="sugerencias"></div>
+    </div>
+
+    <label for="tema">Tema:</label>
+    <div class="campo">
+      <input type="text" id="tema" name="tema" autocomplete="off">
+      
+      
+      <button type="button" onclick="mostrarSugerencias('tema','sugTema')">🔽</button>
+      <input type="checkbox" id="checkTema" onchange="alternarBloqueo('tema')">
+      <label for="checkTema">🔒</label>
+      <div id="sugTema" class="sugerencias"></div>
+    </div>
+
+    <label for="estatus">Estatus:</label>
+    <div class="campo">
+      <input type="text" id="estatus" name="estatus" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('estatus','sugEstatus')">🔽</button>
+      <input type="checkbox" id="checkEstatus" onchange="alternarBloqueo('estatus')">
+      <label for="checkEstatus">🔒</label>
+      <div id="sugEstatus" class="sugerencias"></div>
+    </div>
+
+    <label for="municipio">Municipio:</label>
+    <div class="campo">
+      <input type="text" id="municipio" name="municipio" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('municipio','sugMunicipio')">🔽</button>
+      <input type="checkbox" id="checkMunicipio" onchange="alternarBloqueo('municipio')">
+      <label for="checkMunicipio">🔒</label>
+      <div id="sugMunicipio" class="sugerencias"></div>
+    </div>
+
+    <div class="button-group-form">
+      <button type="submit" id="btnGuardar">
+        <i class="fa-solid fa-floppy-disk"></i> Guardar
+      </button>
+
+      <button type="button" id="btnEliminar" style="display: none;" onclick="borrarNota()">
+        <i class="fa-solid fa-trash-can"></i> Borrar Nota
+      </button>
+
+      <button type="reset" id="btnLimpiar">
+        <i class="fa-solid fa-broom"></i> Limpiar
+      </button>
+    </div>
+  </form>
+
+  <div class="sugerencia-y-acciones">
+    <div class="sugerencia-grupo">
+        <input type="text" id="inputSugerenciaTema" placeholder="Escribe aquí tu sugerencia de tema">
+        <button id="btnSugerirTema" onclick="enviarSugerenciaTema()">
+          <i class="fa-solid fa-lightbulb"></i> Sugerir Tema
+        </button>
+    </div>
+    <div id="mensajeSugerencia" style="color: yellow; font-weight: bold; font-size: 0.9em; margin-top: -10px;"></div>
+    
+    <div class="actions-group">
+      <button id="btnExportar" onclick="exportarCSV()">
+        <i class="fa-solid fa-file-csv"></i> Exportar a hoja de cálculo
+      </button>
+      
+      <button id="btnTelegram" onclick="enviarTelegram()">
+        <i class="fa-brands fa-telegram"></i> Enviar por Telegram
+      </button> 
+      
+      <button id="btnBorrarTodo" onclick="borrarTodo()">
+        <i class="fa-solid fa-trash-can"></i> Borrar Todas
+      </button>
+    </div>
+  </div>
+  <div id="erroresCarga" class="error-carga"></div>
+  
+  <div class="buscador-container">
+      <i class="fas fa-search buscador-icon"></i>
+      <input type="text" id="buscador" placeholder="Buscar en la tabla (Titular, Autor, etc.)">
+  </div>
+  
+  <h2>Notas capturadas</h2>
+  <table id="tablaNotas">
+    <thead>
+      <tr>
+        <th data-col="ordenCaptura"><div class="sortable-header"># <span class="sort-icon"></span></div></th>
+        <th data-col="usuario"><div class="sortable-header">Usuario <span class="sort-icon"></span></div></th>
+        <th data-col="fecha"><div class="sortable-header">Fecha <span class="sort-icon"></span></div></th>
+        <th data-col="radiodifusora"><div class="sortable-header">Radiodifusora <span class="sort-icon"></span></div></th>
+        <th data-col="titular"><div class="sortable-header">Titular <span class="sort-icon"></span></div></th>
+        <th data-col="autor"><div class="sortable-header">Autor <span class="sort-icon"></span></div></th>
+        <th data-col="programa"><div class="sortable-header">Programa <span class="sort-icon"></span></div></th>
+        <th data-col="dependencia"><div class="sortable-header">Dependencia <span class="sort-icon"></span></div></th>
+        <th data-col="organismo"><div class="sortable-header">Organismo <span class="sort-icon"></span></div></th>
+        <th data-col="genero"><div class="sortable-header">Género <span class="sort-icon"></span></div></th>
+        <th data-col="canal"><div class="sortable-header">Canal <span class="sort-icon"></span></div></th>
+        <th data-col="tema"><div class="sortable-header">Tema <span class="sort-icon"></span></div></th>
+        <th data-col="estatus"><div class="sortable-header">Estatus <span class="sort-icon"></span></div></th>
+        <th data-col="municipio"><div class="sortable-header">Municipio <span class="sort-icon"></span></div></th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <br>
+
+  <script>
+>>>>>>> d127ff9add49b5c48e8b9e667613acb7caad01b6
     let notas = [];
     let nextOrdenCaptura = 1;
+<<<<<<< HEAD
     let filaEnEdicion = null;
     const camposDeDatos = [
         "ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", 
         "autor", "programa", "dependencia", "organismo", "genero", 
         "canal", "tema", "estatus", "municipio"
     ];
+=======
+    
+    // CAMPOS PARA RADIO
+    const camposDeDatos = ["ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
+    
+    // ENCABEZADOS
+>>>>>>> d127ff9add49b5c48e8b9e667613acb7caad01b6
     const encabezadosTabla = {
         "ordenCaptura": "#",
         "usuario": "Usuario",
@@ -620,6 +1185,28 @@
         canales: "./Canal.csv",        
         programas: "./Programa.csv"    
     };
+<<<<<<< HEAD
+=======
+
+    // RUTA DE DESPLIEGUE DE TU GOOGLE APPS SCRIPT
+    // *** ESTA ES LA URL PROPORCIONADA POR TI PARA LA PRUEBA ***
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjR-Fs3IF_y5wGI/exec"; 
+
+    // CONFIGURACIÓN TELEGRAM
+    const TELEGRAM_BOT_TOKEN = "8428524335:AAFeKrvKrXxrI9NAkL_G1-X6LdL4Fv6fkV4"; 
+    const TELEGRAM_CHAT_ID = "@capsmonitoreo"; 
+    
+    function findKeyCaseInsensitive(map, value) {
+        if (!value) return null;
+        const lowerValue = value.toLowerCase();
+        for (const key in map) {
+            if (key.toLowerCase() === lowerValue) {
+                return key; 
+            }
+        }
+        return null;
+    }
+>>>>>>> d127ff9add49b5c48e8b9e667613acb7caad01b6
 
     // RUTA DE DESPLIEGUE DE TU GOOGLE APPS SCRIPT
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzXNixPwsyFiLoC55-u3p5Z1rT1rWX03_alTk3XwDmgjq6t3W5-fjR-Fs3IF_y5wGI/exec";
@@ -910,6 +1497,7 @@
         const checkboxId = `check${idCampo.charAt(0).toUpperCase() + idCampo.slice(1)}`;
         const checkbox = document.getElementById(checkboxId);
 
+<<<<<<< HEAD
         if (isBlocked) {
             localStorage.removeItem(`bloqueado_${idCampo}`);
             campo.classList.remove('bloqueado');
@@ -921,6 +1509,75 @@
             campo.disabled = true;
             localStorage.setItem(idCampo, campo.value); 
             if (checkbox) checkbox.checked = true; 
+=======
+    function editarNota(tr) {
+        const indice = parseInt(tr.dataset.index);
+        const nota = notas[indice];
+
+        camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+            document.getElementById(id).value = nota[id];
+        });
+
+        resetearEstadoEdicion();
+        
+        document.getElementById("dependencia").dispatchEvent(new Event('blur'));
+        document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
+        
+        filaEnEdicion = indice; 
+        document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Actualizar Nota';
+        document.getElementById('btnEliminar').style.display = 'inline-block';
+        
+        document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
+        tr.classList.add('editando');
+        window.scrollTo(0, 0);
+    }
+
+    function generarNombreArchivoCSV() {
+        const usuario = document.getElementById('usuario').value.trim() || 'Desconocido';
+        const usuarioLimpio = usuario.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, ''); 
+        const fechaHoy = new Date().toISOString().slice(0, 10); 
+        return `${usuarioLimpio}_${fechaHoy}.csv`;
+    }
+
+    function generarCSVContenido() {
+      const cabeceras = ["#", "Usuario", "Fecha", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
+      const filas = [cabeceras];
+      
+      notas.forEach(nota => {
+        const fila = camposDeDatos.map(key => {
+            let valor = nota[key] || '';
+            // CSV: Envuelve en comillas y escapa las comillas dobles
+            return `"${valor.toString().replace(/"/g, '""')}"`; 
+        });
+        filas.push(fila);
+      });
+      
+      // Añade el BOM (\uFEFF) para compatibilidad con acentos en Excel
+      return "\uFEFF" + filas.map(f => f.join(",")).join("\n");
+    }
+
+    function exportarCSV() {
+        if (notas.length === 0) { alert("No hay notas para exportar."); return; }
+        
+        const csvContenido = generarCSVContenido();
+        const nombreArchivo = generarNombreArchivoCSV();
+        
+        const blob = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = nombreArchivo;
+        document.body.appendChild(a); 
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    async function enviarTelegram() {
+        if (notas.length === 0) {
+             alert("No hay notas para enviar por Telegram.");
+             return;
+>>>>>>> d127ff9add49b5c48e8b9e667613acb7caad01b6
         }
     }
     
@@ -933,10 +1590,40 @@
             const checkboxId = `check${id.charAt(0).toUpperCase() + id.slice(1)}`;
             const checkbox = document.getElementById(checkboxId);
 
+<<<<<<< HEAD
             if (campo) {
                 // 1. Quitar bloqueo (visual y funcional)
                 campo.classList.remove('bloqueado');
                 campo.disabled = false;
+=======
+        const URL_TELEGRAM = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`; 
+        
+        try {
+            document.getElementById('btnTelegram').disabled = true;
+            document.getElementById('btnTelegram').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+            const csvContenido = generarCSVContenido();
+            const blobCSV = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
+            const nombreArchivoTelegram = generarNombreArchivoCSV();
+
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT_ID);
+            formData.append('document', blobCSV, nombreArchivoTelegram); 
+            formData.append('caption', `📋 Reporte de notas de Radio (${nombreArchivoTelegram}) enviado automáticamente.`);
+
+            const response = await fetch(URL_TELEGRAM, {
+                method: 'POST',
+                body: formData 
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.ok) {
+                alert(`¡CSV '${nombreArchivoTelegram}' enviado con éxito al canal ${TELEGRAM_CHAT_ID}!`);
+            } else {
+                console.error("Error Telegram:", result);
+                alert(`Error Telegram: ${result.description}`);
+>>>>>>> d127ff9add49b5c48e8b9e667613acb7caad01b6
             }
 
             // 2. Desmarcar el checkbox
@@ -953,6 +1640,113 @@
         const focusTarget = document.getElementById('titular');
         if (focusTarget) {
             setTimeout(() => focusTarget.focus(), 10);
+        }
+    }
+    
+    /**
+     * Función para enviar la sugerencia de tema a Google App Script
+     */
+    async function enviarSugerenciaTema() {
+        const input = document.getElementById('inputSugerenciaTema');
+        const tema = input.value.trim();
+        const btn = document.getElementById('btnSugerirTema');
+        const mensajeDiv = document.getElementById('mensajeSugerencia');
+        mensajeDiv.textContent = '';
+        
+        if (tema === "") {
+            mensajeDiv.style.color = 'yellow';
+            mensajeDiv.textContent = "Por favor, escribe una sugerencia de tema.";
+            input.focus();
+            return;
+        }
+
+        try {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+            const payload = { tema: tema };
+
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                // Modo CORS para solicitudes a App Script
+                mode: 'cors', 
+                cache: 'no-cache',
+                headers: {
+                    // Importante: App Script funciona mejor con 'text/plain' cuando el cuerpo es JSON
+                    'Content-Type': 'text/plain;charset=utf-8' 
+                },
+                // El cuerpo debe ser una cadena JSON
+                body: JSON.stringify(payload) 
+            });
+
+            // App Script devuelve un JSON de texto. Lo leemos y parseamos
+            const textResponse = await response.text();
+            
+            // Intenta parsear la respuesta
+            let result;
+            try {
+                result = JSON.parse(textResponse);
+            } catch (e) {
+                 // Si falla el parseo, el App Script puede haber devuelto un texto simple o un error HTML
+                mensajeDiv.style.color = 'red';
+                mensajeDiv.textContent = `❌ Error: Respuesta inesperada del script. Revisa el código de tu App Script.`;
+                console.error("Error al parsear la respuesta JSON:", e, "Respuesta recibida:", textResponse);
+                return;
+            }
+            
+            if (result && result.estado === "ok") {
+                mensajeDiv.style.color = 'lightgreen';
+                mensajeDiv.textContent = `✅ Sugerencia enviada: "${tema}"`;
+                input.value = ''; // Limpiar campo
+            } else {
+                mensajeDiv.style.color = 'red';
+                mensajeDiv.textContent = `❌ Error al guardar en Hoja de Cálculo: ${result.error || "Error desconocido"}`;
+                console.error("Error App Script:", result);
+            }
+            
+        } catch (error) {
+            mensajeDiv.style.color = 'red';
+            mensajeDiv.textContent = `❌ Error de conexión. Revisa la consola (F12) para detalles de red y verifica que tu App Script esté desplegado correctamente.`;
+            console.error("Error de red/conexión:", error);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-lightbulb"></i> Sugerir Tema';
+        }
+    }
+    
+    /**
+     * Función Sugerir Tema (Simple, basada en lógica JS)
+     * Se mantiene en el código por si se requiere, aunque se eliminó el botón de la UI.
+     */
+    function sugerirTemaSimple() {
+        const titular = document.getElementById('titular').value.trim();
+        const temaField = document.getElementById('tema');
+        
+        if (!titular) {
+            alert("Por favor, escriba primero un Titular para generar la sugerencia de Tema.");
+            temaField.focus();
+            return;
+        }
+
+        let temaSugerido = '';
+        const titularLower = titular.toLowerCase();
+
+        if (titularLower.includes('salud') || titularLower.includes('vacuna') || titularLower.includes('covid')) {
+            temaSugerido = "Salud y Bienestar";
+        } else if (titularLower.includes('seguridad') || titularLower.includes('policía') || titularLower.includes('cárcel')) {
+            temaSugerido = "Seguridad Pública";
+        } else if (titularLower.includes('escuela') || titularLower.includes('educación') || titularLower.includes('universidad')) {
+            temaSugerido = "Educación";
+        } else if (titularLower.includes('infraestructura') || titularLower.includes('carretera') || titularLower.includes('puente')) {
+            temaSugerido = "Infraestructura";
+        } else {
+             alert(`Función Sugerir Tema: No se pudo generar una sugerencia automática para el Titular: "${titular}".`);
+             return;
+        }
+        
+        if (confirm(`Titular: "${titular}"\n\nSugerencia de Tema: "${temaSugerido}"\n\n¿Desea usar este tema? (El tema actual será reemplazado).`)) {
+            temaField.value = temaSugerido;
+            localStorage.setItem('tema', temaSugerido); 
         }
     }
 
@@ -1001,6 +1795,7 @@
         });
     }
 
+<<<<<<< HEAD
     function filtrarTabla() {
         renderizarTabla();
     }
@@ -1018,6 +1813,21 @@
                 val = val.toString().replace(/"/g, '""'); 
                 if (val.includes(',') || val.includes('\n')) {
                     val = `"${val}"`;
+=======
+    // --- FUNCIÓN: BÚSQUEDA EN TIEMPO REAL ---
+    function filtrarTabla() {
+        const input = document.getElementById('buscador');
+        const filtro = input.value.toLowerCase();
+        const filas = document.getElementById('tablaNotas').querySelectorAll('tbody tr');
+        
+        filas.forEach(tr => {
+            let encontrado = false;
+            for (let i = 0; i < tr.cells.length - 1; i++) {
+                const textoCelda = tr.cells[i].textContent || tr.cells[i].innerText;
+                if (textoCelda.toLowerCase().includes(filtro)) {
+                    encontrado = true;
+                    break;
+>>>>>>> d127ff9add49b5c48e8b9e667613acb7caad01b6
                 }
                 return val;
             });
