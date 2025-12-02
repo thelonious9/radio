@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-  <title>Sistema de Captura de Notas de Radio</title>
+  <title>Sistema de Captura de Radio</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   
@@ -592,7 +592,7 @@
       return Array.from(new Set(filas.map(r => r[0]))).sort((a, b) => a.localeCompare(b, 'es'));
     }
 
-    // --- NUEVA FUNCIÓN: MOVER EL FOCO AL SIGUIENTE INPUT (Skipping locked fields) ---
+    // --- FUNCIÓN: MOVER EL FOCO AL SIGUIENTE INPUT (Skipping locked fields) ---
     function focusNextInput(currentElement) {
         const form = currentElement.form;
         if (!form) return;
@@ -610,6 +610,26 @@
         // Si es el último, intenta enfocar el botón de guardar
         if (currentIndex === focusableInputs.length - 1) {
             document.getElementById('btnGuardar').focus();
+            return true;
+        }
+        
+        return false;
+    }
+
+    // --- NUEVA FUNCIÓN: MOVER EL FOCO AL CAMPO ANTERIOR (Skipping locked fields) ---
+    function focusPreviousInput(currentElement) {
+        const form = currentElement.form;
+        if (!form) return;
+
+        // Elementos que deben recibir el foco (solo inputs de texto/fecha NO bloqueados)
+        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'))
+                                     .filter(input => input.style.display !== 'none');
+
+        const currentIndex = focusableInputs.indexOf(currentElement);
+        
+        // Si el índice es mayor que 0, mueve el foco al elemento anterior
+        if (currentIndex > 0) {
+            focusableInputs[currentIndex - 1].focus();
             return true;
         }
         
@@ -752,7 +772,7 @@
         document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
     }
 
-    // --- NUEVA FUNCIÓN: DESBLOQUEAR TODOS LOS CAMPOS ---
+    // --- FUNCIÓN: DESBLOQUEAR TODOS LOS CAMPOS ---
     function desbloquearTodos() {
         camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
             const chk = document.getElementById(`check${id.charAt(0).toUpperCase() + id.slice(1)}`);
@@ -1137,12 +1157,33 @@
       });
 
       document.querySelector("form").addEventListener('reset', (e) => {
-          desbloquearTodos(); // <--- LLAMADA A LA NUEVA FUNCIÓN: Desbloquea campos
+          desbloquearTodos(); // <--- LLAMADA A LA FUNCIÓN: Desbloquea campos
           setTimeout(() => {
               document.getElementById('titular').focus();
               resetearEstadoEdicion(); 
           }, 10);
       });
+
+      // --- BLOQUEO: Evita que Enter envíe el formulario globalmente y maneja Shift+Tab ---
+      document.querySelector("form").addEventListener('keydown', (e) => {
+          // 1. Manejo de Enter (Navegación, No Guardar)
+          if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) { 
+              if (e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'date')) {
+                  e.preventDefault();
+                  focusNextInput(e.target);
+              }
+          }
+          
+          // 2. Manejo de Shift + Tab (Navegación hacia atrás)
+          if (e.key === 'Tab' && e.shiftKey) { 
+              // Solo actuamos si el foco está en un input de texto o fecha
+              if (e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'date')) {
+                  e.preventDefault();
+                  focusPreviousInput(e.target);
+              }
+          }
+      });
+      // ---------------------------------------------------------------------
 
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.campo')) {
@@ -1150,7 +1191,7 @@
         }
       });
       
-      // --- NUEVO LISTENER GLOBAL PARA CTRL+Q ---
+      // --- LISTENER GLOBAL PARA CTRL+Q (Guardar) ---
       document.addEventListener('keydown', (e) => {
           // Verifica Ctrl+Q (o Cmd+Q en Mac)
           if ((e.ctrlKey || e.metaKey) && (e.key === 'q' || e.key === 'Q')) {
@@ -1158,7 +1199,7 @@
               document.getElementById('btnGuardar').click();
           }
       });
-      // --- FIN NUEVO LISTENER GLOBAL ---
+      // --- FIN LISTENER GLOBAL ---
     });
 
     document.querySelector("form").addEventListener("submit", e => {
@@ -1197,7 +1238,7 @@
   </script>
 
   <footer>
-    © 2025 Institución Pública. Todos los derechos reservados.
+    © 2025 Francisco Villeda (El Bizcocho de Montecristo). Todos los derechos reservados.
   </footer>
 </body>
 </html>
