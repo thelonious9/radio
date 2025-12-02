@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-  <title>Sistema de Captura de Radio</title>
+  <title>Sistema de Captura de Notas de Radio</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   
@@ -334,22 +334,22 @@
     <label for="usuario">Usuario:</label>
     <div class="campo">
       <input type="text" id="usuario" name="usuario" required>
-      <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')">
+      <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')" tabindex="-1">
       <label for="checkUsuario">🔒</label>
     </div>
     
     <label for="fecha">Fecha:</label>
     <div class="campo">
       <input type="date" id="fecha" name="fecha" required>
-      <input type="checkbox" id="checkFecha" onchange="alternarBloqueo('fecha')">
+      <input type="checkbox" id="checkFecha" onchange="alternarBloqueo('fecha')" tabindex="-1">
       <label for="checkFecha">🔒</label>
     </div>
 
     <label for="radiodifusora">Radiodifusora:</label>
     <div class="campo">
       <input type="text" id="radiodifusora" name="radiodifusora" autocomplete="off" required>
-      <button type="button" onclick="mostrarSugerencias('radiodifusora','sugRadiodifusora')">🔽</button>
-      <input type="checkbox" id="checkRadiodifusora" onchange="alternarBloqueo('radiodifusora')">
+      <button type="button" onclick="mostrarSugerencias('radiodifusora','sugRadiodifusora')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkRadiodifusora" onchange="alternarBloqueo('radiodifusora')" tabindex="-1">
       <label for="checkRadiodifusora">🔒</label>
       <div id="sugRadiodifusora" class="sugerencias"></div>
     </div>
@@ -357,87 +357,87 @@
     <label for="titular">Titular:</label>
     <div class="campo">
       <input type="text" id="titular" name="titular" required>
-      <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')">
+      <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')" tabindex="-1">
       <label for="checkTitular">🔒</label>
     </div>
 
     <label for="autor">Autor:</label>
     <div class="campo">
-      <input type="text" id="autor" name="autor" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')">🔽</button>
-      <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')">
+      <input type="text" id="autor" name="autor" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('autor','sugAutor')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkAutor" onchange="alternarBloqueo('autor')" tabindex="-1">
       <label for="checkAutor">🔒</label>
       <div id="sugAutor" class="sugerencias"></div>
     </div>
 
     <label for="programa">Programa:</label>
     <div class="campo">
-      <input type="text" id="programa" name="programa" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')">🔽</button>
-      <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')">
+      <input type="text" id="programa" name="programa" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('programa','sugPrograma')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkPrograma" onchange="alternarBloqueo('programa')" tabindex="-1">
       <label for="checkPrograma">🔒</label>
       <div id="sugPrograma" class="sugerencias"></div>
     </div>
 
     <label for="dependencia">Dependencia:</label>
     <div class="campo">
-      <input type="text" id="dependencia" name="dependencia" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('dependencia','sugDep')">🔽</button>
-      <input type="checkbox" id="checkDependencia" onchange="alternarBloqueo('dependencia')">
+      <input type="text" id="dependencia" name="dependencia" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('dependencia','sugDep')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkDependencia" onchange="alternarBloqueo('dependencia')" tabindex="-1">
       <label for="checkDependencia">🔒</label>
       <div id="sugDep" class="sugerencias"></div>
     </div>
 
     <label for="organismo">Organismo:</label>
     <div class="campo">
-      <input type="text" id="organismo" name="organismo" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('organismo','sugOrg')">🔽</button>
-      <input type="checkbox" id="checkOrganismo" onchange="alternarBloqueo('organismo')">
+      <input type="text" id="organismo" name="organismo" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('organismo','sugOrg')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkOrganismo" onchange="alternarBloqueo('organismo')" tabindex="-1">
       <label for="checkOrganismo">🔒</label>
       <div id="sugOrg" class="sugerencias"></div>
     </div>
 
     <label for="genero">Género:</label>
     <div class="campo">
-      <input type="text" id="genero" name="genero" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('genero','sugGenero')">🔽</button>
-      <input type="checkbox" id="checkGenero" onchange="alternarBloqueo('genero')">
+      <input type="text" id="genero" name="genero" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('genero','sugGenero')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkGenero" onchange="alternarBloqueo('genero')" tabindex="-1">
       <label for="checkGenero">🔒</label>
       <div id="sugGenero" class="sugerencias"></div>
     </div>
 
     <label for="canal">Canal:</label>
     <div class="campo">
-      <input type="text" id="canal" name="canal" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('canal','sugCanal')">🔽</button>
-      <input type="checkbox" id="checkCanal" onchange="alternarBloqueo('canal')">
+      <input type="text" id="canal" name="canal" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('canal','sugCanal')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkCanal" onchange="alternarBloqueo('canal')" tabindex="-1">
       <label for="checkCanal">🔒</label>
       <div id="sugCanal" class="sugerencias"></div>
     </div>
 
     <label for="tema">Tema:</label>
     <div class="campo">
-      <input type="text" id="tema" name="tema" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('tema','sugTema')">🔽</button>
-      <input type="checkbox" id="checkTema" onchange="alternarBloqueo('tema')">
+      <input type="text" id="tema" name="tema" autocomplete="off"> 
+      <button type="button" onclick="mostrarSugerencias('tema','sugTema')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkTema" onchange="alternarBloqueo('tema')" tabindex="-1">
       <label for="checkTema">🔒</label>
       <div id="sugTema" class="sugerencias"></div>
     </div>
 
     <label for="estatus">Estatus:</label>
     <div class="campo">
-      <input type="text" id="estatus" name="estatus" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('estatus','sugEstatus')">🔽</button>
-      <input type="checkbox" id="checkEstatus" onchange="alternarBloqueo('estatus')">
+      <input type="text" id="estatus" name="estatus" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('estatus','sugEstatus')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkEstatus" onchange="alternarBloqueo('estatus')" tabindex="-1">
       <label for="checkEstatus">🔒</label>
       <div id="sugEstatus" class="sugerencias"></div>
     </div>
 
     <label for="municipio">Municipio:</label>
     <div class="campo">
-      <input type="text" id="municipio" name="municipio" autocomplete="off">
-      <button type="button" onclick="mostrarSugerencias('municipio','sugMunicipio')">🔽</button>
-      <input type="checkbox" id="checkMunicipio" onchange="alternarBloqueo('municipio')">
+      <input type="text" id="municipio" name="municipio" autocomplete="off" required>
+      <button type="button" onclick="mostrarSugerencias('municipio','sugMunicipio')" tabindex="-1">🔽</button>
+      <input type="checkbox" id="checkMunicipio" onchange="alternarBloqueo('municipio')" tabindex="-1">
       <label for="checkMunicipio">🔒</label>
       <div id="sugMunicipio" class="sugerencias"></div>
     </div>
@@ -492,7 +492,7 @@
         <th data-col="dependencia"><div class="sortable-header">Dependencia <span class="sort-icon"></span></div></th>
         <th data-col="organismo"><div class="sortable-header">Organismo <span class="sort-icon"></span></div></th>
         <th data-col="genero"><div class="sortable-header">Género <span class="sort-icon"></span></div></th>
-        <th data-col="canal"><div class="sortable-header">Canal <span class="sort-icon"></span></div></th>
+        <th data-col="canal"><div class="sortable-header">Canal <span class="sort-icon"></span></div></div></th>
         <th data-col="tema"><div class="sortable-header">Tema <span class="sort-icon"></span></div></th>
         <th data-col="estatus"><div class="sortable-header">Estatus <span class="sort-icon"></span></div></th>
         <th data-col="municipio"><div class="sortable-header">Municipio <span class="sort-icon"></span></div></th>
@@ -592,51 +592,6 @@
       return Array.from(new Set(filas.map(r => r[0]))).sort((a, b) => a.localeCompare(b, 'es'));
     }
 
-    // --- FUNCIÓN: MOVER EL FOCO AL SIGUIENTE INPUT (Skipping locked fields) ---
-    function focusNextInput(currentElement) {
-        const form = currentElement.form;
-        if (!form) return;
-
-        // Elementos que deben recibir el foco (solo inputs de texto/fecha NO bloqueados)
-        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'))
-                                     .filter(input => input.style.display !== 'none');
-
-        const currentIndex = focusableInputs.indexOf(currentElement);
-        if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
-            focusableInputs[currentIndex + 1].focus();
-            return true;
-        }
-        
-        // Si es el último, intenta enfocar el botón de guardar
-        if (currentIndex === focusableInputs.length - 1) {
-            document.getElementById('btnGuardar').focus();
-            return true;
-        }
-        
-        return false;
-    }
-
-    // --- NUEVA FUNCIÓN: MOVER EL FOCO AL CAMPO ANTERIOR (Skipping locked fields) ---
-    function focusPreviousInput(currentElement) {
-        const form = currentElement.form;
-        if (!form) return;
-
-        // Elementos que deben recibir el foco (solo inputs de texto/fecha NO bloqueados)
-        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'))
-                                     .filter(input => input.style.display !== 'none');
-
-        const currentIndex = focusableInputs.indexOf(currentElement);
-        
-        // Si el índice es mayor que 0, mueve el foco al elemento anterior
-        if (currentIndex > 0) {
-            focusableInputs[currentIndex - 1].focus();
-            return true;
-        }
-        
-        return false;
-    }
-
-
     function autocompletar(idCampo, idSugerencias, lista, callback) {
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
@@ -649,12 +604,6 @@
         indice = -1;
         if (!valor) return;
         const sugerencias = lista.filter(item => item.toLowerCase().includes(valor));
-        
-        // Comprobación de sugerencia única
-        if (sugerencias.length === 1 && sugerencias[0].toLowerCase() === valor) {
-             // Si el texto coincide exactamente con la única sugerencia, no hacer nada para permitir el enter/tab
-        }
-
         sugerencias.forEach((s, i) => {
           const div = document.createElement("div");
           div.textContent = s;
@@ -664,7 +613,8 @@
             campo.value = s;
             contenedor.innerHTML = "";
             if (callback) callback(s);
-            focusNextInput(campo); // Mueve el foco después de la selección con click
+            // Enfocar el siguiente input al seleccionar con mouse
+            focusNextInput(campo); 
           };
           contenedor.appendChild(div);
         });
@@ -672,38 +622,16 @@
 
       campo.addEventListener("keydown", e => {
         const items = contenedor.querySelectorAll(".sugerencia");
-        const valor = campo.value.toLowerCase().trim();
-        const sugerenciasFiltradas = lista.filter(item => item.toLowerCase().includes(valor));
-
-        // --- MODIFICACIÓN DE NAVEGACIÓN Y AUTOSELECCIÓN (Enter/Tab) ---
-        if (e.key === "Enter" || e.key === "Tab") {
-            e.preventDefault(); 
-            
-            // 1. Si hay una sugerencia resaltada (navegada con flechas), la selecciona.
-            if (indice >= 0 && items[indice]) {
-                campo.value = items[indice].textContent;
-                contenedor.innerHTML = "";
-                if (callback) callback(campo.value);
+        
+        if (items.length === 0) {
+            if (e.key === "Enter") {
+                // Si no hay sugerencias y es Enter, simplemente movemos el foco.
+                e.preventDefault(); 
                 focusNextInput(campo);
-                return;
             }
-            
-            // 2. Si solo queda una sugerencia, la selecciona.
-            if (sugerenciasFiltradas.length === 1) {
-                campo.value = sugerenciasFiltradas[0];
-                contenedor.innerHTML = "";
-                if (callback) callback(campo.value);
-                focusNextInput(campo);
-                return;
-            }
-            
-            // 3. Si no hay sugerencias o no aplica auto-selección, simplemente salta al siguiente campo.
-            focusNextInput(campo);
-            return; 
+            return;
         }
-        // --- FIN MODIFICACIÓN ---
-
-        if (items.length === 0) return;
+        
         if (e.key === "ArrowDown") {
           e.preventDefault();
           indice = (indice + 1) % items.length;
@@ -712,7 +640,23 @@
           e.preventDefault();
           indice = (indice - 1 + items.length) % items.length;
           resaltar(items, indice);
-        } 
+        } else if (e.key === "Enter") {
+          e.preventDefault(); // Impedir submit de formulario siempre
+          
+          if (indice >= 0 && items[indice]) {
+            // Selección de sugerencia
+            campo.value = items[indice].textContent;
+            if (callback) callback(campo.value);
+          } 
+          
+          // Limpiar sugerencias y mover foco
+          contenedor.innerHTML = "";
+          focusNextInput(campo);
+          
+        } else if (e.key === "Tab") {
+            // Permitir que Tab funcione para moverse, pero ocultar sugerencias
+            contenedor.innerHTML = "";
+        }
       });
 
       campo.addEventListener("focus", () => {
@@ -752,11 +696,14 @@
         div.onclick = () => {
           campo.value = s;
           contenedor.innerHTML = "";
-          // Disparar blur para actualizar campos dependientes
-          if (idCampo === 'radiodifusora' || idCampo === 'dependencia') {
-              campo.dispatchEvent(new Event('blur'));
+          if (idCampo === 'radiodifusora') {
+              document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
           }
-          focusNextInput(campo); // Mueve el foco después de la selección con click
+          if (idCampo === 'dependencia') {
+              document.getElementById("dependencia").dispatchEvent(new Event('blur'));
+          }
+          // Enfocar el siguiente input al seleccionar con mouse
+          focusNextInput(campo); 
         };
         contenedor.appendChild(div);
       });
@@ -772,20 +719,6 @@
         document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
     }
 
-    // --- FUNCIÓN: DESBLOQUEAR TODOS LOS CAMPOS ---
-    function desbloquearTodos() {
-        camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
-            const chk = document.getElementById(`check${id.charAt(0).toUpperCase() + id.slice(1)}`);
-            if (chk) {
-                if (chk.checked) {
-                    chk.checked = false; 
-                    alternarBloqueo(id);
-                }
-            }
-            localStorage.removeItem(id); // Limpiar también el valor persistente
-        });
-    }
-
     function guardarNotas() {
         localStorage.setItem('notasCapturadas', JSON.stringify(notas));
         localStorage.setItem('nextOrdenCaptura', nextOrdenCaptura);
@@ -796,8 +729,6 @@
             notas = []; 
             nextOrdenCaptura = 1;
             localStorage.removeItem('notasCapturadas'); 
-            desbloquearTodos(); // <--- LLAMADA A LA NUEVA FUNCIÓN
-            document.querySelector("form").reset(); // Limpia los inputs del formulario
             renderizarTabla(); 
             resetearEstadoEdicion();
         }
@@ -817,7 +748,8 @@
     }
 
     function contieneCamposVacios(nota) {
-        const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura'); 
+        // Tema es el único campo opcional, por eso se filtra aquí
+        const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema'); 
         for (const campo of camposARevisar) {
             if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
                 return true;
@@ -834,6 +766,7 @@
             const tr = document.createElement("tr");
             tr.dataset.index = notas.indexOf(nota);
 
+            // La alerta visual en la tabla es la misma, basada en la función contieneCamposVacios
             if (contieneCamposVacios(nota)) {
                 tr.classList.add('alerta-vacio');
             }
@@ -879,7 +812,7 @@
                 notas = [];
             }
         } else {
-            actualizarIndicadoresOrden();
+                ordenarTabla(ordenActual.columna, true); // Renderizar tabla vacía y actualizar iconos
         }
     }
 
@@ -892,12 +825,10 @@
         campo.classList.toggle("bloqueado", checkbox.checked);
         
         localStorage.setItem(`bloqueado_${idCampo}`, checkbox.checked);
-
-        // Actualizar el tabindex del campo para que no sea enfocable si está bloqueado
-        if (checkbox.checked) {
-             campo.setAttribute('tabindex', '-1');
-        } else {
-             campo.removeAttribute('tabindex');
+        
+        // Mantener el foco en el campo después de alternar el bloqueo
+        if(campo && document.activeElement !== campo) {
+            campo.focus();
         }
     }
 
@@ -1077,16 +1008,41 @@
         });
     }
 
+    // --- FUNCIÓN: MOVER EL FOCO AL SIGUIENTE INPUT (Skipping locked fields) ---
+    function focusNextInput(currentElement) {
+        const form = currentElement.form;
+        if (!form) return;
+
+        // Elementos que deben recibir el foco (solo inputs de texto/fecha NO bloqueados)
+        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"]:not([readonly]), input[type="date"]:not([readonly])'))
+                                     .filter(input => input.style.display !== 'none');
+
+        const currentIndex = focusableInputs.indexOf(currentElement);
+        if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
+            focusableInputs[currentIndex + 1].focus();
+            return true;
+        }
+        
+        // Si es el último, intenta enfocar el botón de guardar
+        if (currentIndex === focusableInputs.length - 1) {
+            document.getElementById('btnGuardar').focus();
+            return true;
+        }
+        
+        return false;
+    }
+    
+    // --- FUNCIÓN HELPER para Enter en inputs sin autocompletado ---
+    function handleEnterKey(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            focusNextInput(this);
+        }
+    }
+
     // --- Eventos ---
     document.addEventListener("DOMContentLoaded", async () => {
       let orgMap, programaMap; 
-
-      // --- CONFIGURACIÓN DE TABINDEX PARA SALTAR ELEMENTOS ---
-      // Asigna tabindex="-1" a botones de sugerencia y checkboxes para saltarlos en la navegación normal con Tab.
-      document.querySelectorAll('button[type="button"], input[type="checkbox"]').forEach(el => {
-          el.setAttribute('tabindex', '-1');
-      });
-
 
       const depData = await cargarMapa(urls.dependencias);
       orgMap = depData.map;
@@ -1136,6 +1092,12 @@
       
       // --- Listener para el buscador en tiempo real ---
       document.getElementById('buscador').addEventListener('input', filtrarTabla); 
+      
+      // --- Agregar listeners de Enter para campos sin autocompletado ---
+      document.getElementById('usuario').addEventListener('keydown', handleEnterKey);
+      document.getElementById('fecha').addEventListener('keydown', handleEnterKey);
+      document.getElementById('titular').addEventListener('keydown', handleEnterKey);
+
 
       // Persistence & Locks
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
@@ -1156,34 +1118,12 @@
           th.addEventListener('click', () => ordenarTabla(th.dataset.col));
       });
 
-      document.querySelector("form").addEventListener('reset', (e) => {
-          desbloquearTodos(); // <--- LLAMADA A LA FUNCIÓN: Desbloquea campos
+      document.querySelector("form").addEventListener('reset', () => {
           setTimeout(() => {
               document.getElementById('titular').focus();
               resetearEstadoEdicion(); 
           }, 10);
       });
-
-      // --- BLOQUEO: Evita que Enter envíe el formulario globalmente y maneja Shift+Tab ---
-      document.querySelector("form").addEventListener('keydown', (e) => {
-          // 1. Manejo de Enter (Navegación, No Guardar)
-          if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) { 
-              if (e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'date')) {
-                  e.preventDefault();
-                  focusNextInput(e.target);
-              }
-          }
-          
-          // 2. Manejo de Shift + Tab (Navegación hacia atrás)
-          if (e.key === 'Tab' && e.shiftKey) { 
-              // Solo actuamos si el foco está en un input de texto o fecha
-              if (e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'date')) {
-                  e.preventDefault();
-                  focusPreviousInput(e.target);
-              }
-          }
-      });
-      // ---------------------------------------------------------------------
 
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.campo')) {
@@ -1191,26 +1131,58 @@
         }
       });
       
-      // --- LISTENER GLOBAL PARA CTRL+Q (Guardar) ---
+      // --- Listener global para atajo de teclado: Bloquear/Desbloquear campo (Ctrl+L) ---
+      // --- Listener global para atajo de teclado: Guardar nota (Ctrl+Q) ---
       document.addEventListener('keydown', (e) => {
-          // Verifica Ctrl+Q (o Cmd+Q en Mac)
-          if ((e.ctrlKey || e.metaKey) && (e.key === 'q' || e.key === 'Q')) {
-              e.preventDefault(); 
-              document.getElementById('btnGuardar').click();
+          // Usar e.ctrlKey para Ctrl en Windows/Linux y e.metaKey para Cmd en Mac
+          const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+          
+          // ATALO PARA BLOQUEAR/DESBLOQUEAR (Ctrl + L)
+          if (isCtrlOrCmd && e.key.toLowerCase() === 'l') {
+              const activeElement = document.activeElement;
+              const tagName = activeElement.tagName.toLowerCase();
+              
+              if ((tagName === 'input' && (activeElement.type === 'text' || activeElement.type === 'date')) && activeElement.id) {
+                  e.preventDefault(); 
+                  
+                  const idCampo = activeElement.id;
+                  const checkboxId = `check${idCampo.charAt(0).toUpperCase() + idCampo.slice(1)}`;
+                  const checkbox = document.getElementById(checkboxId);
+                  
+                  if (checkbox) {
+                      // Simular el clic en el checkbox para alternar el estado
+                      checkbox.checked = !checkbox.checked;
+                      alternarBloqueo(idCampo); 
+                  }
+              }
+          } 
+          
+          // ATALHO PARA GUARDAR (Ctrl + Q)
+          else if (isCtrlOrCmd && e.key.toLowerCase() === 'q') {
+               e.preventDefault(); 
+               // Disparar el evento submit del formulario
+               const form = document.querySelector("form");
+               if (form) {
+                   form.dispatchEvent(new Event('submit', { cancelable: true }));
+               }
           }
       });
-      // --- FIN LISTENER GLOBAL ---
     });
 
     document.querySelector("form").addEventListener("submit", e => {
       e.preventDefault();
       
-      // Validación básica antes de guardar
-      if (!document.querySelector("form").checkValidity()) {
-          alert("Por favor, rellena todos los campos obligatorios.");
-          return;
+      const form = e.currentTarget;
+      
+      // 1. Verificar si el formulario cumple con todos los campos requeridos 
+      if (!form.checkValidity()) {
+          // Si la validación falla (campos required vacíos), 
+          // el navegador muestra el mensaje de error y enfoca el primer campo inválido. 
+          // Detenemos la función de guardar.
+          return; 
       }
       
+      // 2. Si es válido, procedemos a guardar la nota
       const nuevaNota = {};
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
         nuevaNota[id] = document.getElementById(id).value.trim();
@@ -1228,17 +1200,20 @@
       ordenarTabla(ordenActual.columna, true); 
       
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+          // Limpiar solo si no está bloqueado
           if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
               document.getElementById(id).value = '';
               localStorage.removeItem(id); 
           }
       });
+      
+      // Mover el foco al campo Titular después de guardar (solicitud del usuario)
       document.getElementById('titular').focus();
     });
   </script>
 
   <footer>
-    © 2025 Francisco Villeda (El Bizcocho de Montecristo). Todos los derechos reservados.
+    © 2025 Institución Pública. Todos los derechos reservados.
   </footer>
 </body>
 </html>
