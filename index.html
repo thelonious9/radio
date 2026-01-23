@@ -1,36 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Captura de Notas de Radio</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  
+
   <style>
     /* Importación de Google Fonts para Roboto */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
     /* --- PALETA DE COLORES ACTUALIZADA (Rojo, Blanco, Negro) --- */
     :root {
-      --color-fondo-pagina: #1E1E1E;       /* Negro Oscuro (Fondo Principal) */
-      --color-fondo-form: #2C2C2C;         /* Gris Oscuro (Fondo del Formulario/Tabla) */
-      --color-primary: #D20A11;            /* Rojo Vivo (Botón Guardar/Encabezado Tabla) */
-      --color-primary-hover: #AA080C;      /* Rojo Oscuro (Hover) */
-      --color-secondary: #D20A11;          /* Rojo Vivo (Botón Limpiar/Iconos) */
-      --color-secondary-hover: #AA080C;    /* Rojo Oscuro (Hover) */
-      --color-danger: #AA080C;             /* Rojo para advertencias/eliminar */
-      --color-danger-hover: #D20A11;       /* Rojo Vivo */
-      --color-telegram: #0088cc;           
-      --color-telegram-hover: #0077b3;     
-      --color-sheets: #3C7550;             /* Color Google Sheets */
-      --color-sheets-hover: #316042;       
-      --color-dark-text: #1E1E1E;          /* Texto para inputs (fondo claro) */
-      --color-light-text: #FFFFFF;         /* Texto principal (fondo oscuro) */
-      --color-input-bg: #FFFFFF;           /* Fondo de los campos de texto: Blanco */
-      --color-alerta-vacio: #FFD700;       
+      --color-fondo-pagina: #1E1E1E;
+      /* Negro Oscuro (Fondo Principal) */
+      --color-fondo-form: #2C2C2C;
+      /* Gris Oscuro (Fondo del Formulario/Tabla) */
+      --color-primary: #D20A11;
+      /* Rojo Vivo (Botón Guardar/Encabezado Tabla) */
+      --color-primary-hover: #AA080C;
+      /* Rojo Oscuro (Hover) */
+      --color-secondary: #D20A11;
+      /* Rojo Vivo (Botón Limpiar/Iconos) */
+      --color-secondary-hover: #AA080C;
+      /* Rojo Oscuro (Hover) */
+      --color-danger: #AA080C;
+      /* Rojo para advertencias/eliminar */
+      --color-danger-hover: #D20A11;
+      /* Rojo Vivo */
+      --color-telegram: #0088cc;
+      --color-telegram-hover: #0077b3;
+      --color-sheets: #3C7550;
+      /* Color Google Sheets */
+      --color-sheets-hover: #316042;
+      --color-dark-text: #1E1E1E;
+      /* Texto para inputs (fondo claro) */
+      --color-light-text: #FFFFFF;
+      /* Texto principal (fondo oscuro) */
+      --color-input-bg: #FFFFFF;
+      /* Fondo de los campos de texto: Blanco */
+      --color-alerta-vacio: #FFD700;
       --radius: 0.25rem;
     }
+
     body {
       font-family: 'Roboto', sans-serif;
       margin: 0;
@@ -38,10 +52,12 @@
       background-color: var(--color-fondo-pagina);
       color: var(--color-light-text);
     }
+
     h1 {
       font-size: 1.8rem;
       color: var(--color-light-text);
     }
+
     header {
       display: flex;
       align-items: center;
@@ -52,13 +68,14 @@
       background-color: var(--color-fondo-form);
       padding: 10px 20px 15px 20px;
       border-radius: var(--radius) var(--radius) 0 0;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+
     header img {
       height: 50px;
       width: auto;
     }
-    
+
     /* --- FORMULARIO --- */
     form {
       display: grid;
@@ -69,32 +86,38 @@
       padding: 25px;
       background-color: var(--color-fondo-form);
       border-radius: var(--radius);
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
+
     .form-logo-container {
-        grid-column: span 4; 
-        text-align: center;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid var(--color-secondary);
+      grid-column: span 4;
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--color-secondary);
     }
+
     .form-logo-container img {
-        height: 80px; 
-        width: auto; 
-        opacity: 0.9;
+      height: 80px;
+      width: auto;
+      opacity: 0.9;
     }
+
     label {
-        font-weight: 700;
-        align-self: center;
-        color: var(--color-light-text);
+      font-weight: 700;
+      align-self: center;
+      color: var(--color-light-text);
     }
+
     .campo {
       position: relative;
       display: flex;
       align-items: center;
     }
-    .campo > input[type="text"], 
-    .campo > input[type="date"] {
+
+    .campo>input[type="text"],
+    .campo>input[type="date"],
+    .campo>textarea {
       flex-grow: 1;
       padding: 8px 10px;
       border: 1px solid var(--color-primary-hover);
@@ -103,18 +126,30 @@
       background-color: var(--color-input-bg);
       color: var(--color-dark-text);
       transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      font-family: inherit;
+      /* Asegurar que use Roboto */
     }
-    .campo > input[type="text"]:focus,
-    .campo > input[type="date"]:focus {
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 0.2rem rgba(210, 10, 17, 0.25);
-        outline: none;
+
+    .campo>input[type="text"]:focus,
+    .campo>input[type="date"]:focus,
+    .campo>textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 0.2rem rgba(210, 10, 17, 0.25);
+      outline: none;
     }
-    form > label:nth-child(8), 
-    form > div:nth-child(9) { 
-        grid-column: span 4;
+
+    .campo>textarea {
+      resize: none;
+      overflow-y: hidden;
+      min-height: 40px;
+      line-height: 1.4;
     }
-    
+
+    form>label:nth-child(8),
+    form>div:nth-child(9) {
+      grid-column: span 4;
+    }
+
     /* --- SUGERENCIAS --- */
     .sugerencias {
       position: absolute;
@@ -127,28 +162,44 @@
       overflow-y: auto;
       z-index: 100;
       border-radius: var(--radius);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       color: var(--color-dark-text);
     }
-    .sugerencia { padding: 8px 10px; cursor: pointer; }
-    .sugerencia:hover, .sugerencia.resaltado { background-color: #f0f0f0; color: var(--color-dark-text); }
-    
-    /* --- BLOQUEO --- */
-    .bloqueado { 
-        background-color: #e9e9e9 !important; 
-        border: 1px solid var(--color-primary-hover) !important; 
+
+    .sugerencia {
+      padding: 8px 10px;
+      cursor: pointer;
     }
-    input:required:invalid { border-left: 5px solid var(--color-danger); }
-    input:required:valid { border-left: 5px solid #28a745; }
-    
+
+    .sugerencia:hover,
+    .sugerencia.resaltado {
+      background-color: #f0f0f0;
+      color: var(--color-dark-text);
+    }
+
+    /* --- BLOQUEO --- */
+    .bloqueado {
+      background-color: #e9e9e9 !important;
+      border: 1px solid var(--color-primary-hover) !important;
+    }
+
+    input:required:invalid {
+      border-left: 5px solid var(--color-danger);
+    }
+
+    input:required:valid {
+      border-left: 5px solid #28a745;
+    }
+
     /* --- BOTONES --- */
     .button-group-form {
-        grid-column: span 4;
-        display: flex;
-        gap: 15px;
-        margin-top: 10px;
-        justify-content: flex-end;
+      grid-column: span 4;
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+      justify-content: flex-end;
     }
+
     button {
       padding: 10px 15px;
       border: none;
@@ -159,38 +210,74 @@
       color: var(--color-light-text);
       margin-right: 5px;
     }
-    #btnGuardar { background-color: var(--color-primary); }
-    #btnGuardar:hover { background-color: var(--color-primary-hover); transform: translateY(-1px); }
-    #btnLimpiar { background-color: var(--color-secondary); }
-    #btnLimpiar:hover { background-color: var(--color-secondary-hover); transform: translateY(-1px); }
-    #btnEliminar { background-color: var(--color-danger); }
-    #btnEliminar:hover { background-color: var(--color-danger-hover); transform: translateY(-1px); }
-    
-    .campo button[type="button"] { background-color: var(--color-secondary); padding: 8px; margin-right: 0; }
-    .campo button[type="button"]:hover { background-color: var(--color-secondary-hover); }
-    button i { margin-right: 8px; font-size: 1.1em; }
-    
+
+    #btnGuardar {
+      background-color: var(--color-primary);
+    }
+
+    #btnGuardar:hover {
+      background-color: var(--color-primary-hover);
+      transform: translateY(-1px);
+    }
+
+    #btnLimpiar {
+      background-color: var(--color-secondary);
+    }
+
+    #btnLimpiar:hover {
+      background-color: var(--color-secondary-hover);
+      transform: translateY(-1px);
+    }
+
+    #btnEliminar {
+      background-color: var(--color-danger);
+    }
+
+    #btnEliminar:hover {
+      background-color: var(--color-danger-hover);
+      transform: translateY(-1px);
+    }
+
+    .campo button[type="button"] {
+      background-color: var(--color-secondary);
+      padding: 8px;
+      margin-right: 0;
+    }
+
+    .campo button[type="button"]:hover {
+      background-color: var(--color-secondary-hover);
+    }
+
+    button i {
+      margin-right: 8px;
+      font-size: 1.1em;
+    }
+
     /* --- TABLA --- */
     h2 {
-        margin-top: 40px;
-        color: var(--color-light-text);
-        border-bottom: 1px solid var(--color-secondary);
-        padding-bottom: 5px;
+      margin-top: 40px;
+      color: var(--color-light-text);
+      border-bottom: 1px solid var(--color-secondary);
+      padding-bottom: 5px;
     }
+
     table {
       border-collapse: collapse;
       width: 100%;
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
       margin-top: 20px;
       background-color: var(--color-fondo-form);
     }
-    th, td {
+
+    th,
+    td {
       padding: 12px 15px;
       border: 1px solid #3A3A3A;
       text-align: left;
       color: var(--color-light-text);
       font-size: 0.85rem;
     }
+
     th {
       background-color: var(--color-primary);
       color: var(--color-light-text);
@@ -198,12 +285,29 @@
       position: sticky;
       top: 0;
     }
-    tbody tr:nth-child(even) { background-color: #353535; } 
-    .editando { background-color: var(--color-primary-hover) !important; color: var(--color-light-text); }
-    .editando td { color: var(--color-light-text); }
-    .alerta-vacio { background-color: var(--color-alerta-vacio) !important; color: var(--color-dark-text) !important; }
-    .alerta-vacio td { color: var(--color-dark-text) !important; }
-    
+
+    tbody tr:nth-child(even) {
+      background-color: #353535;
+    }
+
+    .editando {
+      background-color: var(--color-primary-hover) !important;
+      color: var(--color-light-text);
+    }
+
+    .editando td {
+      color: var(--color-light-text);
+    }
+
+    .alerta-vacio {
+      background-color: var(--color-alerta-vacio) !important;
+      color: var(--color-dark-text) !important;
+    }
+
+    .alerta-vacio td {
+      color: var(--color-dark-text) !important;
+    }
+
     .error-carga {
       color: var(--color-danger);
       font-weight: bold;
@@ -212,6 +316,7 @@
       padding: 10px;
       border-radius: var(--radius);
     }
+
     footer {
       margin-top: 40px;
       border-top: 1px solid var(--color-secondary);
@@ -222,47 +327,87 @@
     }
 
     /* --- SORTING --- */
-    .sortable-header { cursor: pointer; display: flex; align-items: center; justify-content: space-between; width: 100%; }
-    .sort-icon { margin-left: 5px; font-size: 0.8em; opacity: 0.5; }
-    .sorted .sort-icon { opacity: 1; color: var(--color-light-text); }
-    .sorted.alerta-vacio .sort-icon { color: var(--color-dark-text); }
-    
+    .sortable-header {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .sort-icon {
+      margin-left: 5px;
+      font-size: 0.8em;
+      opacity: 0.5;
+    }
+
+    .sorted .sort-icon {
+      opacity: 1;
+      color: var(--color-light-text);
+    }
+
+    .sorted.alerta-vacio .sort-icon {
+      color: var(--color-dark-text);
+    }
+
     /* --- GRUPO DE ACCIONES (Globales) --- */
     .actions-group {
-        display: flex;
-        gap: 15px;
-        margin-top: 15px;
-        margin-bottom: 25px; 
-        justify-content: flex-start;
-        align-items: center;
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+      margin-bottom: 25px;
+      justify-content: flex-start;
+      align-items: center;
     }
-    
-    /* Estilo del nuevo botón de Google Sheets */
-    #btnSheets { 
-        background-color: var(--color-sheets); /* Verde oscuro similar a Google Sheets */
-    } 
-    #btnSheets:hover { 
-        background-color: var(--color-sheets-hover); 
-        transform: translateY(-1px);
-    }
-    
-    /* Estilos existentes */
-    #btnExportar { background-color: #4A4A4A; } /* Descargar CSV */
-    #btnExportar:hover { background-color: #616161; }
-    
-    #btnTelegram { background-color: var(--color-telegram); }
-    #btnTelegram:hover { background-color: var(--color-telegram-hover); }
 
-    #btnBorrarTodo { background-color: var(--color-danger); }
-    #btnBorrarTodo:hover { background-color: var(--color-danger-hover); transform: translateY(-1px); }
+    /* Estilo del nuevo botón de Google Sheets */
+    #btnSheets {
+      background-color: var(--color-sheets);
+      /* Verde oscuro similar a Google Sheets */
+    }
+
+    #btnSheets:hover {
+      background-color: var(--color-sheets-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Estilos existentes */
+    #btnExportar {
+      background-color: #4A4A4A;
+    }
+
+    /* Descargar CSV */
+    #btnExportar:hover {
+      background-color: #616161;
+    }
+
+    #btnTelegram {
+      background-color: var(--color-telegram);
+    }
+
+    #btnTelegram:hover {
+      background-color: var(--color-telegram-hover);
+    }
+
+    #btnBorrarTodo {
+      background-color: var(--color-danger);
+    }
+
+    #btnBorrarTodo:hover {
+      background-color: var(--color-danger-hover);
+      transform: translateY(-1px);
+    }
 
     /* Botón Editar en Tabla */
     .btn-accion-tabla {
-        padding: 8px 12px;
-        background-color: var(--color-secondary); 
-        color: var(--color-light-text); 
+      padding: 8px 12px;
+      background-color: var(--color-secondary);
+      color: var(--color-light-text);
     }
-    .btn-accion-tabla:hover { background-color: var(--color-secondary-hover); }
+
+    .btn-accion-tabla:hover {
+      background-color: var(--color-secondary-hover);
+    }
 
     /* --- ESTILOS DEL BUSCADOR --- */
     .buscador-container {
@@ -270,16 +415,16 @@
       margin-bottom: 15px;
       max-width: 400px;
     }
-    
+
     #buscador {
       width: 100%;
-      padding: 10px 10px 10px 40px; 
+      padding: 10px 10px 10px 40px;
       border: 1px solid var(--color-primary-hover);
       border-radius: var(--radius);
       background-color: var(--color-input-bg);
       color: var(--color-dark-text);
       font-size: 1rem;
-      box-sizing: border-box; 
+      box-sizing: border-box;
       transition: all 0.2s ease;
     }
 
@@ -297,77 +442,141 @@
       color: var(--color-primary);
       font-size: 1.1rem;
     }
-    
+
     /* --- TOAST MESSAGES (Notificaciones) --- */
     #messageContainer {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1000;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
+
     .toast-message {
-        padding: 15px 20px;
-        border-radius: var(--radius);
-        color: var(--color-light-text);
-        font-weight: bold;
-        opacity: 0.95;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: opacity 0.5s, transform 0.5s;
-        transform: translateY(0);
-        min-width: 250px;
+      padding: 15px 20px;
+      border-radius: var(--radius);
+      color: var(--color-light-text);
+      font-weight: bold;
+      opacity: 0.95;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: opacity 0.5s, transform 0.5s;
+      transform: translateY(0);
+      min-width: 250px;
     }
+
     .toast-message.success {
-        background-color: #28a745; /* Verde */
+      background-color: #28a745;
+      /* Verde */
     }
+
     .toast-message.error {
-        background-color: var(--color-danger); /* Rojo */
+      background-color: var(--color-danger);
+      /* Rojo */
     }
+
     .toast-message.hide {
-        opacity: 0;
-        transform: translateY(-20px);
+      opacity: 0;
+      transform: translateY(-20px);
     }
 
     /* --- RESPONSIVE --- */
     @media (max-width: 768px) {
-        body { padding: 10px; }
-        header { flex-direction: column; align-items: flex-start; padding: 10px; }
-        form { grid-template-columns: 1fr; gap: 10px; padding: 15px; }
-        form > label, form > div, .form-logo-container { grid-column: span 1 !important; }
-        .button-group-form { justify-content: space-around; }
-        .button-group-form button { width: 32%; margin-right: 0; }
-        .actions-group { flex-direction: column; align-items: stretch; }
-        .actions-group button { width: 100%; margin-bottom: 10px; }
-        
-        table, thead, tbody, th, td, tr { display: block; }
-        thead tr { position: absolute; top: -9999px; left: -9999px; }
-        tr { border: 1px solid #3A3A3A; margin-bottom: 10px; }
-        td { 
-            border: none;
-            border-bottom: 1px solid #4A4A4A;
-            position: relative;
-            padding-left: 50%;
-            text-align: right;
-            font-size: 0.9em;
-            color: var(--color-light-text);
-        }
-        td:before { 
-            content: attr(data-label);
-            position: absolute;
-            left: 10px;
-            width: 45%; 
-            padding-right: 10px;
-            white-space: nowrap;
-            text-align: left;
-            font-weight: 600;
-        }
-        td:last-child { text-align: center; padding-left: 10px; }
-        .alerta-vacio td { color: var(--color-dark-text) !important; }
+      body {
+        padding: 10px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 15px;
+      }
+
+      form>label,
+      form>div,
+      .form-logo-container {
+        grid-column: span 1 !important;
+      }
+
+      .button-group-form {
+        justify-content: space-around;
+      }
+
+      .button-group-form button {
+        width: 32%;
+        margin-right: 0;
+      }
+
+      .actions-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .actions-group button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: block;
+      }
+
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      tr {
+        border: 1px solid #3A3A3A;
+        margin-bottom: 10px;
+      }
+
+      td {
+        border: none;
+        border-bottom: 1px solid #4A4A4A;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        font-size: 0.9em;
+        color: var(--color-light-text);
+      }
+
+      td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      td:last-child {
+        text-align: center;
+        padding-left: 10px;
+      }
+
+      .alerta-vacio td {
+        color: var(--color-dark-text) !important;
+      }
     }
   </style>
 </head>
+
 <body>
   <header>
     <img src="./logo.png" alt="Logotipo institucional">
@@ -378,7 +587,7 @@
 
   <form>
     <div class="form-logo-container">
-        <img src="./logo.png" alt="Logotipo del Formulario">
+      <img src="./logo.png" alt="Logotipo del Formulario">
     </div>
 
     <label for="usuario">Usuario:</label>
@@ -387,7 +596,7 @@
       <input type="checkbox" id="checkUsuario" onchange="alternarBloqueo('usuario')" tabindex="-1">
       <label for="checkUsuario">🔒</label>
     </div>
-    
+
     <label for="fecha">Fecha:</label>
     <div class="campo">
       <input type="date" id="fecha" name="fecha" required>
@@ -406,7 +615,7 @@
 
     <label for="titular">Titular:</label>
     <div class="campo">
-      <input type="text" id="titular" name="titular" required>
+      <textarea id="titular" name="titular" required oninput="autoResize(this)" rows="1"></textarea>
       <input type="checkbox" id="checkTitular" onchange="alternarBloqueo('titular')" tabindex="-1">
       <label for="checkTitular">🔒</label>
     </div>
@@ -467,7 +676,7 @@
 
     <label for="tema">Tema:</label>
     <div class="campo">
-      <input type="text" id="tema" name="tema" autocomplete="off"> 
+      <input type="text" id="tema" name="tema" autocomplete="off">
       <button type="button" onclick="mostrarSugerencias('tema','sugTema')" tabindex="-1">🔽</button>
       <input type="checkbox" id="checkTema" onchange="alternarBloqueo('tema')" tabindex="-1">
       <label for="checkTema">🔒</label>
@@ -511,45 +720,74 @@
     <button id="btnSheets" onclick="enviarSheets()">
       <i class="fa-solid fa-file-excel"></i> Enviar a Google Sheets
     </button>
-    
+
     <button id="btnExportar" onclick="exportarCSV()">
       <i class="fa-solid fa-file-csv"></i> Descargar CSV
     </button>
-    
+
     <button id="btnTelegram" onclick="enviarTelegram()">
       <i class="fa-brands fa-telegram"></i> Enviar por Telegram
-    </button> 
-    
+    </button>
+
     <button id="btnBorrarTodo" onclick="borrarTodo()">
       <i class="fa-solid fa-trash-can"></i> Borrar Todas
     </button>
   </div>
-  
+
   <div id="erroresCarga" class="error-carga"></div>
-  
+
   <div class="buscador-container">
-      <i class="fas fa-search buscador-icon"></i>
-      <input type="text" id="buscador" placeholder="Buscar en la tabla (Titular, Autor, etc.)">
+    <i class="fas fa-search buscador-icon"></i>
+    <input type="text" id="buscador" placeholder="Buscar en la tabla (Titular, Autor, etc.)">
   </div>
-  
+
   <h2>Notas capturadas</h2>
   <table id="tablaNotas">
     <thead>
       <tr>
-        <th data-col="ordenCaptura"><div class="sortable-header"># <span class="sort-icon"></span></div></th>
-        <th data-col="usuario"><div class="sortable-header">Usuario <span class="sort-icon"></span></div></th>
-        <th data-col="fecha"><div class="sortable-header">Fecha <span class="sort-icon"></span></div></th>
-        <th data-col="radiodifusora"><div class="sortable-header">Radiodifusora <span class="sort-icon"></span></div></th>
-        <th data-col="titular"><div class="sortable-header">Titular <span class="sort-icon"></span></div></th>
-        <th data-col="autor"><div class="sortable-header">Autor <span class="sort-icon"></span></div></th>
-        <th data-col="programa"><div class="sortable-header">Programa <span class="sort-icon"></span></div></th>
-        <th data-col="dependencia"><div class="sortable-header">Dependencia <span class="sort-icon"></span></div></th>
-        <th data-col="organismo"><div class="sortable-header">Organismo <span class="sort-icon"></span></div></th>
-        <th data-col="genero"><div class="sortable-header">Género <span class="sort-icon"></span></div></th>
-        <th data-col="canal"><div class="sortable-header">Canal <span class="sort-icon"></span></div></div></th>
-        <th data-col="tema"><div class="sortable-header">Tema <span class="sort-icon"></span></div></th>
-        <th data-col="estatus"><div class="sortable-header">Estatus <span class="sort-icon"></span></div></th>
-        <th data-col="municipio"><div class="sortable-header">Municipio <span class="sort-icon"></span></div></th>
+        <th data-col="ordenCaptura">
+          <div class="sortable-header"># <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="usuario">
+          <div class="sortable-header">Usuario <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="fecha">
+          <div class="sortable-header">Fecha <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="radiodifusora">
+          <div class="sortable-header">Radiodifusora <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="titular">
+          <div class="sortable-header">Titular <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="autor">
+          <div class="sortable-header">Autor <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="programa">
+          <div class="sortable-header">Programa <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="dependencia">
+          <div class="sortable-header">Dependencia <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="organismo">
+          <div class="sortable-header">Organismo <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="genero">
+          <div class="sortable-header">Género <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="canal">
+          <div class="sortable-header">Canal <span class="sort-icon"></span></div>
+          </div>
+        </th>
+        <th data-col="tema">
+          <div class="sortable-header">Tema <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="estatus">
+          <div class="sortable-header">Estatus <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="municipio">
+          <div class="sortable-header">Municipio <span class="sort-icon"></span></div>
+        </th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -561,67 +799,72 @@
     let notas = [];
     let filaEnEdicion = null;
     let nextOrdenCaptura = 1;
-    
+
     // CAMPOS PARA RADIO
     const camposDeDatos = ["ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
-    
+
     // ENCABEZADOS (Sin columna Telegram individual)
     const encabezadosTabla = {
-        "ordenCaptura": "#", "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor", 
-        "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género", 
-        "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "acciones": "Acciones"
+      "ordenCaptura": "#", "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor",
+      "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género",
+      "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "acciones": "Acciones"
     };
-    
-    let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' }; 
+
+    let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' };
 
     // RUTAS RELATIVAS (Asegúrate de que estos archivos estén en el mismo directorio)
     const urls = {
       dependencias: "./Dependencia.csv",
-      radiodifusoras: "./Radiodifusora.csv", 
+      radiodifusoras: "./Radiodifusora.csv",
       generos: "./Genero.csv",
       estatus: "./Estatus.csv",
       temas: "./Tema.csv",
       municipios: "./Municipio.csv",
-      autores: "./Autor.csv" 
+      autores: "./Autor.csv"
     };
-    
+
     // --- CONFIGURACIÓN GOOGLE APP SCRIPT ---
     // URL de despliegue proporcionada por el usuario
-    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbxw9a6kEd2lTlbtU6OcwtmNx4983L-qNvuoh_fHzGDiKisiy7DjN-AwTORvnDQkfRvM/exec"; 
+    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbxw9a6kEd2lTlbtU6OcwtmNx4983L-qNvuoh_fHzGDiKisiy7DjN-AwTORvnDQkfRvM/exec";
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = (el.scrollHeight) + 'px';
+    }
 
     function findKeyCaseInsensitive(map, value) {
-        if (!value) return null;
-        const lowerValue = value.toLowerCase();
-        for (const key in map) {
-            if (key.toLowerCase() === lowerValue) {
-                return key; 
-            }
+      if (!value) return null;
+      const lowerValue = value.toLowerCase();
+      for (const key in map) {
+        if (key.toLowerCase() === lowerValue) {
+          return key;
         }
-        return null;
+      }
+      return null;
     }
 
     async function cargarCSV(url) {
       try {
         const urlConCacheBuster = `${url}?t=${new Date().getTime()}`;
         const res = await fetch(urlConCacheBuster);
-        
+
         const contentType = res.headers.get("content-type");
         if (contentType && !contentType.includes("text/csv") && !contentType.includes("text/plain")) {
-            if (contentType.includes("text/html")) {
-                throw new Error(`Contenido HTML inesperado. Revise ruta: ${url}`);
-            }
+          if (contentType.includes("text/html")) {
+            throw new Error(`Contenido HTML inesperado. Revise ruta: ${url}`);
+          }
         }
-        
-        const buffer = await res.arrayBuffer(); 
-        const decoder = new TextDecoder('utf-8'); 
-        const texto = decoder.decode(buffer); 
+
+        const buffer = await res.arrayBuffer();
+        const decoder = new TextDecoder('utf-8');
+        const texto = decoder.decode(buffer);
         return texto.split('\n').map(linea => linea.split(','));
       } catch (e) {
         document.getElementById("erroresCarga").innerText += `Error al cargar ${url}: ${e.message}\n`;
         return [];
       }
     }
-    
+
     function limpiarFilasCSV(filas) {
       if (!filas || filas.length === 0) return [];
       filas[0][0] = filas[0][0].replace(/^\uFEFF/, "");
@@ -672,7 +915,7 @@
             contenedor.innerHTML = "";
             if (callback) callback(s);
             // Enfocar el siguiente input al seleccionar con mouse
-            focusNextInput(campo); 
+            focusNextInput(campo);
           };
           contenedor.appendChild(div);
         });
@@ -684,68 +927,68 @@
         const isTab = e.key === "Tab";
         const isUp = e.key === "ArrowUp";
         const isDown = e.key === "ArrowDown";
-        
+
         // 1. Comportamiento de flechas
         if (isDown) {
           e.preventDefault();
-          if(items.length > 0) {
-              indice = (indice + 1) % items.length;
-              resaltar(items, indice);
+          if (items.length > 0) {
+            indice = (indice + 1) % items.length;
+            resaltar(items, indice);
           }
           return;
         } else if (isUp) {
           e.preventDefault();
-          if(items.length > 0) {
-              indice = (indice - 1 + items.length) % items.length;
-              resaltar(items, indice);
+          if (items.length > 0) {
+            indice = (indice - 1 + items.length) % items.length;
+            resaltar(items, indice);
           }
           return;
         }
-        
+
         // 2. Comportamiento de Enter/Tab
         if (isEnter || isTab) {
-            
-            const focusFunction = isTab && e.shiftKey ? focusPrevInput : focusNextInput;
-            let valorSeleccionado = null;
-            
-            // A. Prioridad: Sugerencia resaltada (usando flechas)
-            if (indice >= 0 && items[indice]) {
-                valorSeleccionado = items[indice].textContent;
-            } 
-            // B. Selección de Sugerencia Única Visible
-            else if (items.length === 1) {
-                valorSeleccionado = items[0].textContent;
-            } 
-            
-            // C. Aplicar selección si existe
-            if (valorSeleccionado) {
-                campo.value = valorSeleccionado;
-                if (callback) callback(campo.value);
-            }
-            
-            // D. Limpia sugerencias y mueve el foco (solo si es Enter)
-            contenedor.innerHTML = "";
-            if (isEnter) {
-                 e.preventDefault(); // Prevenir el submit en caso de Enter
-                 focusFunction(campo);
-            }
+
+          const focusFunction = isTab && e.shiftKey ? focusPrevInput : focusNextInput;
+          let valorSeleccionado = null;
+
+          // A. Prioridad: Sugerencia resaltada (usando flechas)
+          if (indice >= 0 && items[indice]) {
+            valorSeleccionado = items[indice].textContent;
+          }
+          // B. Selección de Sugerencia Única Visible
+          else if (items.length === 1) {
+            valorSeleccionado = items[0].textContent;
+          }
+
+          // C. Aplicar selección si existe
+          if (valorSeleccionado) {
+            campo.value = valorSeleccionado;
+            if (callback) callback(campo.value);
+          }
+
+          // D. Limpia sugerencias y mueve el foco (solo si es Enter)
+          contenedor.innerHTML = "";
+          if (isEnter) {
+            e.preventDefault(); // Prevenir el submit en caso de Enter
+            focusFunction(campo);
+          }
         }
       });
 
       campo.addEventListener("focus", () => {
         document.querySelectorAll('.sugerencias').forEach(sug => {
-            if (sug.id !== idSugerencias) {
-                sug.innerHTML = "";
-            }
+          if (sug.id !== idSugerencias) {
+            sug.innerHTML = "";
+          }
         });
       });
-      
+
       campo.addEventListener("blur", () => {
-          setTimeout(() => {
-              if (!contenedor.contains(document.activeElement)) {
-                  contenedor.innerHTML = "";
-              }
-          }, 150); 
+        setTimeout(() => {
+          if (!contenedor.contains(document.activeElement)) {
+            contenedor.innerHTML = "";
+          }
+        }, 150);
       });
 
       function resaltar(items, i) {
@@ -755,7 +998,7 @@
         items[i].parentElement.scrollTop = items[i].offsetTop - items[i].parentElement.offsetTop;
       }
     }
-    
+
     function mostrarSugerencias(idCampo, idSugerencias) {
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
@@ -773,10 +1016,10 @@
           contenedor.innerHTML = "";
           // Disparar blur para manejar campos dependientes (ej. Dependencia -> Organismo)
           if (idCampo === 'radiodifusora' || idCampo === 'dependencia') {
-              campo.dispatchEvent(new Event('blur'));
+            campo.dispatchEvent(new Event('blur'));
           }
           // Enfocar el siguiente input al seleccionar con mouse
-          focusNextInput(campo); 
+          focusNextInput(campo);
         };
         contenedor.appendChild(div);
       });
@@ -786,467 +1029,467 @@
     }
 
     function resetearEstadoEdicion() {
-        filaEnEdicion = null;
-        document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
-        document.getElementById('btnEliminar').style.display = 'none';
-        document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
+      filaEnEdicion = null;
+      document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+      document.getElementById('btnEliminar').style.display = 'none';
+      document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
     }
 
     function guardarNotas() {
-        localStorage.setItem('notasCapturadas', JSON.stringify(notas));
-        localStorage.setItem('nextOrdenCaptura', nextOrdenCaptura);
+      localStorage.setItem('notasCapturadas', JSON.stringify(notas));
+      localStorage.setItem('nextOrdenCaptura', nextOrdenCaptura);
     }
 
     function borrarTodo() {
-        if (confirm("¿Estás seguro de que quieres BORRAR TODAS las notas capturadas? Esta acción es irreversible.")) {
-            notas = []; 
-            nextOrdenCaptura = 1;
-            localStorage.removeItem('notasCapturadas'); 
-            renderizarTabla(); 
-            resetearEstadoEdicion();
-            mostrarMensaje('🗑️ Todas las notas han sido borradas.', 'error');
-        }
+      if (confirm("¿Estás seguro de que quieres BORRAR TODAS las notas capturadas? Esta acción es irreversible.")) {
+        notas = [];
+        nextOrdenCaptura = 1;
+        localStorage.removeItem('notasCapturadas');
+        renderizarTabla();
+        resetearEstadoEdicion();
+        mostrarMensaje('🗑️ Todas las notas han sido borradas.', 'error');
+      }
     }
-    
+
     function borrarNota() {
-        if (filaEnEdicion !== null) {
-            const confirmar = confirm(`¿Eliminar nota #${notas[filaEnEdicion].ordenCaptura}?`);
-            if (confirmar) {
-                notas.splice(filaEnEdicion, 1);
-                guardarNotas();
-                ordenarTabla(ordenActual.columna, true); 
-                document.querySelector("form").reset(); 
-                resetearEstadoEdicion(); 
-                mostrarMensaje('🗑️ Nota eliminada correctamente.', 'success');
-            }
+      if (filaEnEdicion !== null) {
+        const confirmar = confirm(`¿Eliminar nota #${notas[filaEnEdicion].ordenCaptura}?`);
+        if (confirmar) {
+          notas.splice(filaEnEdicion, 1);
+          guardarNotas();
+          ordenarTabla(ordenActual.columna, true);
+          document.querySelector("form").reset();
+          resetearEstadoEdicion();
+          mostrarMensaje('🗑️ Nota eliminada correctamente.', 'success');
         }
+      }
     }
 
     function contieneCamposVacios(nota) {
-        // Tema es el único campo opcional, por eso se filtra aquí
-        const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema'); 
-        for (const campo of camposARevisar) {
-            if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
-                return true;
-            }
+      // Tema es el único campo opcional, por eso se filtra aquí
+      const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema');
+      for (const campo of camposARevisar) {
+        if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
+          return true;
         }
-        return false;
+      }
+      return false;
     }
 
     function renderizarTabla() {
-        const tablaBody = document.getElementById("tablaNotas").querySelector("tbody");
-        tablaBody.innerHTML = '';
-        
-        notas.forEach((nota, indice) => {
-            const tr = document.createElement("tr");
-            tr.dataset.index = notas.indexOf(nota);
+      const tablaBody = document.getElementById("tablaNotas").querySelector("tbody");
+      tablaBody.innerHTML = '';
 
-            // La alerta visual en la tabla es la misma, basada en la función contieneCamposVacios
-            if (contieneCamposVacios(nota)) {
-                tr.classList.add('alerta-vacio');
-            }
+      notas.forEach((nota, indice) => {
+        const tr = document.createElement("tr");
+        tr.dataset.index = notas.indexOf(nota);
 
-            camposDeDatos.forEach(campo => {
-                const td = document.createElement("td");
-                td.textContent = nota[campo];
-                td.setAttribute('data-label', encabezadosTabla[campo]);
-                tr.appendChild(td);
-            });
-            
-            const tdAcciones = document.createElement("td");
-            tdAcciones.setAttribute('data-label', encabezadosTabla['acciones']);
-            const btnEditar = document.createElement("button");
-            btnEditar.textContent = "Editar";
-            btnEditar.classList.add('btn-accion-tabla'); 
-            btnEditar.onclick = function() { editarNota(tr); };
-            tdAcciones.appendChild(btnEditar);
-            tr.appendChild(tdAcciones);
+        // La alerta visual en la tabla es la misma, basada en la función contieneCamposVacios
+        if (contieneCamposVacios(nota)) {
+          tr.classList.add('alerta-vacio');
+        }
 
-            tablaBody.appendChild(tr);
+        camposDeDatos.forEach(campo => {
+          const td = document.createElement("td");
+          td.textContent = nota[campo];
+          td.setAttribute('data-label', encabezadosTabla[campo]);
+          tr.appendChild(td);
         });
-        
-        // Vuelve a aplicar el filtro después de renderizar (útil para cuando se edita/guarda)
-        filtrarTabla();
+
+        const tdAcciones = document.createElement("td");
+        tdAcciones.setAttribute('data-label', encabezadosTabla['acciones']);
+        const btnEditar = document.createElement("button");
+        btnEditar.textContent = "Editar";
+        btnEditar.classList.add('btn-accion-tabla');
+        btnEditar.onclick = function () { editarNota(tr); };
+        tdAcciones.appendChild(btnEditar);
+        tr.appendChild(tdAcciones);
+
+        tablaBody.appendChild(tr);
+      });
+
+      // Vuelve a aplicar el filtro después de renderizar (útil para cuando se edita/guarda)
+      filtrarTabla();
     }
 
     function cargarNotasGuardadas() {
-        const datosJSON = localStorage.getItem('notasCapturadas');
-        const ordenJSON = localStorage.getItem('nextOrdenCaptura');
-        
-        if (ordenJSON) nextOrdenCaptura = parseInt(ordenJSON, 10);
+      const datosJSON = localStorage.getItem('notasCapturadas');
+      const ordenJSON = localStorage.getItem('nextOrdenCaptura');
 
-        if (datosJSON) {
-            try {
-                notas = JSON.parse(datosJSON);
-                notas.forEach(nota => {
-                    if (!nota.ordenCaptura) nota.ordenCaptura = nextOrdenCaptura++; 
-                });
-                ordenarTabla(ordenActual.columna, true);
-            } catch (e) {
-                console.error("Error al cargar notas:", e);
-                notas = [];
-            }
-        } else {
-                ordenarTabla(ordenActual.columna, true); // Renderizar tabla vacía y actualizar iconos
+      if (ordenJSON) nextOrdenCaptura = parseInt(ordenJSON, 10);
+
+      if (datosJSON) {
+        try {
+          notas = JSON.parse(datosJSON);
+          notas.forEach(nota => {
+            if (!nota.ordenCaptura) nota.ordenCaptura = nextOrdenCaptura++;
+          });
+          ordenarTabla(ordenActual.columna, true);
+        } catch (e) {
+          console.error("Error al cargar notas:", e);
+          notas = [];
         }
+      } else {
+        ordenarTabla(ordenActual.columna, true); // Renderizar tabla vacía y actualizar iconos
+      }
     }
 
     function alternarBloqueo(idCampo) {
-        const campo = document.getElementById(idCampo);
-        const checkboxId = `check${idCampo.charAt(0).toUpperCase() + idCampo.slice(1)}`;
-        const checkbox = document.getElementById(checkboxId);
-        
-        campo.readOnly = checkbox.checked;
-        campo.classList.toggle("bloqueado", checkbox.checked);
-        
-        localStorage.setItem(`bloqueado_${idCampo}`, checkbox.checked);
-        
-        // Mantener el foco en el campo después de alternar el bloqueo
-        if(campo && document.activeElement !== campo) {
-            campo.focus();
-        }
+      const campo = document.getElementById(idCampo);
+      const checkboxId = `check${idCampo.charAt(0).toUpperCase() + idCampo.slice(1)}`;
+      const checkbox = document.getElementById(checkboxId);
+
+      campo.readOnly = checkbox.checked;
+      campo.classList.toggle("bloqueado", checkbox.checked);
+
+      localStorage.setItem(`bloqueado_${idCampo}`, checkbox.checked);
+
+      // Mantener el foco en el campo después de alternar el bloqueo
+      if (campo && document.activeElement !== campo) {
+        campo.focus();
+      }
     }
-    
+
     // --- FUNCIÓN DE MENSAJES TOAST ---
     function mostrarMensaje(mensaje, tipo = 'success') {
-        const container = document.getElementById('messageContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast-message ${tipo}`;
-        toast.textContent = mensaje;
-        
-        container.appendChild(toast);
+      const container = document.getElementById('messageContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast-message ${tipo}`;
+      toast.textContent = mensaje;
 
-        // Auto-desaparecer después de 4 segundos
-        setTimeout(() => {
-            toast.classList.add('hide');
-            // Eliminar del DOM después de la transición
-            toast.addEventListener('transitionend', () => {
-                toast.remove();
-            });
-        }, 4000);
+      container.appendChild(toast);
+
+      // Auto-desaparecer después de 4 segundos
+      setTimeout(() => {
+        toast.classList.add('hide');
+        // Eliminar del DOM después de la transición
+        toast.addEventListener('transitionend', () => {
+          toast.remove();
+        });
+      }, 4000);
     }
 
     function editarNota(tr) {
-        const indice = parseInt(tr.dataset.index);
-        const nota = notas[indice];
+      const indice = parseInt(tr.dataset.index);
+      const nota = notas[indice];
 
-        camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
-            document.getElementById(id).value = nota[id];
-        });
+      camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+        document.getElementById(id).value = nota[id];
+      });
 
-        resetearEstadoEdicion();
-        
-        document.getElementById("dependencia").dispatchEvent(new Event('blur'));
-        document.getElementById("radiodifusora").dispatchEvent(new Event('blur')); 
-        
-        filaEnEdicion = indice; 
-        document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Actualizar Nota';
-        document.getElementById('btnEliminar').style.display = 'inline-block';
-        
-        document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
-        tr.classList.add('editando');
-        window.scrollTo(0, 0);
+      resetearEstadoEdicion();
+
+      document.getElementById("dependencia").dispatchEvent(new Event('blur'));
+      document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
+
+      filaEnEdicion = indice;
+      document.getElementById('btnGuardar').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Actualizar Nota';
+      document.getElementById('btnEliminar').style.display = 'inline-block';
+
+      document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
+      tr.classList.add('editando');
+      window.scrollTo(0, 0);
     }
 
     function generarNombreArchivoCSV() {
-        const usuario = document.getElementById('usuario').value.trim() || 'Desconocido';
-        const usuarioLimpio = usuario.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, ''); 
-        const fechaHoy = new Date().toISOString().slice(0, 10); 
-        return `${usuarioLimpio}_${fechaHoy}.csv`;
+      const usuario = document.getElementById('usuario').value.trim() || 'Desconocido';
+      const usuarioLimpio = usuario.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+      const fechaHoy = new Date().toISOString().slice(0, 10);
+      return `${usuarioLimpio}_${fechaHoy}.csv`;
     }
 
     function generarCSVContenido() {
       const cabeceras = ["#", "Usuario", "Fecha", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
       const filas = [cabeceras];
-      
+
       notas.forEach(nota => {
         const fila = camposDeDatos.map(key => {
-            let valor = nota[key] || '';
-            return `"${valor.toString().replace(/"/g, '""')}"`; 
+          let valor = nota[key] || '';
+          return `"${valor.toString().replace(/"/g, '""')}"`;
         });
         filas.push(fila);
       });
-      
+
       return "\uFEFF" + filas.map(f => f.join(",")).join("\n");
     }
 
     function exportarCSV() {
-        if (notas.length === 0) { 
-             mostrarMensaje("No hay notas para descargar.", 'error');
-             return; 
-        }
-        
-        const csvContenido = generarCSVContenido();
-        const nombreArchivo = generarNombreArchivoCSV();
-        
-        const blob = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = nombreArchivo;
-        document.body.appendChild(a); 
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        mostrarMensaje("CSV descargado con éxito.", 'success');
+      if (notas.length === 0) {
+        mostrarMensaje("No hay notas para descargar.", 'error');
+        return;
+      }
+
+      const csvContenido = generarCSVContenido();
+      const nombreArchivo = generarNombreArchivoCSV();
+
+      const blob = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nombreArchivo;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      mostrarMensaje("CSV descargado con éxito.", 'success');
     }
 
     // --- FUNCIÓN AÑADIDA: ENVIAR A GOOGLE SHEETS (JSON) ---
     async function enviarSheets() {
-        if (notas.length === 0) {
-            mostrarMensaje("No hay notas para enviar a Google Sheets.", 'error');
-            return;
+      if (notas.length === 0) {
+        mostrarMensaje("No hay notas para enviar a Google Sheets.", 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btnSheets');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+      try {
+        // 1. Prepara los datos como JSON y envíalos en un FormData
+        const datosJSON = JSON.stringify(notas);
+        const formData = new FormData();
+        formData.append("notas", datosJSON);
+        formData.append("tipo", "datos_monitoreo");
+
+        const response = await fetch(URL_APP_SCRIPT, {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.result === 'success') {
+          mostrarMensaje(`✅ ${notas.length} notas enviadas a Google Sheets con éxito.`, 'success');
+        } else {
+          const errorMessage = data.error || data.description || "Error desconocido. Revise su App Script.";
+          mostrarMensaje(`❌ Error al enviar a Sheets: ${errorMessage}`, 'error');
+          console.error("Error App Script:", data);
         }
 
-        const btn = document.getElementById('btnSheets');
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
-
-        try {
-            // 1. Prepara los datos como JSON y envíalos en un FormData
-            const datosJSON = JSON.stringify(notas);
-            const formData = new FormData();
-            formData.append("notas", datosJSON); 
-            formData.append("tipo", "datos_monitoreo"); 
-
-            const response = await fetch(URL_APP_SCRIPT, {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.result === 'success') {
-                mostrarMensaje(`✅ ${notas.length} notas enviadas a Google Sheets con éxito.`, 'success');
-            } else {
-                const errorMessage = data.error || data.description || "Error desconocido. Revise su App Script.";
-                mostrarMensaje(`❌ Error al enviar a Sheets: ${errorMessage}`, 'error');
-                console.error("Error App Script:", data);
-            }
-
-        } catch (e) {
-            mostrarMensaje("❌ Error de red o conexión al comunicarse con Google App Script. Revisa la consola.", 'error');
-            console.error("Fetch error:", e);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-        }
+      } catch (e) {
+        mostrarMensaje("❌ Error de red o conexión al comunicarse con Google App Script. Revisa la consola.", 'error');
+        console.error("Fetch error:", e);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
-    
+
     // --- FUNCIÓN ACTUALIZADA: ENVIAR A TELEGRAM (CSV) ---
     async function enviarTelegram() {
-        if (notas.length === 0) {
-             mostrarMensaje("No hay notas para enviar por Telegram.", 'error');
-             return;
+      if (notas.length === 0) {
+        mostrarMensaje("No hay notas para enviar por Telegram.", 'error');
+        return;
+      }
+
+      try {
+        document.getElementById('btnTelegram').disabled = true;
+        document.getElementById('btnTelegram').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+        const csvContenido = generarCSVContenido();
+        const blobCSV = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
+        const nombreArchivoTelegram = generarNombreArchivoCSV();
+
+        const formData = new FormData();
+        formData.append('document', blobCSV, nombreArchivoTelegram);
+        formData.append('filename', nombreArchivoTelegram);
+        formData.append('caption', `📋 Reporte de notas de Radio (${nombreArchivoTelegram}) enviado automáticamente.`);
+
+        const response = await fetch(URL_APP_SCRIPT, { // Utiliza la constante global
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.ok) {
+          mostrarMensaje(`✅ Reporte '${nombreArchivoTelegram}' enviado con éxito a través de Google App Script.`, 'success');
+        } else {
+          console.error("Error App Script:", result);
+          mostrarMensaje(`❌ Error al enviar. App Script reportó: ${result.error || result.description || 'Error desconocido'}`, 'error');
         }
-        
-        try {
-            document.getElementById('btnTelegram').disabled = true;
-            document.getElementById('btnTelegram').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
 
-            const csvContenido = generarCSVContenido();
-            const blobCSV = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
-            const nombreArchivoTelegram = generarNombreArchivoCSV();
-
-            const formData = new FormData();
-            formData.append('document', blobCSV, nombreArchivoTelegram); 
-            formData.append('filename', nombreArchivoTelegram);
-            formData.append('caption', `📋 Reporte de notas de Radio (${nombreArchivoTelegram}) enviado automáticamente.`);
-
-            const response = await fetch(URL_APP_SCRIPT, { // Utiliza la constante global
-                method: 'POST',
-                body: formData 
-            });
-
-            const result = await response.json();
-
-            if (response.ok && result.ok) {
-                mostrarMensaje(`✅ Reporte '${nombreArchivoTelegram}' enviado con éxito a través de Google App Script.`, 'success');
-            } else {
-                console.error("Error App Script:", result);
-                mostrarMensaje(`❌ Error al enviar. App Script reportó: ${result.error || result.description || 'Error desconocido'}`, 'error');
-            }
-
-        } catch (error) {
-            console.error("Error de conexión con App Script:", error);
-            mostrarMensaje("❌ Error de red o conexión al intentar comunicarse con Google App Script. Revisa la consola.", 'error');
-        } finally {
-            document.getElementById('btnTelegram').disabled = false;
-            document.getElementById('btnTelegram').innerHTML = '<i class="fa-brands fa-telegram"></i> Enviar por Telegram';
-        }
+      } catch (error) {
+        console.error("Error de conexión con App Script:", error);
+        mostrarMensaje("❌ Error de red o conexión al intentar comunicarse con Google App Script. Revisa la consola.", 'error');
+      } finally {
+        document.getElementById('btnTelegram').disabled = false;
+        document.getElementById('btnTelegram').innerHTML = '<i class="fa-brands fa-telegram"></i> Enviar por Telegram';
+      }
     }
 
     function ordenarTabla(columna, esInicial = false) {
-        if (!columna) return;
-        let direccion = 'asc';
-        if (ordenActual.columna === columna && !esInicial) {
-            direccion = ordenActual.direccion === 'asc' ? 'desc' : 'asc';
-        } else if (esInicial && columna === 'ordenCaptura') {
-            direccion = 'desc';
+      if (!columna) return;
+      let direccion = 'asc';
+      if (ordenActual.columna === columna && !esInicial) {
+        direccion = ordenActual.direccion === 'asc' ? 'desc' : 'asc';
+      } else if (esInicial && columna === 'ordenCaptura') {
+        direccion = 'desc';
+      }
+
+      notas.sort((a, b) => {
+        const valA = a[columna] || '';
+        const valB = b[columna] || '';
+        let comparacion = 0;
+
+        if (columna === 'ordenCaptura') comparacion = valA - valB;
+        else if (columna === 'fecha') {
+          const dateA = new Date(valA + 'T00:00:00');
+          const dateB = new Date(valB + 'T00:00:00');
+          if (dateA < dateB) comparacion = -1;
+          if (dateA > dateB) comparacion = 1;
+        } else {
+          comparacion = valA.toString().localeCompare(valB.toString(), 'es', { sensitivity: 'base' });
         }
+        return direccion === 'asc' ? comparacion : -comparacion;
+      });
 
-        notas.sort((a, b) => {
-            const valA = a[columna] || '';
-            const valB = b[columna] || '';
-            let comparacion = 0;
-            
-            if (columna === 'ordenCaptura') comparacion = valA - valB;
-            else if (columna === 'fecha') {
-                const dateA = new Date(valA + 'T00:00:00');
-                const dateB = new Date(valB + 'T00:00:00');
-                if (dateA < dateB) comparacion = -1;
-                if (dateA > dateB) comparacion = 1;
-            } else {
-                comparacion = valA.toString().localeCompare(valB.toString(), 'es', { sensitivity: 'base' });
-            }
-            return direccion === 'asc' ? comparacion : -comparacion;
-        });
-
-        ordenActual = { columna, direccion };
-        actualizarIndicadoresOrden();
-        renderizarTabla();
+      ordenActual = { columna, direccion };
+      actualizarIndicadoresOrden();
+      renderizarTabla();
     }
 
     function actualizarIndicadoresOrden() {
-        document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
-            const headerDiv = th.querySelector('.sortable-header');
-            const iconSpan = th.querySelector('.sort-icon');
-            const col = th.dataset.col;
-            headerDiv.classList.remove('sorted');
-            iconSpan.innerHTML = ''; 
-            if (col === ordenActual.columna) {
-                headerDiv.classList.add('sorted');
-                iconSpan.innerHTML = ordenActual.direccion === 'asc' ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
-            } else {
-                iconSpan.innerHTML = '<i class="fas fa-sort"></i>';
-            }
-        });
+      document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
+        const headerDiv = th.querySelector('.sortable-header');
+        const iconSpan = th.querySelector('.sort-icon');
+        const col = th.dataset.col;
+        headerDiv.classList.remove('sorted');
+        iconSpan.innerHTML = '';
+        if (col === ordenActual.columna) {
+          headerDiv.classList.add('sorted');
+          iconSpan.innerHTML = ordenActual.direccion === 'asc' ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+        } else {
+          iconSpan.innerHTML = '<i class="fas fa-sort"></i>';
+        }
+      });
     }
 
     // --- FUNCIÓN: BÚSQUEDA EN TIEMPO REAL ---
     function filtrarTabla() {
-        const input = document.getElementById('buscador');
-        const filtro = input.value.toLowerCase();
-        const filas = document.getElementById('tablaNotas').querySelectorAll('tbody tr');
-        
-        filas.forEach(tr => {
-            let encontrado = false;
-            // Itera sobre las celdas (excepto la última, que es la de Acciones)
-            for (let i = 0; i < tr.cells.length - 1; i++) {
-                const textoCelda = tr.cells[i].textContent || tr.cells[i].innerText;
-                if (textoCelda.toLowerCase().includes(filtro)) {
-                    encontrado = true;
-                    break;
-                }
-            }
-            tr.style.display = encontrado ? "" : "none";
-        });
+      const input = document.getElementById('buscador');
+      const filtro = input.value.toLowerCase();
+      const filas = document.getElementById('tablaNotas').querySelectorAll('tbody tr');
+
+      filas.forEach(tr => {
+        let encontrado = false;
+        // Itera sobre las celdas (excepto la última, que es la de Acciones)
+        for (let i = 0; i < tr.cells.length - 1; i++) {
+          const textoCelda = tr.cells[i].textContent || tr.cells[i].innerText;
+          if (textoCelda.toLowerCase().includes(filtro)) {
+            encontrado = true;
+            break;
+          }
+        }
+        tr.style.display = encontrado ? "" : "none";
+      });
     }
 
     // --- FUNCIÓN CORREGIDA: MOVER EL FOCO AL SIGUIENTE INPUT (INCLUYE BLOQUEADOS) ---
     function focusNextInput(currentElement) {
-        const form = currentElement.form;
-        if (!form) return;
+      const form = currentElement.form;
+      if (!form) return;
 
-        // **CORRECCIÓN:** Selecciona todos los inputs de texto y fecha, sin excepción de [readonly].
-        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
+      // **CORRECCIÓN:** Selecciona todos los inputs de texto y fecha, sin excepción de [readonly].
+      const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
 
-        const currentIndex = focusableInputs.indexOf(currentElement);
-        if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
-            focusableInputs[currentIndex + 1].focus();
-            return true;
-        }
-        
-        // Si es el último input, intenta enfocar el botón de guardar
-        if (currentIndex === focusableInputs.length - 1) {
-            document.getElementById('btnGuardar').focus();
-            return true;
-        }
-        
-        return false;
+      const currentIndex = focusableInputs.indexOf(currentElement);
+      if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
+        focusableInputs[currentIndex + 1].focus();
+        return true;
+      }
+
+      // Si es el último input, intenta enfocar el botón de guardar
+      if (currentIndex === focusableInputs.length - 1) {
+        document.getElementById('btnGuardar').focus();
+        return true;
+      }
+
+      return false;
     }
-    
+
     // --- FUNCIÓN CORREGIDA: MOVER EL FOCO AL ANTERIOR INPUT (INCLUYE BLOQUEADOS) ---
     function focusPrevInput(currentElement) {
-        const form = currentElement.form;
-        if (!form) return;
+      const form = currentElement.form;
+      if (!form) return;
 
-        // **CORRECCIÓN:** Selecciona todos los inputs de texto y fecha, sin excepción de [readonly].
-        const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
+      // **CORRECCIÓN:** Selecciona todos los inputs de texto y fecha, sin excepción de [readonly].
+      const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
 
-        const currentIndex = focusableInputs.indexOf(currentElement);
-        if (currentIndex > 0) { // Si no es el primer elemento
-            focusableInputs[currentIndex - 1].focus();
-            return true;
-        }
-        
-        return false;
+      const currentIndex = focusableInputs.indexOf(currentElement);
+      if (currentIndex > 0) { // Si no es el primer elemento
+        focusableInputs[currentIndex - 1].focus();
+        return true;
+      }
+
+      return false;
     }
-    
+
     // --- FUNCIÓN HELPER para Enter en inputs sin autocompletado ---
     function handleEnterKey(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            focusNextInput(this);
-        }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        focusNextInput(this);
+      }
     }
 
     // --- Eventos ---
     document.addEventListener("DOMContentLoaded", async () => {
-      let orgMap, programaMap; 
+      let orgMap, programaMap;
 
       const depData = await cargarMapa(urls.dependencias);
       orgMap = depData.map;
       autocompletar("dependencia", "sugDep", depData.claves, dep => {
         autocompletar("organismo", "sugOrg", orgMap[dep] || []);
       });
-      
+
       const radioData = await cargarMapa(urls.radiodifusoras);
       programaMap = radioData.map;
       autocompletar("radiodifusora", "sugRadiodifusora", radioData.claves, radio => {
         const programas = programaMap[radio] || [];
-        autocompletar("programa", "sugPrograma", programas); 
+        autocompletar("programa", "sugPrograma", programas);
         // Si solo hay un programa al seleccionar la radio, lo auto-rellenamos.
         if (programas.length === 1) document.getElementById("programa").value = programas[0];
       });
-      
+
       // Blur events
       document.getElementById("dependencia").addEventListener("blur", (e) => {
-          const val = e.target.value.trim();
-          const key = findKeyCaseInsensitive(orgMap, val);
-          if (key) { e.target.value = key; autocompletar("organismo", "sugOrg", orgMap[key] || []); }
-          else autocompletar("organismo", "sugOrg", []);
+        const val = e.target.value.trim();
+        const key = findKeyCaseInsensitive(orgMap, val);
+        if (key) { e.target.value = key; autocompletar("organismo", "sugOrg", orgMap[key] || []); }
+        else autocompletar("organismo", "sugOrg", []);
       });
-      
+
       document.getElementById("radiodifusora").addEventListener("blur", (e) => {
-          const val = e.target.value.trim();
-          const key = findKeyCaseInsensitive(programaMap, val);
-          if (key) { 
-              e.target.value = key; 
-              const progs = programaMap[key] || [];
-              autocompletar("programa", "sugPrograma", progs);
-              if (progs.length === 1) document.getElementById("programa").value = progs[0];
-          } else {
-              autocompletar("programa", "sugPrograma", []);
-          }
+        const val = e.target.value.trim();
+        const key = findKeyCaseInsensitive(programaMap, val);
+        if (key) {
+          e.target.value = key;
+          const progs = programaMap[key] || [];
+          autocompletar("programa", "sugPrograma", progs);
+          if (progs.length === 1) document.getElementById("programa").value = progs[0];
+        } else {
+          autocompletar("programa", "sugPrograma", []);
+        }
       });
-      
+
       // Initialize dependent empty
-      autocompletar("organismo", "sugOrg", []); 
-      autocompletar("programa", "sugPrograma", []); 
+      autocompletar("organismo", "sugOrg", []);
+      autocompletar("programa", "sugPrograma", []);
 
       autocompletar("genero", "sugGenero", await cargarLista(urls.generos));
       autocompletar("estatus", "sugEstatus", await cargarLista(urls.estatus));
       autocompletar("tema", "sugTema", await cargarLista(urls.temas));
       autocompletar("municipio", "sugMunicipio", await cargarLista(urls.municipios));
-      autocompletar("autor", "sugAutor", await cargarLista(urls.autores)); 
-      autocompletar("canal", "sugCanal", await cargarLista("./Canal.csv")); 
-      
+      autocompletar("autor", "sugAutor", await cargarLista(urls.autores));
+      autocompletar("canal", "sugCanal", await cargarLista("./Canal.csv"));
+
       // --- Listener para el buscador en tiempo real ---
-      document.getElementById('buscador').addEventListener('input', filtrarTabla); 
-      
+      document.getElementById('buscador').addEventListener('input', filtrarTabla);
+
       // --- Agregar listeners de Enter para campos sin autocompletado ---
       document.getElementById('usuario').addEventListener('keydown', handleEnterKey);
       document.getElementById('fecha').addEventListener('keydown', handleEnterKey);
@@ -1258,89 +1501,91 @@
         const campo = document.getElementById(id);
         if (localStorage.getItem(id)) campo.value = localStorage.getItem(id);
         campo.addEventListener("input", () => localStorage.setItem(id, campo.value));
-        
+
         const chk = document.getElementById(`check${id.charAt(0).toUpperCase() + id.slice(1)}`);
         if (chk) {
-            chk.checked = localStorage.getItem(`bloqueado_${id}`) === 'true';
-            alternarBloqueo(id);
+          chk.checked = localStorage.getItem(`bloqueado_${id}`) === 'true';
+          alternarBloqueo(id);
         }
       });
-      
+
       cargarNotasGuardadas();
 
       document.querySelectorAll('#tablaNotas th[data-col]').forEach(th => {
-          th.addEventListener('click', () => ordenarTabla(th.dataset.col));
+        th.addEventListener('click', () => ordenarTabla(th.dataset.col));
       });
 
       // --- CORRECCIÓN: Manejo del RESET (Botón Limpiar) para los estilos de bloqueo ---
       document.querySelector("form").addEventListener('reset', () => {
-          setTimeout(() => {
-              camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
-                  const campo = document.getElementById(id);
-                  const isLocked = localStorage.getItem(`bloqueado_${id}`) === 'true';
-                  
-                  if (!isLocked) {
-                      // **FIX**: Asegurar que los campos no bloqueados no tengan la clase visual gris
-                      campo.classList.remove("bloqueado"); 
-                      localStorage.removeItem(id); // Limpiar el valor temporal guardado
-                  } else {
-                      // Asegurar que los campos bloqueados mantengan el estilo
-                      campo.classList.add("bloqueado");
-                  }
-              });
-              resetearEstadoEdicion(); 
-              document.getElementById('titular').focus();
-          }, 10);
+        setTimeout(() => {
+          camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+            const campo = document.getElementById(id);
+            const isLocked = localStorage.getItem(`bloqueado_${id}`) === 'true';
+
+            if (!isLocked) {
+              // **FIX**: Asegurar que los campos no bloqueados no tengan la clase visual gris
+              campo.classList.remove("bloqueado");
+              localStorage.removeItem(id); // Limpiar el valor temporal guardado
+            } else {
+              // Asegurar que los campos bloqueados mantengan el estilo
+              campo.classList.add("bloqueado");
+            }
+          });
+          resetearEstadoEdicion();
+          const titular = document.getElementById('titular');
+          titular.style.height = 'auto'; // Resetear altura
+          titular.focus();
+        }, 10);
       });
 
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.campo')) {
-            document.querySelectorAll('.sugerencias').forEach(s => s.innerHTML = "");
+          document.querySelectorAll('.sugerencias').forEach(s => s.innerHTML = "");
         }
       });
-      
+
       // --- Listener global para atajos de teclado ---
       document.addEventListener('keydown', (e) => {
-          // Usar e.ctrlKey para Ctrl en Windows/Linux y e.metaKey para Cmd en Mac
-          const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-          
-          // ATALO PARA BLOQUEAR/DESBLOQUEAR (Ctrl + Shift + L)
-          if (isCtrlOrCmd && e.shiftKey && e.key.toLowerCase() === 'l') {
-              const activeElement = document.activeElement;
-              const tagName = activeElement.tagName.toLowerCase();
-              
-              if ((tagName === 'input' && (activeElement.type === 'text' || activeElement.type === 'date')) && activeElement.id) {
-                  e.preventDefault(); 
-                  
-                  const idCampo = activeElement.id;
-                  const checkboxId = `check${idCampo.charAt(0).toUpperCase() + idCampo.slice(1)}`;
-                  const checkbox = document.getElementById(checkboxId);
-                  
-                  if (checkbox) {
-                      // Simular el clic en el checkbox para alternar el estado
-                      checkbox.checked = !checkbox.checked;
-                      alternarBloqueo(idCampo); 
-                  }
-              }
-          } 
-          
-          // ATALHO PARA GUARDAR (Ctrl + Q)
-          else if (isCtrlOrCmd && e.key.toLowerCase() === 'q') {
-               e.preventDefault(); 
-               // Disparar el evento submit del formulario
-               const form = document.querySelector("form");
-               if (form) {
-                   form.dispatchEvent(new Event('submit', { cancelable: true }));
-               }
+        // Usar e.ctrlKey para Ctrl en Windows/Linux y e.metaKey para Cmd en Mac
+        const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+
+        // ATALO PARA BLOQUEAR/DESBLOQUEAR (Ctrl + Shift + L)
+        if (isCtrlOrCmd && e.shiftKey && e.key.toLowerCase() === 'l') {
+          const activeElement = document.activeElement;
+          const tagName = activeElement.tagName.toLowerCase();
+
+          if ((tagName === 'input' && (activeElement.type === 'text' || activeElement.type === 'date')) && activeElement.id) {
+            e.preventDefault();
+
+            const idCampo = activeElement.id;
+            const checkboxId = `check${idCampo.charAt(0).toUpperCase() + idCampo.slice(1)}`;
+            const checkbox = document.getElementById(checkboxId);
+
+            if (checkbox) {
+              // Simular el clic en el checkbox para alternar el estado
+              checkbox.checked = !checkbox.checked;
+              alternarBloqueo(idCampo);
+            }
           }
+        }
+
+        // ATALHO PARA GUARDAR (Ctrl + Q)
+        else if (isCtrlOrCmd && e.key.toLowerCase() === 'q') {
+          e.preventDefault();
+          // Disparar el evento submit del formulario
+          const form = document.querySelector("form");
+          if (form) {
+            form.dispatchEvent(new Event('submit', { cancelable: true }));
+          }
+        }
       });
     });
 
     document.querySelector("form").addEventListener("submit", e => {
       e.preventDefault();
-      
+
       const form = e.currentTarget;
-      
+
       // Pre-carga de nota para validación
       const nuevaNota = {};
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
@@ -1349,41 +1594,43 @@
 
       // 1. VALIDACIÓN CUSTOM (Mensaje de error si faltan campos)
       if (contieneCamposVacios(nuevaNota)) {
-          // Intentar enfocar el primer campo vacío para guiar al usuario
-          const primerCampoVacioId = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema').find(id => !nuevaNota[id]);
-          if (primerCampoVacioId) {
-              document.getElementById(primerCampoVacioId).focus();
-          }
-          mostrarMensaje('⚠️ Por favor, complete todos los campos requeridos (excepto Tema) antes de guardar.', 'error');
-          return; 
+        // Intentar enfocar el primer campo vacío para guiar al usuario
+        const primerCampoVacioId = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema').find(id => !nuevaNota[id]);
+        if (primerCampoVacioId) {
+          document.getElementById(primerCampoVacioId).focus();
+        }
+        mostrarMensaje('⚠️ Por favor, complete todos los campos requeridos (excepto Tema) antes de guardar.', 'error');
+        return;
       }
-      
+
       // 2. Proceso de Guardado
       if (filaEnEdicion !== null) {
-          notas[filaEnEdicion] = {...nuevaNota, ordenCaptura: notas[filaEnEdicion].ordenCaptura};
-          resetearEstadoEdicion();
+        notas[filaEnEdicion] = { ...nuevaNota, ordenCaptura: notas[filaEnEdicion].ordenCaptura };
+        resetearEstadoEdicion();
       } else {
-          nuevaNota.ordenCaptura = nextOrdenCaptura++; 
-          notas.push(nuevaNota);
+        nuevaNota.ordenCaptura = nextOrdenCaptura++;
+        notas.push(nuevaNota);
       }
-      
+
       guardarNotas();
-      ordenarTabla(ordenActual.columna, true); 
-      
+      ordenarTabla(ordenActual.columna, true);
+
       // 3. Limpiar y enfocar
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
-          // Limpiar solo si no está bloqueado
-          if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
-              document.getElementById(id).value = '';
-              localStorage.removeItem(id); 
-          }
+        // Limpiar solo si no está bloqueado
+        if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
+          document.getElementById(id).value = '';
+          localStorage.removeItem(id);
+        }
       });
-      
+
       // Mover el foco al campo Titular después de guardar
-      document.getElementById('titular').focus();
-      
+      const titular = document.getElementById('titular');
+      titular.style.height = 'auto'; // Resetear altura
+      titular.focus();
+
       // 4. MENSAJE DE ÉXITO
-      mostrarMensaje('✅ Nota guardada correctamente.', 'success'); 
+      mostrarMensaje('✅ Nota guardada correctamente.', 'success');
     });
   </script>
 
@@ -1391,4 +1638,5 @@
     © 2025 Institución Pública. Todos los derechos reservados.
   </footer>
 </body>
+
 </html>
