@@ -1066,7 +1066,7 @@
     }
 
     function contieneCamposVacios(nota) {
-      // Tema es el único campo opcional, por eso se filtra aquí
+      // Tema es opcional, por eso se filtra aquí
       const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema');
       for (const campo of camposARevisar) {
         if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
@@ -1084,14 +1084,12 @@
         const tr = document.createElement("tr");
         tr.dataset.index = notas.indexOf(nota);
 
-        // La alerta visual en la tabla es la misma, basada en la función contieneCamposVacios
-        if (contieneCamposVacios(nota)) {
-          tr.classList.add('alerta-vacio');
-        }
-
         camposDeDatos.forEach(campo => {
           const td = document.createElement("td");
           td.textContent = nota[campo];
+          if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
+            td.classList.add('alerta-vacio');
+          }
           td.setAttribute('data-label', encabezadosTabla[campo]);
           tr.appendChild(td);
         });
@@ -1394,7 +1392,7 @@
       if (!form) return;
 
       // **CORRECCIÓN:** Selecciona todos los inputs de texto y fecha, sin excepción de [readonly].
-      const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
+      const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"], textarea'));
 
       const currentIndex = focusableInputs.indexOf(currentElement);
       if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
@@ -1417,7 +1415,7 @@
       if (!form) return;
 
       // **CORRECCIÓN:** Selecciona todos los inputs de texto y fecha, sin excepción de [readonly].
-      const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"]'));
+      const focusableInputs = Array.from(form.querySelectorAll('input[type="text"], input[type="date"], textarea'));
 
       const currentIndex = focusableInputs.indexOf(currentElement);
       if (currentIndex > 0) { // Si no es el primer elemento
@@ -1554,7 +1552,7 @@
           const activeElement = document.activeElement;
           const tagName = activeElement.tagName.toLowerCase();
 
-          if ((tagName === 'input' && (activeElement.type === 'text' || activeElement.type === 'date')) && activeElement.id) {
+          if (((tagName === 'input' && (activeElement.type === 'text' || activeElement.type === 'date')) || tagName === 'textarea') && activeElement.id) {
             e.preventDefault();
 
             const idCampo = activeElement.id;
