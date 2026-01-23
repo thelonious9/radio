@@ -29,9 +29,6 @@
       --color-danger: #AA080C;
       /* Rojo para advertencias/eliminar */
       --color-danger-hover: #D20A11;
-      /* Rojo Vivo */
-      --color-telegram: #0088cc;
-      --color-telegram-hover: #0077b3;
       --color-sheets: #3C7550;
       /* Color Google Sheets */
       --color-sheets-hover: #316042;
@@ -381,14 +378,6 @@
       background-color: #616161;
     }
 
-    #btnTelegram {
-      background-color: var(--color-telegram);
-    }
-
-    #btnTelegram:hover {
-      background-color: var(--color-telegram-hover);
-    }
-
     #btnBorrarTodo {
       background-color: var(--color-danger);
     }
@@ -723,10 +712,6 @@
 
     <button id="btnExportar" onclick="exportarCSV()">
       <i class="fa-solid fa-file-csv"></i> Descargar CSV
-    </button>
-
-    <button id="btnTelegram" onclick="enviarTelegram()">
-      <i class="fa-brands fa-telegram"></i> Enviar por Telegram
     </button>
 
     <button id="btnBorrarTodo" onclick="borrarTodo()">
@@ -1273,49 +1258,6 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
-      }
-    }
-
-    // --- FUNCIÓN ACTUALIZADA: ENVIAR A TELEGRAM (CSV) ---
-    async function enviarTelegram() {
-      if (notas.length === 0) {
-        mostrarMensaje("No hay notas para enviar por Telegram.", 'error');
-        return;
-      }
-
-      try {
-        document.getElementById('btnTelegram').disabled = true;
-        document.getElementById('btnTelegram').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
-
-        const csvContenido = generarCSVContenido();
-        const blobCSV = new Blob([csvContenido], { type: "text/csv;charset=utf-8;" });
-        const nombreArchivoTelegram = generarNombreArchivoCSV();
-
-        const formData = new FormData();
-        formData.append('document', blobCSV, nombreArchivoTelegram);
-        formData.append('filename', nombreArchivoTelegram);
-        formData.append('caption', `📋 Reporte de notas de Radio (${nombreArchivoTelegram}) enviado automáticamente.`);
-
-        const response = await fetch(URL_APP_SCRIPT, { // Utiliza la constante global
-          method: 'POST',
-          body: formData
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.ok) {
-          mostrarMensaje(`✅ Reporte '${nombreArchivoTelegram}' enviado con éxito a través de Google App Script.`, 'success');
-        } else {
-          console.error("Error App Script:", result);
-          mostrarMensaje(`❌ Error al enviar. App Script reportó: ${result.error || result.description || 'Error desconocido'}`, 'error');
-        }
-
-      } catch (error) {
-        console.error("Error de conexión con App Script:", error);
-        mostrarMensaje("❌ Error de red o conexión al intentar comunicarse con Google App Script. Revisa la consola.", 'error');
-      } finally {
-        document.getElementById('btnTelegram').disabled = false;
-        document.getElementById('btnTelegram').innerHTML = '<i class="fa-brands fa-telegram"></i> Enviar por Telegram';
       }
     }
 
