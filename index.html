@@ -12,33 +12,22 @@
     /* Importación de Google Fonts para Roboto */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-    /* --- PALETA DE COLORES ACTUALIZADA (Rojo, Blanco, Negro) --- */
+    /* --- PALETA DE COLORES FINAL --- */
     :root {
-      --color-fondo-pagina: #1E1E1E;
-      /* Negro Oscuro (Fondo Principal) */
-      --color-fondo-form: #2C2C2C;
-      /* Gris Oscuro (Fondo del Formulario/Tabla) */
-      --color-primary: #D20A11;
-      /* Rojo Vivo (Botón Guardar/Encabezado Tabla) */
-      --color-primary-hover: #AA080C;
-      /* Rojo Oscuro (Hover) */
-      --color-secondary: #D20A11;
-      /* Rojo Vivo (Botón Limpiar/Iconos) */
-      --color-secondary-hover: #AA080C;
-      /* Rojo Oscuro (Hover) */
-      --color-danger: #AA080C;
-      /* Rojo para advertencias/eliminar */
-      --color-danger-hover: #D20A11;
-      --color-sheets: #3C7550;
-      /* Color Google Sheets */
+      --color-fondo-pagina: #31302F;       /* Oscuro Suave */
+      --color-fondo-form: #52504E;         /* Gris Cálido (Fondo del Formulario/Tabla) */
+      --color-primary: #6F0909;            /* Rojo Intenso (Botón Guardar/Encabezado Tabla) */
+      --color-primary-hover: #792929;      /* Rojo Suave (Hover) */
+      --color-secondary: #792929;          /* Rojo Suave (Botón Limpiar/Iconos) */
+      --color-secondary-hover: #6F0909;    /* Rojo Intenso (Hover) */
+      --color-danger: #6F0909;             /* Rojo Intenso para advertencias/eliminar */
+      --color-danger-hover: #792929;       /* Rojo Suave */
+      --color-sheets: #3C7550;             /* Color Google Sheets */
       --color-sheets-hover: #316042;
-      --color-dark-text: #1E1E1E;
-      /* Texto para inputs (fondo claro) */
-      --color-light-text: #FFFFFF;
-      /* Texto principal (fondo oscuro) */
-      --color-input-bg: #FFFFFF;
-      /* Fondo de los campos de texto: Blanco */
-      --color-alerta-vacio: #FFD700;
+      --color-dark-text: #31302F;          /* Texto para inputs (fondo claro) */
+      --color-light-text: #F0EAD1;         /* Texto principal (fondo oscuro) */
+      --color-input-bg: #F0EAD1;           /* Fondo de los campos de texto */
+      --color-alerta-vacio: #FFD700;       /* Amarillo/Oro llamativo para alertas */
       --radius: 0.25rem;
     }
 
@@ -303,6 +292,15 @@
 
     .alerta-vacio td {
       color: var(--color-dark-text) !important;
+    }
+
+    .fila-vacia {
+      background-color: var(--color-danger) !important;
+      color: var(--color-light-text);
+    }
+
+    .fila-vacia td {
+      color: var(--color-light-text);
     }
 
     .error-carga {
@@ -1068,6 +1066,10 @@
       notas.forEach((nota, indice) => {
         const tr = document.createElement("tr");
         tr.dataset.index = notas.indexOf(nota);
+
+        if (contieneCamposVacios(nota)) {
+          tr.classList.add('fila-vacia');
+        }
 
         camposDeDatos.forEach(campo => {
           const td = document.createElement("td");
