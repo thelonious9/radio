@@ -1531,7 +1531,11 @@
       // Pre-carga de nota para validación
       const nuevaNota = {};
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
-        nuevaNota[id] = document.getElementById(id).value.trim();
+        if (id === 'titular') {
+          nuevaNota[id] = document.getElementById(id).value.trim().replace(/\n/g, ' ');
+        } else {
+          nuevaNota[id] = document.getElementById(id).value.trim();
+        }
       });
 
       // 1. VALIDACIÓN CUSTOM (Mensaje de error si faltan campos)
