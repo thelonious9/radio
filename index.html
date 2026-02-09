@@ -14,20 +14,33 @@
 
     /* --- PALETA DE COLORES FINAL --- */
     :root {
-      --color-fondo-pagina: #31302F;       /* Oscuro Suave */
-      --color-fondo-form: #52504E;         /* Gris Cálido (Fondo del Formulario/Tabla) */
-      --color-primary: #6F0909;            /* Rojo Intenso (Botón Guardar/Encabezado Tabla) */
-      --color-primary-hover: #792929;      /* Rojo Suave (Hover) */
-      --color-secondary: #792929;          /* Rojo Suave (Botón Limpiar/Iconos) */
-      --color-secondary-hover: #6F0909;    /* Rojo Intenso (Hover) */
-      --color-danger: #6F0909;             /* Rojo Intenso para advertencias/eliminar */
-      --color-danger-hover: #792929;       /* Rojo Suave */
-      --color-sheets: #3C7550;             /* Color Google Sheets */
+      --color-fondo-pagina: #31302F;
+      /* Oscuro Suave */
+      --color-fondo-form: #52504E;
+      /* Gris Cálido (Fondo del Formulario/Tabla) */
+      --color-primary: #6F0909;
+      /* Rojo Intenso (Botón Guardar/Encabezado Tabla) */
+      --color-primary-hover: #792929;
+      /* Rojo Suave (Hover) */
+      --color-secondary: #792929;
+      /* Rojo Suave (Botón Limpiar/Iconos) */
+      --color-secondary-hover: #6F0909;
+      /* Rojo Intenso (Hover) */
+      --color-danger: #6F0909;
+      /* Rojo Intenso para advertencias/eliminar */
+      --color-danger-hover: #792929;
+      /* Rojo Suave */
+      --color-sheets: #3C7550;
+      /* Color Google Sheets */
       --color-sheets-hover: #316042;
-      --color-dark-text: #31302F;          /* Texto para inputs (fondo claro) */
-      --color-light-text: #F0EAD1;         /* Texto principal (fondo oscuro) */
-      --color-input-bg: #F0EAD1;           /* Fondo de los campos de texto */
-      --color-alerta-vacio: #FFD700;       /* Amarillo/Oro llamativo para alertas */
+      --color-dark-text: #31302F;
+      /* Texto para inputs (fondo claro) */
+      --color-light-text: #F0EAD1;
+      /* Texto principal (fondo oscuro) */
+      --color-input-bg: #F0EAD1;
+      /* Fondo de los campos de texto */
+      --color-alerta-vacio: #FFD700;
+      /* Amarillo/Oro llamativo para alertas */
       --radius: 0.25rem;
     }
 
@@ -1027,7 +1040,7 @@
       if (confirm("¿Estás seguro de que quieres BORRAR TODAS las notas capturadas? Esta acción es irreversible.")) {
         notas = [];
         nextOrdenCaptura = 1;
-        localStorage.removeItem('notasCapturadas');
+        guardarNotas();
         renderizarTabla();
         resetearEstadoEdicion();
         mostrarMensaje('🗑️ Todas las notas han sido borradas.', 'error');
@@ -1038,12 +1051,35 @@
       if (filaEnEdicion !== null) {
         const confirmar = confirm(`¿Eliminar nota #${notas[filaEnEdicion].ordenCaptura}?`);
         if (confirmar) {
+          // Guardar el estado de ordenación antes de re-indexar
+          const currentCol = ordenActual.columna;
+          const currentDir = ordenActual.direccion;
+
+          // 1. Eliminar la nota
           notas.splice(filaEnEdicion, 1);
+
+          // 2. Re-indexar todas las notas correlativamente (1, 2, 3...)
+          // Primero las ordenamos por su orden original para re-indexar bien
+          notas.sort((a, b) => a.ordenCaptura - b.ordenCaptura);
+          notas.forEach((nota, idx) => {
+            nota.ordenCaptura = idx + 1;
+          });
+
+          // 3. Actualizar el contador para la siguiente nota
+          nextOrdenCaptura = notas.length + 1;
+
+          // 4. Guardar cambios
           guardarNotas();
-          ordenarTabla(ordenActual.columna, true);
+
+          // 5. Restaurar la ordenación que tenía el usuario (si no era por orden de captura)
+          // Si era por orden de captura, simplemente re-renderizamos con el nuevo orden
+          ordenarTabla(currentCol, true);
+          ordenActual.direccion = currentDir; // Mantener la dirección original si cambió por el "true"
+          ordenarTabla(currentCol, false); // Aplicar de nuevo para asegurar dirección correcta
+
           document.querySelector("form").reset();
           resetearEstadoEdicion();
-          mostrarMensaje('🗑️ Nota eliminada correctamente.', 'success');
+          mostrarMensaje('🗑️ Nota eliminada correctamente y numeración actualizada.', 'success');
         }
       }
     }
