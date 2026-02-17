@@ -1556,6 +1556,43 @@
             form.dispatchEvent(new Event('submit', { cancelable: true }));
           }
         }
+
+        // ATAJO PARA DUPLICAR EL ÚLTIMO REGISTRO (Ctrl + Shift + J)
+        else if (isCtrlOrCmd && e.shiftKey && e.key.toLowerCase() === 'j') {
+          e.preventDefault();
+
+          if (notas.length === 0) {
+            mostrarMensaje("⚠️ No hay registros para duplicar.", 'error');
+            return;
+          }
+
+          // Obtiene el último registro guardado (el de mayor ordenCaptura)
+          const ultimoRegistro = notas.reduce((max, nota) => nota.ordenCaptura > max.ordenCaptura ? nota : max, notas[0]);
+
+          // Carga los valores en el formulario
+          camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+            const campo = document.getElementById(id);
+            if (campo) {
+              campo.value = ultimoRegistro[id] || '';
+              // Guardar en localStorage para persistencia si no está bloqueado
+              if (localStorage.getItem(`bloqueado_${id}`) !== 'true') {
+                localStorage.setItem(id, campo.value);
+              }
+            }
+          });
+
+          // Resetea el estado de edición para que se guarde como nuevo registro
+          resetearEstadoEdicion();
+
+          // Disparar blur para cargar sugerencias dependientes
+          document.getElementById("dependencia").dispatchEvent(new Event('blur'));
+          document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
+
+          // Enfoca el campo titular
+          document.getElementById('titular').focus();
+
+          mostrarMensaje("📋 Último registro duplicado y cargado en el formulario.");
+        }
       });
     });
 
