@@ -1266,27 +1266,30 @@
 
       try {
         const datosJSON = JSON.stringify(notas);
-        const formData = new FormData();
-        formData.append("notas", datosJSON);
-        formData.append("tipo", "datos_monitoreo");
 
-        // Usamos mode: 'no-cors' para evitar que el navegador bloquee la petición por falta de cabeceras CORS.
-        // Google Apps Script suele recibir los datos correctamente, pero no nos permite leer la respuesta de éxito.
+        // Usamos URLSearchParams para enviar los datos como application/x-www-form-urlencoded.
+        // Este formato es mucho más fiable para Google Apps Script cuando se usa 'no-cors'.
+        const params = new URLSearchParams();
+        params.append("notas", datosJSON);
+        params.append("tipo", "datos_monitoreo");
+
         await fetch(URL_APP_SCRIPT, {
           method: 'POST',
-          body: formData,
+          body: params,
           mode: 'no-cors',
-          redirect: 'follow'
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         });
 
-        // Al usar 'no-cors', no podemos verificar si el script devolvió "success". 
-        // Asumimos que se envió basándonos en que no saltó una excepción de red.
+        // En modo 'no-cors' no podemos leer la respuesta, pero el navegador 
+        // garantiza que la petición salió de la red local.
         mostrarMensaje(`✅ CSV descargado y datos enviados a Google Sheets.`, 'success');
-        console.log("Sincronización enviada (en modo no-cors)");
+        console.log("Datos enviados a través de URLSearchParams (no-cors)");
 
       } catch (e) {
         console.error("Fetch error:", e);
-        mostrarMensaje("💾 CSV descargado. ⚠️ Error de red al intentar sincronizar con Sheets.", 'error');
+        mostrarMensaje("💾 CSV descargado. ⚠️ Error de red al sincronizar con Sheets.", 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
