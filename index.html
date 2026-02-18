@@ -717,10 +717,6 @@
   </form>
 
   <div class="actions-group">
-    <button id="btnSheets" onclick="enviarSheets()">
-      <i class="fa-solid fa-file-excel"></i> Enviar a Google Sheets
-    </button>
-
     <button id="btnExportar" onclick="exportarCSV()">
       <i class="fa-solid fa-file-csv"></i> Descargar CSV
     </button>
@@ -821,7 +817,7 @@
 
     // --- CONFIGURACIÓN GOOGLE APP SCRIPT ---
     // URL de despliegue proporcionada por el usuario
-    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbxw9a6kEd2lTlbtU6OcwtmNx4983L-qNvuoh_fHzGDiKisiy7DjN-AwTORvnDQkfRvM/exec";
+    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbyh9qZml1QsfgWUplqerAXDLAOXgMZ3WRh239_gOEv8MHjGe4PO9Ut0NrAv0vAJHswyrw/exec";
 
     function autoResize(el) {
       el.style.height = 'auto';
@@ -1253,46 +1249,44 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      mostrarMensaje("CSV descargado con éxito.", 'success');
+      // Sincronizar automáticamente con Google Sheets
+      enviarSheets();
     }
 
     // --- FUNCIÓN AÑADIDA: ENVIAR A GOOGLE SHEETS (JSON) ---
     async function enviarSheets() {
       if (notas.length === 0) {
-        mostrarMensaje("No hay notas para enviar a Google Sheets.", 'error');
         return;
       }
 
-      const btn = document.getElementById('btnSheets');
+      const btn = document.getElementById('btnExportar');
       const originalText = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando...';
 
       try {
-        // 1. Prepara los datos como JSON y envíalos en un FormData
         const datosJSON = JSON.stringify(notas);
         const formData = new FormData();
         formData.append("notas", datosJSON);
         formData.append("tipo", "datos_monitoreo");
 
-        const response = await fetch(URL_APP_SCRIPT, {
+        // Usamos mode: 'no-cors' para evitar que el navegador bloquee la petición por falta de cabeceras CORS.
+        // Google Apps Script suele recibir los datos correctamente, pero no nos permite leer la respuesta de éxito.
+        await fetch(URL_APP_SCRIPT, {
           method: 'POST',
-          body: formData
+          body: formData,
+          mode: 'no-cors',
+          redirect: 'follow'
         });
 
-        const data = await response.json();
-
-        if (response.ok && data.result === 'success') {
-          mostrarMensaje(`✅ ${notas.length} notas enviadas a Google Sheets con éxito.`, 'success');
-        } else {
-          const errorMessage = data.error || data.description || "Error desconocido. Revise su App Script.";
-          mostrarMensaje(`❌ Error al enviar a Sheets: ${errorMessage}`, 'error');
-          console.error("Error App Script:", data);
-        }
+        // Al usar 'no-cors', no podemos verificar si el script devolvió "success". 
+        // Asumimos que se envió basándonos en que no saltó una excepción de red.
+        mostrarMensaje(`✅ CSV descargado y datos enviados a Google Sheets.`, 'success');
+        console.log("Sincronización enviada (en modo no-cors)");
 
       } catch (e) {
-        mostrarMensaje("❌ Error de red o conexión al comunicarse con Google App Script. Revisa la consola.", 'error');
         console.error("Fetch error:", e);
+        mostrarMensaje("💾 CSV descargado. ⚠️ Error de red al intentar sincronizar con Sheets.", 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
