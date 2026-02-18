@@ -1265,27 +1265,23 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando...';
 
       try {
-        const datosJSON = JSON.stringify(notas);
-
-        // Usamos URLSearchParams para enviar los datos como application/x-www-form-urlencoded.
-        // Este formato es mucho más fiable para Google Apps Script cuando se usa 'no-cors'.
-        const params = new URLSearchParams();
-        params.append("notas", datosJSON);
-        params.append("tipo", "datos_monitoreo");
+        // Enviamos el array completo como un string JSON plano.
+        // Usamos Blob con text/plain para máxima compatibilidad con no-cors y GAS postData.contents.
+        const payload = JSON.stringify(notas);
 
         await fetch(URL_APP_SCRIPT, {
           method: 'POST',
-          body: params,
           mode: 'no-cors',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
+            'Content-Type': 'text/plain'
+          },
+          body: payload
         });
 
         // En modo 'no-cors' no podemos leer la respuesta, pero el navegador 
         // garantiza que la petición salió de la red local.
-        mostrarMensaje(`✅ CSV descargado y datos enviados a Google Sheets.`, 'success');
-        console.log("Datos enviados a través de URLSearchParams (no-cors)");
+        mostrarMensaje(`✅ CSV descargado y notas enviadas a Google Sheets.`, 'success');
+        console.log("Datos enviados como JSON raw (no-cors)");
 
       } catch (e) {
         console.error("Fetch error:", e);
