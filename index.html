@@ -9,144 +9,184 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <style>
-    /* Importación de Google Fonts para Roboto */
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-    /* --- PALETA DE COLORES FINAL --- */
+    /* --- DISEÑO EDITORIAL INSPIRADO EN CAPTURA DE PORTADAS --- */
     :root {
-      --color-fondo-pagina: #31302F;
-      /* Oscuro Suave */
-      --color-fondo-form: #52504E;
-      /* Gris Cálido (Fondo del Formulario/Tabla) */
-      --color-primary: #6F0909;
-      /* Rojo Intenso (Botón Guardar/Encabezado Tabla) */
-      --color-primary-hover: #792929;
-      /* Rojo Suave (Hover) */
-      --color-secondary: #792929;
-      /* Rojo Suave (Botón Limpiar/Iconos) */
-      --color-secondary-hover: #6F0909;
-      /* Rojo Intenso (Hover) */
-      --color-danger: #6F0909;
-      /* Rojo Intenso para advertencias/eliminar */
-      --color-danger-hover: #792929;
-      /* Rojo Suave */
-      --color-sheets: #3C7550;
-      /* Color Google Sheets */
-      --color-sheets-hover: #316042;
-      --color-dark-text: #31302F;
-      /* Texto para inputs (fondo claro) */
-      --color-light-text: #F0EAD1;
-      /* Texto principal (fondo oscuro) */
-      --color-input-bg: #F0EAD1;
-      /* Fondo de los campos de texto */
-      --color-alerta-vacio: #FFD700;
-      /* Amarillo/Oro llamativo para alertas */
-      --radius: 0.25rem;
+      --color-fondo-pagina: #fcfcfc;
+      --color-fondo-form: #ffffff;
+      --color-primary: #15173D;
+      --color-primary-hover: #21255e;
+      --color-secondary: #15173D;
+      --color-secondary-hover: #21255e;
+      --color-danger: #d90000;
+      --color-danger-hover: #a10000;
+      --color-success: #15173D;
+      --color-error: #d90000;
+      --color-text: #15173D;
+      --color-border: #15173D;
+      --color-input-bg: #ffffff;
+      --color-dark-text: #15173D;
+      --color-light-text: #ffffff;
+      --radius: 0px; /* Bordes rectos */
     }
 
     body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: var(--color-fondo-pagina);
-      color: var(--color-light-text);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin: 0 auto;
+      max-width: 1440px;
+      padding: 40px;
+      background: var(--color-fondo-pagina);
+      color: var(--color-text);
+      letter-spacing: -0.3px;
     }
 
-    h1 {
-      font-size: 1.8rem;
-      color: var(--color-light-text);
-    }
-
+    /* --- HEADER ESTILO PERIÓDICO --- */
     header {
+      border-top: 5px solid var(--color-text);
+      border-bottom: 5px solid var(--color-text);
+      padding: 24px 0;
+      margin-bottom: 32px;
+      background: transparent;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      border-bottom: 2px solid var(--color-primary);
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-      background-color: var(--color-fondo-form);
-      padding: 10px 20px 15px 20px;
-      border-radius: var(--radius) var(--radius) 0 0;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -1.5px;
+      color: var(--color-text);
+    }
+
+    header h1::after {
+      content: '®';
+      font-size: 1.5rem;
+      vertical-align: super;
+      font-weight: 400;
     }
 
     header img {
-      height: 50px;
+      height: 80px;
       width: auto;
     }
 
-    /* --- FORMULARIO --- */
+    /* --- BLOQUE ARTÍSTICO (3 CÍRCULOS) --- */
+    .art-box {
+      background: var(--color-text);
+      width: 100%;
+      height: 120px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .art-circle {
+      width: 150px;
+      height: 150px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      position: absolute;
+      top: -15px;
+    }
+
+    .art-circle:nth-child(1) { left: calc(50% - 225px); }
+    .art-circle:nth-child(2) { left: calc(50% - 75px); }
+    .art-circle:nth-child(3) { left: calc(50% + 75px); }
+
+    /* --- FORMULARIO GRID --- */
     form {
       display: grid;
       grid-template-columns: auto 1fr auto 1fr;
-      gap: 15px 30px;
-      max-width: 900px;
-      margin: 0 auto 30px auto;
-      padding: 25px;
-      background-color: var(--color-fondo-form);
-      border-radius: var(--radius);
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      gap: 16px 24px;
+      max-width: 1200px;
+      margin: 0 auto 40px auto;
+      padding: 0;
+      background: transparent;
     }
 
     .form-logo-container {
-      grid-column: span 4;
-      text-align: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid var(--color-secondary);
-    }
-
-    .form-logo-container img {
-      height: 80px;
-      width: auto;
-      opacity: 0.9;
+      display: none; /* Ocultamos el logo extra del form para limpiar diseño */
     }
 
     label {
       font-weight: 700;
       align-self: center;
-      color: var(--color-light-text);
+      font-size: 1.1rem;
+      color: var(--color-text);
     }
 
     .campo {
-      position: relative;
       display: flex;
       align-items: center;
+      gap: 8px;
+      position: relative;
     }
 
-    .campo>input[type="text"],
-    .campo>input[type="date"],
-    .campo>textarea {
-      flex-grow: 1;
-      padding: 8px 10px;
-      border: 1px solid var(--color-primary-hover);
+    label[for="titular"],
+    .campo:has(#titular) {
+      grid-column: 1 / span 4;
+    }
+
+    label[for="radiodifusora"],
+    .campo:has(#radiodifusora) {
+      grid-column: 1 / span 4;
+    }
+    
+    .form-logo-container {
+      grid-column: 1 / span 4;
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--color-border);
+    }
+
+    .form-logo-container img {
+      height: 80px;
+      width: auto;
+    }
+
+    .campo > input[type="text"],
+    .campo > input[type="date"],
+    .campo > textarea {
+      flex: 1;
+      padding: 10px 14px;
+      border: 2px solid var(--color-border);
       border-radius: var(--radius);
-      margin-right: 10px;
-      background-color: var(--color-input-bg);
-      color: var(--color-dark-text);
-      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      background: #fff;
+      color: var(--color-text);
       font-family: inherit;
-      /* Asegurar que use Roboto */
-    }
-
-    .campo>input[type="text"]:focus,
-    .campo>input[type="date"]:focus,
-    .campo>textarea:focus {
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 0.2rem rgba(210, 10, 17, 0.25);
+      font-size: 1rem;
       outline: none;
+      transition: all 0.2s;
+      overflow: hidden; /* Ocultar scroll en texterea elástico */
+      resize: none; /* Desactivar redimensionado manual */
     }
 
-    .campo>textarea {
-      resize: none;
-      overflow-y: hidden;
-      min-height: 40px;
-      line-height: 1.4;
+    .campo > input:focus,
+    .campo > textarea:focus {
+      background-color: var(--color-text);
+      color: #fff;
     }
 
-    form>label:nth-child(8),
-    form>div:nth-child(9) {
-      grid-column: span 4;
+    /* Estilo del botón 🔽 */
+    .campo button[type="button"] {
+      padding: 10px 12px;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--color-text);
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .campo button[type="button"]:hover {
+      background: var(--color-text);
+      color: #fff;
     }
 
     /* --- SUGERENCIAS --- */
@@ -155,441 +195,240 @@
       top: 100%;
       left: 0;
       width: 100%;
-      border: 1px solid var(--color-primary-hover);
-      background: var(--color-input-bg);
-      max-height: 180px;
+      border: 2px solid var(--color-border);
+      background: #fff;
+      color: var(--color-text);
+      max-height: 220px;
       overflow-y: auto;
-      z-index: 100;
+      z-index: 1000; /* Prioridad alta */
       border-radius: var(--radius);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      color: var(--color-dark-text);
+      border-top: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     .sugerencia {
-      padding: 8px 10px;
+      padding: 10px 14px;
       cursor: pointer;
+      border-bottom: 1px solid #eee;
     }
 
     .sugerencia:hover,
     .sugerencia.resaltado {
-      background-color: #f0f0f0;
-      color: var(--color-dark-text);
+      background: var(--color-text);
+      color: #fff;
     }
 
     /* --- BLOQUEO --- */
     .bloqueado {
-      background-color: #e9e9e9 !important;
-      border: 1px solid var(--color-primary-hover) !important;
+      background: #e9e9e9 !important;
+      cursor: not-allowed;
+      color: #888 !important;
     }
 
-    input:required:invalid {
-      border-left: 5px solid var(--color-danger);
-    }
-
-    input:required:valid {
-      border-left: 5px solid #28a745;
-    }
-
-    /* --- BOTONES --- */
+    /* --- BOTONES DE ACCIÓN --- */
     .button-group-form {
-      grid-column: span 4;
+      grid-column: 1 / span 4;
       display: flex;
-      gap: 15px;
-      margin-top: 10px;
-      justify-content: flex-end;
+      gap: 14px;
+      justify-content: flex-start;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      border-top: 2px solid var(--color-border);
+      padding-top: 24px;
     }
 
     button {
-      padding: 10px 15px;
-      border: none;
+      padding: 12px 18px;
+      border: 2px solid var(--color-border);
       border-radius: var(--radius);
       cursor: pointer;
       font-weight: 700;
-      transition: background-color 0.2s ease, transform 0.1s;
-      color: var(--color-light-text);
-      margin-right: 5px;
+      color: var(--color-text);
+      background: transparent;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    #btnGuardar {
-      background-color: var(--color-primary);
-    }
-
-    #btnGuardar:hover {
-      background-color: var(--color-primary-hover);
-      transform: translateY(-1px);
-    }
-
-    #btnLimpiar {
-      background-color: var(--color-secondary);
-    }
-
-    #btnLimpiar:hover {
-      background-color: var(--color-secondary-hover);
-      transform: translateY(-1px);
+    button:hover {
+      background: var(--color-text);
+      color: #fff;
     }
 
     #btnEliminar {
-      background-color: var(--color-danger);
+      border-color: var(--color-error);
+      color: var(--color-error);
     }
 
     #btnEliminar:hover {
-      background-color: var(--color-danger-hover);
-      transform: translateY(-1px);
+      background: var(--color-error);
+      color: #fff;
     }
 
-    .campo button[type="button"] {
-      background-color: var(--color-secondary);
-      padding: 8px;
-      margin-right: 0;
+    #btnBorrarTodo {
+      border-color: var(--color-error);
+      color: var(--color-error);
     }
 
-    .campo button[type="button"]:hover {
-      background-color: var(--color-secondary-hover);
-    }
-
-    button i {
-      margin-right: 8px;
-      font-size: 1.1em;
+    #btnBorrarTodo:hover {
+      background: var(--color-error);
+      color: #fff;
     }
 
     /* --- TABLA --- */
     h2 {
-      margin-top: 40px;
-      color: var(--color-light-text);
-      border-bottom: 1px solid var(--color-secondary);
-      padding-bottom: 5px;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-top: 48px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--color-text);
+      padding-bottom: 10px;
+      display: inline-block;
+      color: var(--color-text);
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-      margin-top: 20px;
-      background-color: var(--color-fondo-form);
+      margin-top: 0;
+      background: #fff;
+      border: 2px solid var(--color-border);
     }
 
-    th,
-    td {
-      padding: 12px 15px;
-      border: 1px solid #3A3A3A;
+    th, td {
+      padding: 12px 10px;
+      border: 1px solid var(--color-border);
       text-align: left;
-      color: var(--color-light-text);
-      font-size: 0.85rem;
+      color: var(--color-text);
+      font-size: 0.95rem;
     }
 
     th {
-      background-color: var(--color-primary);
-      color: var(--color-light-text);
-      font-weight: 700;
+      background: #fff;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.85rem;
       position: sticky;
       top: 0;
+      z-index: 10;
     }
 
     tbody tr:nth-child(even) {
-      background-color: #353535;
+      background-color: #f9f9f9;
     }
 
     .editando {
-      background-color: var(--color-primary-hover) !important;
-      color: var(--color-light-text);
+      background-color: var(--color-text) !important;
+      color: #ffffff;
     }
 
     .editando td {
-      color: var(--color-light-text);
+      color: #ffffff;
     }
 
-    .alerta-vacio {
-      background-color: var(--color-alerta-vacio) !important;
-      color: var(--color-dark-text) !important;
-    }
-
-    .alerta-vacio td {
-      color: var(--color-dark-text) !important;
-    }
-
-    .fila-vacia {
-      background-color: var(--color-danger) !important;
-      color: var(--color-light-text);
-    }
-
-    .fila-vacia td {
-      color: var(--color-light-text);
-    }
-
-    .error-carga {
-      color: var(--color-danger);
-      font-weight: bold;
-      margin-top: 15px;
-      background-color: var(--color-input-bg);
-      padding: 10px;
-      border-radius: var(--radius);
-    }
-
-    footer {
-      margin-top: 40px;
-      border-top: 1px solid var(--color-secondary);
-      padding-top: 10px;
-      font-size: 0.9em;
-      color: var(--color-light-text);
-      text-align: center;
-    }
-
-    /* --- SORTING --- */
-    .sortable-header {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-    }
-
-    .sort-icon {
-      margin-left: 5px;
-      font-size: 0.8em;
-      opacity: 0.5;
-    }
-
-    .sorted .sort-icon {
-      opacity: 1;
-      color: var(--color-light-text);
-    }
-
-    .sorted.alerta-vacio .sort-icon {
-      color: var(--color-dark-text);
-    }
-
-    /* --- GRUPO DE ACCIONES (Globales) --- */
+    /* --- ACCIONES GLOBALES Y BUSCADOR --- */
     .actions-group {
       display: flex;
-      gap: 15px;
-      margin-top: 15px;
-      margin-bottom: 25px;
-      justify-content: flex-start;
-      align-items: center;
+      gap: 14px;
+      margin: 24px 0;
     }
 
-    /* Estilo del nuevo botón de Google Sheets */
-    #btnSheets {
-      background-color: var(--color-sheets);
-      /* Verde oscuro similar a Google Sheets */
-    }
-
-    #btnSheets:hover {
-      background-color: var(--color-sheets-hover);
-      transform: translateY(-1px);
-    }
-
-    /* Estilos existentes */
-    #btnExportar {
-      background-color: #4A4A4A;
-    }
-
-    /* Descargar CSV */
-    #btnExportar:hover {
-      background-color: #616161;
-    }
-
-    #btnBorrarTodo {
-      background-color: var(--color-danger);
-    }
-
-    #btnBorrarTodo:hover {
-      background-color: var(--color-danger-hover);
-      transform: translateY(-1px);
-    }
-
-    /* Botón Editar en Tabla */
-    .btn-accion-tabla {
-      padding: 8px 12px;
-      background-color: var(--color-secondary);
-      color: var(--color-light-text);
-    }
-
-    .btn-accion-tabla:hover {
-      background-color: var(--color-secondary-hover);
-    }
-
-    /* --- ESTILOS DEL BUSCADOR --- */
     .buscador-container {
+      margin: 32px 0 16px;
       position: relative;
-      margin-bottom: 15px;
-      max-width: 400px;
+      max-width: 420px;
     }
 
     #buscador {
       width: 100%;
-      padding: 10px 10px 10px 40px;
-      border: 1px solid var(--color-primary-hover);
+      padding: 12px 14px 12px 40px;
+      border: 2px solid var(--color-border);
       border-radius: var(--radius);
-      background-color: var(--color-input-bg);
-      color: var(--color-dark-text);
+      background: #fff;
+      color: var(--color-text);
+      font-family: inherit;
       font-size: 1rem;
-      box-sizing: border-box;
-      transition: all 0.2s ease;
-    }
-
-    #buscador:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 0.2rem rgba(210, 10, 17, 0.25);
     }
 
     .buscador-icon {
       position: absolute;
-      left: 12px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--color-primary);
-      font-size: 1.1rem;
+      color: var(--color-text);
     }
 
-    /* --- TOAST MESSAGES (Notificaciones) --- */
+    /* --- NOTIFICACIONES (TOAST) --- */
     #messageContainer {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
+      top: 24px;
+      right: 24px;
+      z-index: 2000;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .toast-message {
-      padding: 15px 20px;
-      border-radius: var(--radius);
-      color: var(--color-light-text);
+      padding: 16px 24px;
+      border: 2px solid var(--color-border);
+      background: #fff;
+      color: var(--color-text);
       font-weight: bold;
-      opacity: 0.95;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      transition: opacity 0.5s, transform 0.5s;
-      transform: translateY(0);
-      min-width: 250px;
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+      transition: all 0.3s;
     }
 
-    .toast-message.success {
-      background-color: #28a745;
-      /* Verde */
-    }
-
-    .toast-message.error {
-      background-color: var(--color-danger);
-      /* Rojo */
-    }
-
-    .toast-message.hide {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
+    .toast-message.success { border-color: var(--color-success); border-width: 4px; }
+    .toast-message.error { border-color: var(--color-error); border-width: 4px; }
 
     /* --- RESPONSIVE --- */
+    @media (max-width: 1024px) {
+      form { grid-template-columns: auto 1fr; }
+      .button-group-form { grid-column: 1 / span 2; }
+    }
+
     @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px;
-      }
-
-      form {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        padding: 15px;
-      }
-
-      form>label,
-      form>div,
-      .form-logo-container {
-        grid-column: span 1 !important;
-      }
-
-      .button-group-form {
-        justify-content: space-around;
-      }
-
-      .button-group-form button {
-        width: 32%;
-        margin-right: 0;
-      }
-
-      .actions-group {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .actions-group button {
-        width: 100%;
-        margin-bottom: 10px;
-      }
-
-      table,
-      thead,
-      tbody,
-      th,
-      td,
-      tr {
-        display: block;
-      }
-
-      thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-      }
-
-      tr {
-        border: 1px solid #3A3A3A;
-        margin-bottom: 10px;
-      }
-
-      td {
-        border: none;
-        border-bottom: 1px solid #4A4A4A;
-        position: relative;
-        padding-left: 50%;
-        text-align: right;
-        font-size: 0.9em;
-        color: var(--color-light-text);
-      }
-
-      td:before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align: left;
-        font-weight: 600;
-      }
-
-      td:last-child {
-        text-align: center;
-        padding-left: 10px;
-      }
-
-      .alerta-vacio td {
-        color: var(--color-dark-text) !important;
-      }
+      header { flex-direction: column; text-align: center; }
+      header h1 { font-size: 2.5rem; }
+      .art-box { display: none; }
+      form { grid-template-columns: 1fr; }
+      .button-group-form { grid-column: 1; flex-direction: column; }
+      label { margin-bottom: -10px; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr { border: 2px solid var(--color-border); margin-bottom: 12px; }
+      td { border: none; border-bottom: 1px solid #eee; position: relative; padding-left: 50%; text-align: right; }
+      td:before { content: attr(data-label); position: absolute; left: 10px; width: 45%; text-align: left; font-weight: 800; }
     }
   </style>
 </head>
 
 <body>
   <header>
+    <div>
+      <h1>Captura de Notas de Radio</h1>
+      <p>Ladies and gentlemen we are floating in space</p>
+    </div>
     <img src="./logo.png" alt="Logotipo institucional">
-    <h1>Sistema de Captura de Notas de Radio</h1>
   </header>
+
+  <div class="art-box">
+    <div class="art-circle"></div>
+    <div class="art-circle"></div>
+    <div class="art-circle"></div>
+  </div>
 
   <div id="messageContainer"></div>
 
-  <form>
+  <form id="formCaptura">
     <div class="form-logo-container">
-      <img src="./logo.png" alt="Logotipo del Formulario">
+      <img src="./logo.png" alt="Logotipo institucional">
     </div>
-
     <label for="usuario">Usuario:</label>
     <div class="campo">
       <input type="text" id="usuario" name="usuario" required>
@@ -706,25 +545,25 @@
         <i class="fa-solid fa-floppy-disk"></i> Guardar
       </button>
 
+      <button type="reset" id="btnLimpiar">
+        <i class="fa-solid fa-broom"></i> Limpiar
+      </button>
+
+      <button type="button" id="btnExportar" onclick="exportarCSV()">
+        <i class="fa-solid fa-download"></i> Exportar CSV
+      </button>
+
+      <!-- Botón dinámico para borrar nota en edición -->
       <button type="button" id="btnEliminar" style="display: none;" onclick="borrarNota()">
         <i class="fa-solid fa-trash-can"></i> Borrar Nota
       </button>
 
-      <button type="reset" id="btnLimpiar">
-        <i class="fa-solid fa-broom"></i> Limpiar
+      <button type="button" id="btnBorrarTodo" onclick="borrarTodo()">
+        <i class="fa-solid fa-skull-crossbones"></i> BORRAR TODO
       </button>
     </div>
   </form>
 
-  <div class="actions-group">
-    <button id="btnExportar" onclick="exportarCSV()">
-      <i class="fa-solid fa-file-csv"></i> Descargar CSV
-    </button>
-
-    <button id="btnBorrarTodo" onclick="borrarTodo()">
-      <i class="fa-solid fa-trash-can"></i> Borrar Todas
-    </button>
-  </div>
 
   <div id="erroresCarga" class="error-carga"></div>
 
@@ -820,6 +659,7 @@
     const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbyh9qZml1QsfgWUplqerAXDLAOXgMZ3WRh239_gOEv8MHjGe4PO9Ut0NrAv0vAJHswyrw/exec";
 
     function autoResize(el) {
+      if (!el) return;
       el.style.height = 'auto';
       el.style.height = (el.scrollHeight) + 'px';
     }
@@ -1205,6 +1045,10 @@
 
       document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
       tr.classList.add('editando');
+      
+      // Auto-resize titular al editar
+      setTimeout(() => autoResize(document.getElementById('titular')), 10);
+      
       window.scrollTo(0, 0);
     }
 
@@ -1581,9 +1425,13 @@
           document.getElementById("dependencia").dispatchEvent(new Event('blur'));
           document.getElementById("radiodifusora").dispatchEvent(new Event('blur'));
 
-          // Enfoca el campo titular
-          document.getElementById('titular').focus();
-
+          // Enfoca el campo titular y ajusta altura
+          const titular = document.getElementById('titular');
+          if (titular) {
+            titular.focus();
+            autoResize(titular);
+          }
+          
           mostrarMensaje("📋 Último registro duplicado y cargado en el formulario.");
         }
       });
@@ -1597,10 +1445,12 @@
       // Pre-carga de nota para validación
       const nuevaNota = {};
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
+        const value = document.getElementById(id).value;
         if (id === 'titular') {
-          nuevaNota[id] = document.getElementById(id).value.trim().replace(/\n/g, ' ');
+          // Reemplaza TODOS los saltos de línea (incluyendo múltiples) por un espacio único
+          nuevaNota[id] = value.replace(/\r?\n|\r/g, ' ').replace(/\s+/g, ' ').trim();
         } else {
-          nuevaNota[id] = document.getElementById(id).value.trim();
+          nuevaNota[id] = value.trim();
         }
       });
 
