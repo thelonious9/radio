@@ -330,6 +330,15 @@
       color: #ffffff;
     }
 
+    /* Resaltado para temas vacíos */
+    .fila-tema-vacio {
+      background-color: #ffffa1 !important; /* Amarillo suave legible */
+    }
+
+    .fila-tema-vacio td {
+      color: var(--color-text);
+    }
+
     /* --- ACCIONES GLOBALES Y BUSCADOR --- */
     .actions-group {
       display: flex;
@@ -943,6 +952,11 @@
           tr.classList.add('fila-vacia');
         }
 
+        // Resaltar si el campo Tema está vacío
+        if (!nota.tema || nota.tema.trim() === '') {
+          tr.classList.add('fila-tema-vacio');
+        }
+
         camposDeDatos.forEach(campo => {
           const td = document.createElement("td");
           td.textContent = nota[campo];
@@ -1475,7 +1489,14 @@
       }
 
       guardarNotas();
-      ordenarTabla(ordenActual.columna, true);
+
+      // Si no hay un filtro activo en el buscador, forzamos el orden por # descendente (nueva al principio)
+      const filtro = document.getElementById('buscador').value.trim();
+      if (filtro === '' && filaEnEdicion === null) {
+        ordenarTabla('ordenCaptura', true);
+      } else {
+        ordenarTabla(ordenActual.columna, true);
+      }
 
       // 3. Limpiar y enfocar
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
