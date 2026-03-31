@@ -502,11 +502,22 @@
       color: var(--color-text);
       font-weight: bold;
       box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
-      transition: all 0.3s;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 1;
+      transform: translateX(0);
     }
 
-    .toast-message.success { border-color: var(--color-success); border-width: 4px; }
-    .toast-message.error { border-color: var(--color-error); border-width: 4px; }
+    .toast-message.hide {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+
+    .toast-message.success { border-left: 8px solid #00a82d; }
+    .toast-message.error { border-left: 8px solid var(--color-error); }
 
     /* --- RESPONSIVE --- */
     @media (max-width: 1024px) {
@@ -1017,7 +1028,7 @@
         guardarNotas();
         renderizarTabla();
         resetearEstadoEdicion();
-        mostrarMensaje('🗑️ Todas las notas han sido borradas.', 'error');
+        mostrarMensaje('Todas las notas han sido borradas.', 'error');
       }
     }
 
@@ -1053,7 +1064,7 @@
 
           document.querySelector("form").reset();
           resetearEstadoEdicion();
-          mostrarMensaje('🗑️ Nota eliminada correctamente y numeración actualizada.', 'success');
+          mostrarMensaje('Nota eliminada correctamente y numeración actualizada.', 'success');
         }
       }
     }
@@ -1151,18 +1162,34 @@
       const container = document.getElementById('messageContainer');
       const toast = document.createElement('div');
       toast.className = `toast-message ${tipo}`;
-      toast.textContent = mensaje;
+      
+      // Iconos según el tipo
+      const icono = tipo === 'success' ? '<i class="fa-solid fa-circle-check" style="color: #00a82d;"></i>' : '<i class="fa-solid fa-circle-exclamation" style="color: var(--color-error);"></i>';
+      toast.innerHTML = `${icono} <span>${mensaje}</span>`;
+
+      // Permitir cerrar al hacer clic
+      toast.onclick = () => {
+        toast.classList.add('hide');
+        setTimeout(() => toast.remove(), 300);
+      };
 
       container.appendChild(toast);
 
-      // Auto-desaparecer después de 4 segundos
+      // Auto-desaparecer después de 5 segundos
       setTimeout(() => {
-        toast.classList.add('hide');
-        // Eliminar del DOM después de la transición
-        toast.addEventListener('transitionend', () => {
-          toast.remove();
-        });
-      }, 4000);
+        if (toast.parentNode) {
+          toast.classList.add('hide');
+          // Eliminar del DOM después de la transición
+          toast.addEventListener('transitionend', () => {
+            toast.remove();
+          }, { once: true });
+          
+          // Fallback por si la transición falla
+          setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+          }, 500);
+        }
+      }, 5000);
     }
 
     function editarNota(tr) {
@@ -1263,12 +1290,12 @@
 
         // En modo 'no-cors' no podemos leer la respuesta, pero el navegador 
         // garantiza que la petición salió de la red local.
-        mostrarMensaje(`✅ CSV descargado y notas enviadas a Google Sheets.`, 'success');
+        mostrarMensaje(`CSV descargado y notas enviadas a Google Sheets.`, 'success');
         console.log("Datos enviados como JSON raw (no-cors)");
 
       } catch (e) {
         console.error("Fetch error:", e);
-        mostrarMensaje("💾 CSV descargado. ⚠️ Error de red al sincronizar con Sheets.", 'error');
+        mostrarMensaje("CSV descargado. Error de red al sincronizar con Sheets.", 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
@@ -1542,7 +1569,7 @@
           e.preventDefault();
 
           if (notas.length === 0) {
-            mostrarMensaje("⚠️ No hay registros para duplicar.", 'error');
+            mostrarMensaje("No hay registros para duplicar.", 'error');
             return;
           }
 
@@ -1575,7 +1602,7 @@
             autoResize(titular);
           }
           
-          mostrarMensaje("📋 Último registro duplicado y cargado en el formulario.");
+          mostrarMensaje("Último registro duplicado y cargado en el formulario.");
         }
       });
     });
@@ -1604,7 +1631,7 @@
         if (primerCampoVacioId) {
           document.getElementById(primerCampoVacioId).focus();
         }
-        mostrarMensaje('⚠️ Por favor, complete todos los campos requeridos (excepto Tema) antes de guardar.', 'error');
+        mostrarMensaje('Por favor, complete todos los campos requeridos (excepto Tema) antes de guardar.', 'error');
         return;
       }
 
@@ -1642,7 +1669,7 @@
       titular.focus();
 
       // 4. MENSAJE DE ÉXITO
-      mostrarMensaje('✅ Nota guardada correctamente.', 'success');
+      mostrarMensaje('Nota guardada correctamente.', 'success');
     });
 
     // --- LÓGICA DE TEMA OSCURO ---
