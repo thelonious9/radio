@@ -678,6 +678,13 @@
       <div id="sugMunicipio" class="sugerencias"></div>
     </div>
 
+    <label for="id">ID:</label>
+    <div class="campo">
+      <input type="text" id="id" name="id" autocomplete="off" required>
+      <input type="checkbox" id="checkId" onchange="alternarBloqueo('id')" tabindex="-1">
+      <label for="checkId">🔒</label>
+    </div>
+
     <div class="button-group-form">
       <button type="submit" id="btnGuardar">
         <i class="fa-solid fa-floppy-disk"></i> Guardar
@@ -728,11 +735,14 @@
         <th data-col="ordenCaptura">
           <div class="sortable-header"># <span class="sort-icon"></span></div>
         </th>
-        <th data-col="usuario">
-          <div class="sortable-header">Usuario <span class="sort-icon"></span></div>
+        <th data-col="id">
+          <div class="sortable-header">ID <span class="sort-icon"></span></div>
         </th>
         <th data-col="fecha">
           <div class="sortable-header">Fecha <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="usuario">
+          <div class="sortable-header">Usuario <span class="sort-icon"></span></div>
         </th>
         <th data-col="radiodifusora">
           <div class="sortable-header">Radiodifusora <span class="sort-icon"></span></div>
@@ -781,11 +791,11 @@
     let nextOrdenCaptura = 1;
 
     // CAMPOS PARA RADIO
-    const camposDeDatos = ["ordenCaptura", "usuario", "fecha", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
+    const camposDeDatos = ["ordenCaptura", "id", "fecha", "usuario", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
 
     // ENCABEZADOS (Sin columna Telegram individual)
     const encabezadosTabla = {
-      "ordenCaptura": "#", "usuario": "Usuario", "fecha": "Fecha", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor",
+      "ordenCaptura": "#", "id": "ID", "fecha": "Fecha", "usuario": "Usuario", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor",
       "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género",
       "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "acciones": "Acciones"
     };
@@ -805,7 +815,7 @@
 
     // --- CONFIGURACIÓN GOOGLE APP SCRIPT ---
     // URL de despliegue proporcionada por el usuario
-    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbyh9qZml1QsfgWUplqerAXDLAOXgMZ3WRh239_gOEv8MHjGe4PO9Ut0NrAv0vAJHswyrw/exec";
+    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbx9GDcw3-JRPulO0ThsKLk6B5OKwB5b0K-sSLWJARNLzr17hhq2pLSkC1-jNorKXjY_pg/exec";
 
     function autoResize(el) {
       if (!el) return;
@@ -1226,7 +1236,7 @@
     }
 
     function generarCSVContenido() {
-      const cabeceras = ["#", "Usuario", "Fecha", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
+      const cabeceras = ["#", "ID", "Fecha", "Usuario", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
       const filas = [cabeceras];
 
       notas.forEach(nota => {
@@ -1275,9 +1285,17 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando...';
 
       try {
-        // Enviamos el array completo como un string JSON plano.
-        // Usamos Blob con text/plain para máxima compatibilidad con no-cors y GAS postData.contents.
-        const payload = JSON.stringify(notas);
+        // Ordenamos las propiedades de los objetos explícitamente según camposDeDatos
+        // Esto asegura que si Apps Script usa Object.values(), el orden sea el correcto
+        const notasOrdenadas = notas.map(nota => {
+          const obj = {};
+          camposDeDatos.forEach(key => {
+            obj[key] = nota[key] || "";
+          });
+          return obj;
+        });
+
+        const payload = JSON.stringify(notasOrdenadas);
 
         await fetch(URL_APP_SCRIPT, {
           method: 'POST',
