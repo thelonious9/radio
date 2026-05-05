@@ -1401,9 +1401,9 @@
         return true;
       }
 
-      // Si es el último input, intenta enfocar el botón de guardar
+      // Si es el último input, vuelve al primero
       if (currentIndex === focusableInputs.length - 1) {
-        document.getElementById('btnGuardar').focus();
+        focusableInputs[0].focus();
         return true;
       }
 
@@ -1503,6 +1503,7 @@
       // --- Agregar listeners de Enter para campos sin autocompletado ---
       document.getElementById('usuario').addEventListener('keydown', handleEnterKey);
       document.getElementById('fecha').addEventListener('keydown', handleEnterKey);
+      document.getElementById('id').addEventListener('keydown', handleEnterKey);
       document.getElementById('titular').addEventListener('keydown', handleEnterKey);
 
 
