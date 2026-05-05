@@ -1489,6 +1489,17 @@
       // --- Listener para el buscador en tiempo real ---
       document.getElementById('buscador').addEventListener('input', filtrarTabla);
 
+      // --- Lógica para el campo ID: Agregar N/A al empezar a escribir ---
+      document.getElementById('id').addEventListener('input', function(e) {
+        if (e.inputType === 'insertText' && this.value.length === 1) {
+          if (this.value.toUpperCase() === 'N') {
+            this.value = 'N/A';
+          } else {
+            this.value = 'N/A ' + this.value;
+          }
+        }
+      });
+
       // --- Agregar listeners de Enter para campos sin autocompletado ---
       document.getElementById('usuario').addEventListener('keydown', handleEnterKey);
       document.getElementById('fecha').addEventListener('keydown', handleEnterKey);
