@@ -696,6 +696,55 @@
       <label for="checkId">🔒</label>
     </div>
 
+    <label for="contenido">Contenido:</label>
+    <div class="campo" style="grid-column: 2 / span 3;">
+      <textarea id="contenido" name="contenido" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+    </div>
+
+    <label for="sintesis">Síntesis:</label>
+    <div class="campo" style="grid-column: 2 / span 3;">
+      <textarea id="sintesis" name="sintesis" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+    </div>
+
+    <label for="liga">Liga:</label>
+    <div class="campo">
+      <input type="text" id="liga" name="liga" autocomplete="off" placeholder="https://...">
+    </div>
+
+    <label for="duracion">Duración del segmento:</label>
+    <div class="campo">
+      <input type="number" id="duracion" name="duracion" min="0" style="flex:1; padding:10px 14px; border:2px solid var(--color-border); border-radius:var(--radius); background:var(--color-input-bg); color:var(--color-text); font-family:inherit; font-size:1rem; outline:none; transition:all 0.2s;">
+    </div>
+
+    <label for="medidaTiempo">Medida de tiempo:</label>
+    <div class="campo">
+      <input type="text" id="medidaTiempo" name="medidaTiempo" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('medidaTiempo','sugMedidaTiempo')" tabindex="-1">🔽</button>
+      <div id="sugMedidaTiempo" class="sugerencias"></div>
+    </div>
+
+    <label for="replica">Réplica:</label>
+    <div class="campo">
+      <input type="text" id="replica" name="replica" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('replica','sugReplica')" tabindex="-1">🔽</button>
+      <div id="sugReplica" class="sugerencias"></div>
+    </div>
+
+    <label for="medioOrigen">Medio de origen:</label>
+    <div class="campo">
+      <input type="text" id="medioOrigen" name="medioOrigen" autocomplete="off" placeholder="Texto abierto">
+    </div>
+
+    <label for="dependenciasMencionadas">Dependencias mencionadas:</label>
+    <div class="campo" style="grid-column: 2 / span 3;">
+      <textarea id="dependenciasMencionadas" name="dependenciasMencionadas" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+    </div>
+
+    <label for="personasMencionadas">Personas mencionadas:</label>
+    <div class="campo" style="grid-column: 2 / span 3;">
+      <textarea id="personasMencionadas" name="personasMencionadas" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+    </div>
+
     <div class="button-group-form">
       <button type="submit" id="btnGuardar">
         <i class="fa-solid fa-floppy-disk"></i> Guardar
@@ -807,6 +856,33 @@
         <th data-col="municipio">
           <div class="sortable-header">Municipio <span class="sort-icon"></span></div>
         </th>
+        <th data-col="contenido">
+          <div class="sortable-header">Contenido <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="sintesis">
+          <div class="sortable-header">Síntesis <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="liga">
+          <div class="sortable-header">Liga <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="duracion">
+          <div class="sortable-header">Duración <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="medidaTiempo">
+          <div class="sortable-header">Medida de tiempo <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="replica">
+          <div class="sortable-header">Réplica <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="medioOrigen">
+          <div class="sortable-header">Medio de origen <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="dependenciasMencionadas">
+          <div class="sortable-header">Dependencias mencionadas <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="personasMencionadas">
+          <div class="sortable-header">Personas mencionadas <span class="sort-icon"></span></div>
+        </th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -833,13 +909,18 @@
     };
 
     // CAMPOS PARA RADIO
-    const camposDeDatos = ["ordenCaptura", "id", "fecha", "usuario", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio"];
+    const camposDeDatos = ["ordenCaptura", "id", "fecha", "usuario", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio", "contenido", "sintesis", "liga", "duracion", "medidaTiempo", "replica", "medioOrigen", "dependenciasMencionadas", "personasMencionadas"];
+    // Campos opcionales que NO se validan como obligatorios
+    const camposOpcionales = ["ordenCaptura", "tema", "id", "contenido", "sintesis", "liga", "duracion", "medidaTiempo", "replica", "medioOrigen", "dependenciasMencionadas", "personasMencionadas"];
 
     // ENCABEZADOS
     const encabezadosTabla = {
       "ordenCaptura": "#", "id": "ID", "fecha": "Fecha", "usuario": "Usuario", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor",
       "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género",
-      "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio", "acciones": "Acciones"
+      "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio",
+      "contenido": "Contenido", "sintesis": "Síntesis", "liga": "Liga", "duracion": "Duración", "medidaTiempo": "Medida de tiempo",
+      "replica": "Réplica", "medioOrigen": "Medio de origen", "dependenciasMencionadas": "Dependencias mencionadas", "personasMencionadas": "Personas mencionadas",
+      "acciones": "Acciones"
     };
 
     let ordenActual = { columna: 'ordenCaptura', direccion: 'desc' };
@@ -1191,7 +1272,7 @@
 
     // --- REVISIÓN DE CAMPOS OBLIGATORIOS (Ningún campo en blanco salvo Tema e ID) ---
     function contieneCamposVacios(nota) {
-      const camposARevisar = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema' && c !== 'id');
+      const camposARevisar = camposDeDatos.filter(c => !camposOpcionales.includes(c));
       for (const campo of camposARevisar) {
         if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
           return true;
@@ -1342,7 +1423,7 @@
     }
 
     function generarCSVContenido() {
-      const cabeceras = ["#", "ID", "Fecha", "Usuario", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio"];
+      const cabeceras = ["#", "ID", "Fecha", "Usuario", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio", "Contenido", "Síntesis", "Liga", "Duración", "Medida de tiempo", "Réplica", "Medio de origen", "Dependencias mencionadas", "Personas mencionadas"];
       const filas = [cabeceras];
 
       notas.forEach(nota => {
@@ -1626,9 +1707,14 @@
       document.getElementById('id').addEventListener('keydown', handleEnterKey);
       document.getElementById('titular').addEventListener('keydown', handleEnterKey);
 
+      // Inicializar listas estáticas: Medida de tiempo y Réplica
+      autocompletar("medidaTiempo", "sugMedidaTiempo", ["Segundos", "Minutos"]);
+      autocompletar("replica", "sugReplica", ["Sí", "No"]);
+
       // Persistence & Locks
       camposDeDatos.filter(c => c !== 'ordenCaptura').forEach(id => {
         const campo = document.getElementById(id);
+        if (!campo) return;
         if (localStorage.getItem(id)) campo.value = localStorage.getItem(id);
         campo.addEventListener("input", () => localStorage.setItem(id, campo.value));
 
@@ -1879,9 +1965,9 @@
         }
       });
 
-      // 3. VALIDACIÓN DE CAMPOS OBLIGATORIOS (Ninguno en blanco salvo Tema e ID)
+      // 3. VALIDACIÓN DE CAMPOS OBLIGATORIOS (Ninguno en blanco salvo los opcionales)
       if (contieneCamposVacios(nuevaNota)) {
-        const primerCampoVacioId = camposDeDatos.filter(c => c !== 'ordenCaptura' && c !== 'tema' && c !== 'id').find(id => !nuevaNota[id]);
+        const primerCampoVacioId = camposDeDatos.filter(c => !camposOpcionales.includes(c)).find(id => !nuevaNota[id]);
         if (primerCampoVacioId) {
           document.getElementById(primerCampoVacioId).focus();
         }
@@ -1894,6 +1980,7 @@
       const vaciosOpcionales = [];
       if (!nuevaNota.tema || nuevaNota.tema.trim() === '') vaciosOpcionales.push('Tema');
       if (!nuevaNota.id || nuevaNota.id.trim() === '') vaciosOpcionales.push('ID');
+      // Los nuevos campos de texto libre son totalmente opcionales — no generan recordatorio
 
       if (vaciosOpcionales.length > 0) {
         mostrarMensaje(`Recordatorio para ${nombreUsuario}: La nota se guardó, pero dejaste el campo ${vaciosOpcionales.join(' e ')} en blanco.`, 'error');
