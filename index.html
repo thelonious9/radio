@@ -910,6 +910,7 @@
 
     // CAMPOS PARA RADIO
     const camposDeDatos = ["ordenCaptura", "id", "fecha", "usuario", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio", "contenido", "sintesis", "liga", "duracion", "medidaTiempo", "replica", "medioOrigen", "dependenciasMencionadas", "personasMencionadas"];
+    const camposParaSheets = [...camposDeDatos, "Registro"];
     // Campos opcionales que NO se validan como obligatorios
     const camposOpcionales = ["ordenCaptura", "tema", "id", "contenido", "sintesis", "liga", "duracion", "medidaTiempo", "replica", "medioOrigen", "dependenciasMencionadas", "personasMencionadas"];
 
@@ -937,7 +938,7 @@
     };
 
     // --- CONFIGURACIÓN GOOGLE APP SCRIPT ---
-    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbx9GDcw3-JRPulO0ThsKLk6B5OKwB5b0K-sSLWJARNLzr17hhq2pLSkC1-jNorKXjY_pg/exec";
+    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbxStPxVoHIRAZR5OWcEtIxWIIIYy_gDE-l6rfcDKKdHPuIVg5TYwjekia8vsuMg0E8jhg/exec";
 
     function autoResize(el) {
       if (!el) return;
@@ -1470,12 +1471,12 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sincronizando...';
 
       try {
+        const fechaRegistro = new Date().toISOString();
         const notasOrdenadas = notas.map(nota => {
-          const obj = {};
-          camposDeDatos.forEach(key => {
-            obj[key] = nota[key] || "";
-          });
-          return obj;
+          return Object.fromEntries(camposParaSheets.map(key => [
+            key,
+            key === "Registro" ? fechaRegistro : (nota[key] ?? "")
+          ]));
         });
 
         const payload = JSON.stringify(notasOrdenadas);
