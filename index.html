@@ -701,11 +701,6 @@
       <textarea id="contenido" name="contenido" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
     </div>
 
-    <label for="sintesis">Síntesis:</label>
-    <div class="campo" style="grid-column: 2 / span 3;">
-      <textarea id="sintesis" name="sintesis" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
-    </div>
-
     <label for="liga">Liga:</label>
     <div class="campo">
       <input type="text" id="liga" name="liga" autocomplete="off" placeholder="https://...">
@@ -740,9 +735,14 @@
       <textarea id="dependenciasMencionadas" name="dependenciasMencionadas" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
     </div>
 
-    <label for="personasMencionadas">Personas mencionadas:</label>
+    <label for="actorPrincipal">👤Actor principal:</label>
     <div class="campo" style="grid-column: 2 / span 3;">
-      <textarea id="personasMencionadas" name="personasMencionadas" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+      <textarea id="actorPrincipal" name="actorPrincipal" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+    </div>
+
+    <label for="otrosActores">👥 Otros actores:</label>
+    <div class="campo" style="grid-column: 2 / span 3;">
+      <textarea id="otrosActores" name="otrosActores" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
     </div>
 
     <div class="button-group-form">
@@ -756,6 +756,11 @@
 
       <button type="button" id="btnExportar" onclick="exportarCSV()">
         <i class="fa-solid fa-download"></i> Exportar CSV
+      </button>
+
+      <input type="file" id="archivoAudio" accept="audio/*" hidden>
+      <button type="button" id="btnSubirAudio">
+        <i class="fa-solid fa-cloud-arrow-up"></i> Subir audio
       </button>
 
       <!-- Botón dinámico para borrar nota en edición -->
@@ -859,9 +864,6 @@
         <th data-col="contenido">
           <div class="sortable-header">Contenido <span class="sort-icon"></span></div>
         </th>
-        <th data-col="sintesis">
-          <div class="sortable-header">Síntesis <span class="sort-icon"></span></div>
-        </th>
         <th data-col="liga">
           <div class="sortable-header">Liga <span class="sort-icon"></span></div>
         </th>
@@ -880,8 +882,11 @@
         <th data-col="dependenciasMencionadas">
           <div class="sortable-header">Dependencias mencionadas <span class="sort-icon"></span></div>
         </th>
-        <th data-col="personasMencionadas">
-          <div class="sortable-header">Personas mencionadas <span class="sort-icon"></span></div>
+        <th data-col="actorPrincipal">
+          <div class="sortable-header">👤Actor principal <span class="sort-icon"></span></div>
+        </th>
+        <th data-col="otrosActores">
+          <div class="sortable-header">👥 Otros actores <span class="sort-icon"></span></div>
         </th>
         <th>Acciones</th>
       </tr>
@@ -909,18 +914,18 @@
     };
 
     // CAMPOS PARA RADIO
-    const camposDeDatos = ["ordenCaptura", "id", "fecha", "usuario", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio", "contenido", "sintesis", "liga", "duracion", "medidaTiempo", "replica", "medioOrigen", "dependenciasMencionadas", "personasMencionadas"];
+    const camposDeDatos = ["ordenCaptura", "id", "fecha", "usuario", "radiodifusora", "titular", "autor", "programa", "dependencia", "organismo", "genero", "canal", "tema", "estatus", "municipio", "contenido", "liga", "duracion", "medidaTiempo", "replica", "medioOrigen", "dependenciasMencionadas", "actorPrincipal", "otrosActores"];
     const camposParaSheets = [...camposDeDatos, "Registro"];
     // Campos opcionales que NO se validan como obligatorios
-    const camposOpcionales = ["ordenCaptura", "tema", "id", "contenido", "sintesis", "liga", "duracion", "medidaTiempo", "replica", "medioOrigen", "dependenciasMencionadas", "personasMencionadas"];
+    const camposOpcionales = ["ordenCaptura", "tema", "id", "contenido", "liga", "duracion", "medidaTiempo", "replica", "medioOrigen", "dependenciasMencionadas", "actorPrincipal", "otrosActores"];
 
     // ENCABEZADOS
     const encabezadosTabla = {
       "ordenCaptura": "#", "id": "ID", "fecha": "Fecha", "usuario": "Usuario", "radiodifusora": "Radiodifusora", "titular": "Titular", "autor": "Autor",
       "programa": "Programa", "dependencia": "Dependencia", "organismo": "Organismo", "genero": "Género",
       "canal": "Canal", "tema": "Tema", "estatus": "Estatus", "municipio": "Municipio",
-      "contenido": "Contenido", "sintesis": "Síntesis", "liga": "Liga", "duracion": "Duración", "medidaTiempo": "Medida de tiempo",
-      "replica": "Réplica", "medioOrigen": "Medio de origen", "dependenciasMencionadas": "Dependencias mencionadas", "personasMencionadas": "Personas mencionadas",
+      "contenido": "Contenido", "liga": "Liga", "duracion": "Duración", "medidaTiempo": "Medida de tiempo",
+      "replica": "Réplica", "medioOrigen": "Medio de origen", "dependenciasMencionadas": "Dependencias mencionadas", "actorPrincipal": "👤Actor principal", "otrosActores": "👥 Otros actores",
       "acciones": "Acciones"
     };
 
@@ -938,7 +943,7 @@
     };
 
     // --- CONFIGURACIÓN GOOGLE APP SCRIPT ---
-    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbxStPxVoHIRAZR5OWcEtIxWIIIYy_gDE-l6rfcDKKdHPuIVg5TYwjekia8vsuMg0E8jhg/exec";
+    const URL_APP_SCRIPT = "https://script.google.com/macros/s/AKfycbwLPBVQDPd7FNbRRBqiJwCmZDL0xqrKfv4iI2gRp41qzuacwEZtMDfthGhFbp54tn9VCQ/exec";
 
     function autoResize(el) {
       if (!el) return;
@@ -1424,7 +1429,7 @@
     }
 
     function generarCSVContenido() {
-      const cabeceras = ["#", "ID", "Fecha", "Usuario", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio", "Contenido", "Síntesis", "Liga", "Duración", "Medida de tiempo", "Réplica", "Medio de origen", "Dependencias mencionadas", "Personas mencionadas"];
+      const cabeceras = ["#", "ID", "Fecha", "Usuario", "Radiodifusora", "Titular", "Autor", "Programa", "Dependencia", "Organismo", "Género", "Canal", "Tema", "Estatus", "Municipio", "Contenido", "Liga", "Duración", "Medida de tiempo", "Réplica", "Medio de origen", "Dependencias mencionadas", "👤Actor principal", "👥 Otros actores"];
       const filas = [cabeceras];
 
       notas.forEach(nota => {
@@ -1479,11 +1484,13 @@
           ]));
         });
 
-        const payload = JSON.stringify(notasOrdenadas);
+        const payload = JSON.stringify({
+          accion: "guardarTabla",
+          notas: notasOrdenadas
+        });
 
         await fetch(URL_APP_SCRIPT, {
           method: 'POST',
-          mode: 'no-cors',
           headers: {
             'Content-Type': 'text/plain'
           },
@@ -1497,6 +1504,76 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
+      }
+    }
+
+    async function subirAudioSeleccionado() {
+      const archivoInput = document.getElementById('archivoAudio');
+      const archivo = archivoInput.files[0];
+      const fecha = document.getElementById('fecha').value;
+      const radiodifusora = document.getElementById('radiodifusora').value.trim();
+      const btn = document.getElementById('btnSubirAudio');
+
+      if (!archivo) {
+        mostrarMensaje('Selecciona un archivo de audio antes de subirlo.', 'error');
+        return;
+      }
+      if (!fecha || !radiodifusora) {
+        mostrarMensaje('Completa Fecha y Radiodifusora antes de subir el audio.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      const textoOriginal = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...';
+
+      try {
+        const base64 = await new Promise((resolve, reject) => {
+          const lector = new FileReader();
+          lector.onload = () => resolve(lector.result.split(',')[1]);
+          lector.onerror = () => reject(new Error('No se pudo leer el archivo.'));
+          lector.readAsDataURL(archivo);
+        });
+
+        const respuesta = await fetch(URL_APP_SCRIPT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({
+            accion: 'subirAudio',
+            audio: {
+              base64,
+              mimeType: archivo.type || 'application/octet-stream',
+              nombre: archivo.name,
+              fecha,
+              radiodifusora
+            }
+          })
+        });
+
+        const respuestaTexto = await respuesta.text();
+        let resultado;
+        try {
+          resultado = JSON.parse(respuestaTexto);
+        } catch {
+          throw new Error(respuestaTexto || 'El servidor no devolvió una respuesta válida.');
+        }
+
+        if (!respuesta.ok || resultado.status !== 'success' || !resultado.url) {
+          throw new Error(resultado.error || 'El servidor no devolvió la URL del archivo.');
+        }
+
+        const campoLiga = document.getElementById('liga');
+        campoLiga.value = resultado.url;
+        campoLiga.dispatchEvent(new Event('input', { bubbles: true }));
+
+        mostrarMensaje('Audio enviado a la carpeta de Drive y URL agregada en Liga.', 'success');
+        archivoInput.value = '';
+      } catch (error) {
+        console.error('Error al subir audio:', error);
+        mostrarMensaje('No se pudo subir el audio. Revisa la conexión.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
       }
     }
 
@@ -1690,6 +1767,11 @@
       autocompletar("canal", "sugCanal", canalesList);
 
       document.getElementById('buscador').addEventListener('input', filtrarTabla);
+
+      const btnSubirAudio = document.getElementById('btnSubirAudio');
+      const archivoAudio = document.getElementById('archivoAudio');
+      btnSubirAudio.addEventListener('click', () => archivoAudio.click());
+      archivoAudio.addEventListener('change', subirAudioSeleccionado);
 
       // Lógica para el campo ID: Agregar N/A al empezar a escribir
       document.getElementById('id').addEventListener('input', function(e) {
