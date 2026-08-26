@@ -1525,7 +1525,7 @@
 
       btn.disabled = true;
       const textoOriginal = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando audio e IA...';
 
       try {
         const base64 = await new Promise((resolve, reject) => {
@@ -1555,22 +1555,45 @@
         try {
           resultado = JSON.parse(respuestaTexto);
         } catch {
-          throw new Error(respuestaTexto || 'El servidor no devolvió una respuesta válida.');
+          throw new Error(respuestaTexto || 'El servidor no devolvió un objeto JSON válido.');
         }
 
-        if (!respuesta.ok || resultado.status !== 'success' || !resultado.url) {
+        // 1. Extraer la URL devuelta (apoyando formato nuevo y anterior)
+        const urlFinal = resultado.url || resultado.liga || '';
+        if (!urlFinal) {
           throw new Error(resultado.error || 'El servidor no devolvió la URL del archivo.');
         }
 
+        // 2. Asignar Liga al Input
         const campoLiga = document.getElementById('liga');
-        campoLiga.value = resultado.url;
-        campoLiga.dispatchEvent(new Event('input', { bubbles: true }));
+        if (campoLiga) {
+          campoLiga.value = urlFinal;
+          localStorage.setItem('liga', urlFinal);
+          campoLiga.dispatchEvent(new Event('input', { bubbles: true }));
+        }
 
-        mostrarMensaje('Audio enviado a la carpeta de Drive y URL agregada en Liga.', 'success');
+        // 3. Asignar Transcripción al Textarea de Contenido
+        const campoContenido = document.getElementById('contenido');
+        const textoTranscrito = resultado.transcripcion || resultado.texto || '';
+
+        if (campoContenido) {
+          campoContenido.value = textoTranscrito;
+          localStorage.setItem('contenido', textoTranscrito);
+          
+          // Ajustar altura elástica del textarea
+          autoResize(campoContenido);
+          campoContenido.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        if (textoTranscrito) {
+          mostrarMensaje('Audio respaldado en Drive y transcrito exitosamente en Contenido.', 'success');
+        } else {
+          mostrarMensaje('Audio en Drive. No se obtuvo texto de transcripción.', 'error');
+        }
         archivoInput.value = '';
       } catch (error) {
-        console.error('Error al subir audio:', error);
-        mostrarMensaje('No se pudo subir el audio. Revisa la conexión.', 'error');
+        console.error('Error al subir/transcribir audio:', error);
+        mostrarMensaje('Error al procesar: ' + error.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = textoOriginal;
