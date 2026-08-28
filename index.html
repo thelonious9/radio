@@ -727,7 +727,9 @@
 
     <label for="medioOrigen">Medio de origen:</label>
     <div class="campo">
-      <input type="text" id="medioOrigen" name="medioOrigen" autocomplete="off" placeholder="Texto abierto">
+      <input type="text" id="medioOrigen" name="medioOrigen" autocomplete="off">
+      <button type="button" onclick="mostrarSugerencias('medioOrigen','sugMedioOrigen')" tabindex="-1">🔽</button>
+      <div id="sugMedioOrigen" class="sugerencias"></div>
     </div>
 
     <label for="dependenciasMencionadas">Dependencias mencionadas:</label>
@@ -903,14 +905,15 @@
     // ESTRUCTURA DE LISTAS PERMITIDAS PARA VALIDACIÓN
     const listasParaValidar = {
       radiodifusoras: [],
-      autores: [],
+      autores: {},
       programas: {},
       dependencias: [],
       organismos: {},
       generos: [],
-      canales: [],
+      canales: {},
       estatus: [],
-      municipios: []
+      municipios: [],
+      medioOrigen: []
     };
 
     // CAMPOS PARA RADIO
@@ -934,12 +937,12 @@
     // RUTAS RELATIVAS
     const urls = {
       dependencias: "./Dependencia.csv",
-      radiodifusoras: "./Radiodifusora.csv",
       generos: "./Genero.csv",
       estatus: "./Estatus.csv",
       temas: "./Tema.csv",
       municipios: "./Municipio.csv",
-      autores: "./Autor.csv"
+      origenes: "./Origen.csv",
+      medioFirma: "./MedioFirma.csv"
     };
 
     // --- CONFIGURACIÓN GOOGLE APP SCRIPT ---
@@ -977,7 +980,42 @@
         const buffer = await res.arrayBuffer();
         const decoder = new TextDecoder('utf-8');
         const texto = decoder.decode(buffer);
-        return texto.split('\n').map(linea => linea.split(','));
+        const filas = [];
+        let fila = [];
+        let campo = "";
+        let entreComillas = false;
+
+        for (let i = 0; i < texto.length; i++) {
+          const caracter = texto[i];
+          const siguiente = texto[i + 1];
+
+          if (caracter === '"') {
+            if (entreComillas && siguiente === '"') {
+              campo += '"';
+              i++;
+            } else {
+              entreComillas = !entreComillas;
+            }
+          } else if (caracter === ',' && !entreComillas) {
+            fila.push(campo);
+            campo = "";
+          } else if ((caracter === '\n' || caracter === '\r') && !entreComillas) {
+            if (caracter === '\r' && siguiente === '\n') i++;
+            fila.push(campo);
+            if (fila.some(valor => valor.trim() !== "")) filas.push(fila);
+            fila = [];
+            campo = "";
+          } else {
+            campo += caracter;
+          }
+        }
+
+        if (campo || fila.length > 0) {
+          fila.push(campo);
+          if (fila.some(valor => valor.trim() !== "")) filas.push(fila);
+        }
+
+        return filas;
       } catch (e) {
         document.getElementById("erroresCarga").innerText += `Error al cargar ${url}: ${e.message}\n`;
         return [];
@@ -988,7 +1026,7 @@
       if (!filas || filas.length === 0) return [];
       filas[0][0] = filas[0][0].replace(/^\uFEFF/, "");
       const encabezado = filas[0].map(c => (c || "").toLowerCase()).join(",");
-      const tieneEncabezado = encabezado.includes("dependencia") || encabezado.includes("radiodifusora") || encabezado.includes("género");
+      const tieneEncabezado = encabezado.includes("dependencia") || encabezado.includes("radiodifusora") || encabezado.includes("género") || encabezado.includes("medio,programa,autor,canal");
       if (tieneEncabezado) filas = filas.slice(1);
       return filas.map(r => r.map(c => (c || "").replace(/<[^>]+>/g, "").trim())).filter(r => r[0]);
     }
@@ -1012,13 +1050,14 @@
       return Array.from(new Set(filas.map(r => r[0]))).sort((a, b) => a.localeCompare(b, 'es'));
     }
 
-    async function cargarRadiodifusoras(url) {
+    async function cargarMediosFirma(url) {
       const filas = limpiarFilasCSV(await cargarCSV(url));
       const radioClaves = new Set();
       const canalMap = {};
       const programaMap = {};
+      const autorMap = {};
 
-      filas.forEach(([radio, canal, programa]) => {
+      filas.forEach(([radio, programa, autor, canal]) => {
         if (!radio) return;
         radioClaves.add(radio);
         
@@ -1030,25 +1069,35 @@
           programaMap[radio] = programaMap[radio] || new Set();
           programaMap[radio].add(programa);
         }
+        if (autor) {
+          autorMap[radio] = autorMap[radio] || new Set();
+          autorMap[radio].add(autor);
+        }
       });
 
       const claves = Array.from(radioClaves).sort((a, b) => a.localeCompare(b, 'es'));
       const canalArrays = {};
       const programaArrays = {};
+      const autorArrays = {};
 
       claves.forEach(k => {
         canalArrays[k] = canalMap[k] ? Array.from(canalMap[k]).sort((a, b) => a.localeCompare(b, 'es')) : [];
         programaArrays[k] = programaMap[k] ? Array.from(programaMap[k]).sort((a, b) => a.localeCompare(b, 'es')) : [];
+        autorArrays[k] = autorMap[k] ? Array.from(autorMap[k]).sort((a, b) => a.localeCompare(b, 'es')) : [];
       });
 
-      return { claves, canalMap: canalArrays, programaMap: programaArrays };
+      return { claves, canalMap: canalArrays, programaMap: programaArrays, autorMap: autorArrays };
     }
 
 
     function autocompletar(idCampo, idSugerencias, lista, callback) {
       const campo = document.getElementById(idCampo);
       const contenedor = document.getElementById(idSugerencias);
+      campo._listaAutocompletado = lista;
+      campo._callbackAutocompletado = callback;
       campo.dataset.lista = JSON.stringify(lista);
+      if (campo._autocompletadoInicializado) return;
+      campo._autocompletadoInicializado = true;
       let indice = -1;
 
       campo.addEventListener("input", () => {
@@ -1056,7 +1105,7 @@
         contenedor.innerHTML = "";
         indice = -1;
         if (!valor) return;
-        const sugerencias = lista.filter(item => item.toLowerCase().includes(valor));
+        const sugerencias = campo._listaAutocompletado.filter(item => item.toLowerCase().includes(valor));
         sugerencias.forEach((s, i) => {
           const div = document.createElement("div");
           div.textContent = s;
@@ -1065,7 +1114,7 @@
           div.onclick = () => {
             campo.value = s;
             contenedor.innerHTML = "";
-            if (callback) callback(s);
+            if (campo._callbackAutocompletado) campo._callbackAutocompletado(s);
             focusNextInput(campo);
           };
           contenedor.appendChild(div);
@@ -1107,7 +1156,7 @@
 
           if (valorSeleccionado) {
             campo.value = valorSeleccionado;
-            if (callback) callback(campo.value);
+            if (campo._callbackAutocompletado) campo._callbackAutocompletado(campo.value);
           }
 
           contenedor.innerHTML = "";
@@ -1717,30 +1766,40 @@
         autocompletar("organismo", "sugOrg", orgMap[dep] || []);
       });
 
-      const radioData = await cargarRadiodifusoras(urls.radiodifusoras);
+      const radioData = await cargarMediosFirma(urls.medioFirma);
       const radioCanalMap = radioData.canalMap;
       const radioProgramaMap = radioData.programaMap;
+      const radioAutorMap = radioData.autorMap;
 
       listasParaValidar.radiodifusoras = radioData.claves;
       listasParaValidar.programas = radioData.programaMap;
+      listasParaValidar.autores = radioData.autorMap;
+      listasParaValidar.canales = radioData.canalMap;
 
-      const actualizarCanalYPrograma = (radioKey) => {
-        // 1. Autocompletar el campo Canal con la columna Canal de Radiodifusora.csv
-        const canales = radioCanalMap[radioKey] || [];
-        if (canales.length > 0) {
-          document.getElementById("canal").value = canales[0];
+      const actualizarCamposPorRadiodifusora = (radioKey, limpiarValores = true) => {
+        if (limpiarValores) {
+          document.getElementById("autor").value = "";
+          document.getElementById("programa").value = "";
+          document.getElementById("canal").value = "";
         }
 
-        // 2. Autocompletar y actualizar sugerencias de Programa
+        const autores = radioAutorMap[radioKey] || [];
         const programas = radioProgramaMap[radioKey] || [];
+        const canales = radioCanalMap[radioKey] || [];
+        autocompletar("autor", "sugAutor", autores);
         autocompletar("programa", "sugPrograma", programas);
+        autocompletar("canal", "sugCanal", canales);
+
+        if (canales.length === 1) {
+          document.getElementById("canal").value = canales[0];
+        }
         if (programas.length === 1) {
           document.getElementById("programa").value = programas[0];
         }
       };
 
       autocompletar("radiodifusora", "sugRadiodifusora", radioData.claves, radio => {
-        actualizarCanalYPrograma(radio);
+        actualizarCamposPorRadiodifusora(radio);
       });
 
       // Blur events
@@ -1756,16 +1815,23 @@
         const key = findKeyCaseInsensitive(radioProgramaMap, val);
         if (key) {
           e.target.value = key;
-          actualizarCanalYPrograma(key);
+          actualizarCamposPorRadiodifusora(key, false);
         } else {
+          document.getElementById("autor").value = "";
+          document.getElementById("programa").value = "";
+          document.getElementById("canal").value = "";
+          autocompletar("autor", "sugAutor", []);
           autocompletar("programa", "sugPrograma", []);
+          autocompletar("canal", "sugCanal", []);
         }
       });
 
 
       // Inicializar vacíos
       autocompletar("organismo", "sugOrg", []);
+      autocompletar("autor", "sugAutor", []);
       autocompletar("programa", "sugPrograma", []);
+      autocompletar("canal", "sugCanal", []);
 
       const generosList = await cargarLista(urls.generos);
       listasParaValidar.generos = generosList;
@@ -1781,13 +1847,9 @@
       listasParaValidar.municipios = municipiosList;
       autocompletar("municipio", "sugMunicipio", municipiosList);
 
-      const autoresList = await cargarLista(urls.autores);
-      listasParaValidar.autores = autoresList;
-      autocompletar("autor", "sugAutor", autoresList);
-
-      const canalesList = await cargarLista("./Canal.csv");
-      listasParaValidar.canales = canalesList;
-      autocompletar("canal", "sugCanal", canalesList);
+      const mediosOrigenList = await cargarLista(urls.origenes);
+      listasParaValidar.medioOrigen = mediosOrigenList;
+      autocompletar("medioOrigen", "sugMedioOrigen", mediosOrigenList);
 
       document.getElementById('buscador').addEventListener('input', filtrarTabla);
 
@@ -2011,12 +2073,11 @@
       // 1. VALIDACIÓN DE LISTAS (No permite guardar si la información ingresada no está en las listas, EXCEPTO Tema e ID)
       const camposAValidar = [
         { id: 'radiodifusora', lista: listasParaValidar.radiodifusoras, nombre: 'Radiodifusora' },
-        { id: 'autor', lista: listasParaValidar.autores, nombre: 'Autor' },
         { id: 'dependencia', lista: listasParaValidar.dependencias, nombre: 'Dependencia' },
         { id: 'genero', lista: listasParaValidar.generos, nombre: 'Género' },
-        { id: 'canal', lista: listasParaValidar.canales, nombre: 'Canal' },
         { id: 'estatus', lista: listasParaValidar.estatus, nombre: 'Estatus' },
-        { id: 'municipio', lista: listasParaValidar.municipios, nombre: 'Municipio' }
+        { id: 'municipio', lista: listasParaValidar.municipios, nombre: 'Municipio' },
+        { id: 'medioOrigen', lista: listasParaValidar.medioOrigen, nombre: 'Medio de origen' }
       ];
 
       for (const campo of camposAValidar) {
@@ -2033,9 +2094,24 @@
       const valorPrograma = document.getElementById('programa').value.trim();
       if (valorPrograma && valorRadio) {
         const progsValidos = listasParaValidar.programas[valorRadio] || [];
-        if (progsValidos.length > 0 && !progsValidos.includes(valorPrograma)) {
+        if (!progsValidos.includes(valorPrograma)) {
           mostrarMensaje(`Error: El valor "${valorPrograma}" en el campo Programa no es válido para la radiodifusora "${valorRadio}".`, 'error');
           document.getElementById('programa').focus();
+          return;
+        }
+      }
+
+      // Validación de Autor y Canal (dependientes de Radiodifusora)
+      const valoresDependientes = [
+        { id: 'autor', mapa: listasParaValidar.autores, nombre: 'Autor' },
+        { id: 'canal', mapa: listasParaValidar.canales, nombre: 'Canal' }
+      ];
+      for (const campo of valoresDependientes) {
+        const valor = document.getElementById(campo.id).value.trim();
+        const valoresValidos = campo.mapa[valorRadio] || [];
+        if (valor && valorRadio && !valoresValidos.includes(valor)) {
+          mostrarMensaje(`Error: El valor "${valor}" en el campo ${campo.nombre} no es válido para la radiodifusora "${valorRadio}".`, 'error');
+          document.getElementById(campo.id).focus();
           return;
         }
       }
