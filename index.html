@@ -27,7 +27,8 @@
       --color-input-bg: #ffffff;
       --color-dark-text: #15173D;
       --color-light-text: #ffffff;
-      --radius: 0px; /* Bordes rectos */
+      --radius: 0px;
+      /* Bordes rectos */
       --table-zoom: 1;
       --color-blocked-bg: #eaecf0;
     }
@@ -143,9 +144,17 @@
       top: -15px;
     }
 
-    .art-circle:nth-child(1) { left: calc(50% - 225px); }
-    .art-circle:nth-child(2) { left: calc(50% - 75px); }
-    .art-circle:nth-child(3) { left: calc(50% + 75px); }
+    .art-circle:nth-child(1) {
+      left: calc(50% - 225px);
+    }
+
+    .art-circle:nth-child(2) {
+      left: calc(50% - 75px);
+    }
+
+    .art-circle:nth-child(3) {
+      left: calc(50% + 75px);
+    }
 
     /* --- FORMULARIO GRID --- */
     form {
@@ -159,7 +168,8 @@
     }
 
     .form-logo-container {
-      display: none; /* Ocultamos el logo extra del form para limpiar diseño */
+      display: none;
+      /* Ocultamos el logo extra del form para limpiar diseño */
     }
 
     label {
@@ -185,7 +195,7 @@
     .campo:has(#radiodifusora) {
       grid-column: 1 / span 4;
     }
-    
+
     .form-logo-container {
       grid-column: 1 / span 4;
       text-align: center;
@@ -199,9 +209,9 @@
       width: auto;
     }
 
-    .campo > input[type="text"],
-    .campo > input[type="date"],
-    .campo > textarea {
+    .campo>input[type="text"],
+    .campo>input[type="date"],
+    .campo>textarea {
       flex: 1;
       padding: 10px 14px;
       border: 2px solid var(--color-border);
@@ -212,12 +222,14 @@
       font-size: 1rem;
       outline: none;
       transition: all 0.2s;
-      overflow: hidden; /* Ocultar scroll en texterea elástico */
-      resize: none; /* Desactivar redimensionado manual */
+      overflow: hidden;
+      /* Ocultar scroll en texterea elástico */
+      resize: none;
+      /* Desactivar redimensionado manual */
     }
 
-    .campo > input:focus,
-    .campo > textarea:focus {
+    .campo>input:focus,
+    .campo>textarea:focus {
       background-color: var(--color-text);
       color: #fff;
     }
@@ -250,10 +262,11 @@
       color: var(--color-text);
       max-height: 220px;
       overflow-y: auto;
-      z-index: 1000; /* Prioridad alta */
+      z-index: 1000;
+      /* Prioridad alta */
       border-radius: var(--radius);
       border-top: none;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .sugerencia {
@@ -408,7 +421,8 @@
       border: 2px solid var(--color-border);
     }
 
-    th, td {
+    th,
+    td {
       padding: 12px 10px;
       border: 1px solid var(--color-border);
       text-align: left;
@@ -423,11 +437,145 @@
       position: sticky;
       top: 0;
       z-index: 10;
+      white-space: nowrap;
     }
 
     td {
       font-size: calc(0.95rem * var(--table-zoom));
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: default;
     }
+
+    /* Anchos específicos por columna para mejor distribución */
+    #tablaNotas td:nth-child(1) {
+      max-width: 50px;
+    }
+
+    /* # */
+    #tablaNotas td:nth-child(2) {
+      max-width: 70px;
+    }
+
+    /* ID */
+    #tablaNotas td:nth-child(3) {
+      max-width: 95px;
+    }
+
+    /* Fecha */
+    #tablaNotas td:nth-child(4) {
+      max-width: 100px;
+    }
+
+    /* Usuario */
+    #tablaNotas td:nth-child(5) {
+      max-width: 130px;
+    }
+
+    /* Radiodifusora */
+    #tablaNotas td:nth-child(6) {
+      max-width: 220px;
+    }
+
+    /* Titular */
+    #tablaNotas td:nth-child(7) {
+      max-width: 130px;
+    }
+
+    /* Autor */
+    #tablaNotas td:nth-child(8) {
+      max-width: 130px;
+    }
+
+    /* Programa */
+    #tablaNotas td:nth-child(9) {
+      max-width: 140px;
+    }
+
+    /* Dependencia */
+    #tablaNotas td:nth-child(10) {
+      max-width: 130px;
+    }
+
+    /* Organismo */
+    #tablaNotas td:nth-child(11) {
+      max-width: 90px;
+    }
+
+    /* Género */
+    #tablaNotas td:nth-child(12) {
+      max-width: 90px;
+    }
+
+    /* Canal */
+    #tablaNotas td:nth-child(13) {
+      max-width: 130px;
+    }
+
+    /* Tema */
+    #tablaNotas td:nth-child(14) {
+      max-width: 90px;
+    }
+
+    /* Estatus */
+    #tablaNotas td:nth-child(15) {
+      max-width: 110px;
+    }
+
+    /* Municipio */
+    #tablaNotas td:nth-child(16) {
+      max-width: 200px;
+    }
+
+    /* Contenido */
+    #tablaNotas td:nth-child(17) {
+      max-width: 120px;
+    }
+
+    /* Liga */
+    #tablaNotas td:nth-child(18) {
+      max-width: 70px;
+    }
+
+    /* Duración */
+    #tablaNotas td:nth-child(19) {
+      max-width: 100px;
+    }
+
+    /* Medida de tiempo */
+    #tablaNotas td:nth-child(20) {
+      max-width: 90px;
+    }
+
+    /* Réplica */
+    #tablaNotas td:nth-child(21) {
+      max-width: 120px;
+    }
+
+    /* Medio de origen */
+    #tablaNotas td:nth-child(22) {
+      max-width: 180px;
+    }
+
+    /* Dependencias mencionadas */
+    #tablaNotas td:nth-child(23) {
+      max-width: 160px;
+    }
+
+    /* Actor principal */
+    #tablaNotas td:nth-child(24) {
+      max-width: 160px;
+    }
+
+    /* Otros actores */
+    #tablaNotas td:last-child {
+      max-width: none;
+      white-space: nowrap;
+    }
+
+    /* Acciones */
 
     tbody tr:hover td {
       background: var(--color-text);
@@ -512,7 +660,7 @@
       background: var(--color-fondo-form);
       color: var(--color-text);
       font-weight: bold;
-      box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+      box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
       transition: opacity 0.3s ease, transform 0.3s ease;
       cursor: pointer;
       display: flex;
@@ -527,27 +675,88 @@
       transform: translateX(50px);
     }
 
-    .toast-message.success { border-left: 8px solid #00a82d; }
-    .toast-message.error { border-left: 8px solid var(--color-error); }
+    .toast-message.success {
+      border-left: 8px solid #00a82d;
+    }
+
+    .toast-message.error {
+      border-left: 8px solid var(--color-error);
+    }
 
     /* --- RESPONSIVE --- */
     @media (max-width: 1024px) {
-      form { grid-template-columns: auto 1fr; }
-      .button-group-form { grid-column: 1 / span 2; }
+      form {
+        grid-template-columns: auto 1fr;
+      }
+
+      .button-group-form {
+        grid-column: 1 / span 2;
+      }
     }
 
     @media (max-width: 768px) {
-      header { flex-direction: column; text-align: center; }
-      header h1 { font-size: 2.5rem; }
-      .art-box { display: none; }
-      form { grid-template-columns: 1fr; }
-      .button-group-form { grid-column: 1; flex-direction: column; }
-      label { margin-bottom: -10px; }
-      table, thead, tbody, th, td, tr { display: block; }
-      thead tr { position: absolute; top: -9999px; left: -9999px; }
-      tr { border: 2px solid var(--color-border); margin-bottom: 12px; }
-      td { border: none; border-bottom: 1px solid #eee; position: relative; padding-left: 50%; text-align: right; }
-      td:before { content: attr(data-label); position: absolute; left: 10px; width: 45%; text-align: left; font-weight: 800; }
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+      }
+
+      .art-box {
+        display: none;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group-form {
+        grid-column: 1;
+        flex-direction: column;
+      }
+
+      label {
+        margin-bottom: -10px;
+      }
+
+      table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: block;
+      }
+
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      tr {
+        border: 2px solid var(--color-border);
+        margin-bottom: 12px;
+      }
+
+      td {
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+      }
+
+      td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        text-align: left;
+        font-weight: 800;
+      }
     }
   </style>
 </head>
@@ -698,7 +907,8 @@
 
     <label for="contenido">Contenido:</label>
     <div class="campo" style="grid-column: 2 / span 3;">
-      <textarea id="contenido" name="contenido" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+      <textarea id="contenido" name="contenido" oninput="autoResize(this)" rows="2"
+        placeholder="Texto libre..."></textarea>
     </div>
 
     <label for="liga">Liga:</label>
@@ -708,7 +918,8 @@
 
     <label for="duracion">Duración del segmento:</label>
     <div class="campo">
-      <input type="number" id="duracion" name="duracion" min="0" step="any" style="flex:1; padding:10px 14px; border:2px solid var(--color-border); border-radius:var(--radius); background:var(--color-input-bg); color:var(--color-text); font-family:inherit; font-size:1rem; outline:none; transition:all 0.2s;">
+      <input type="number" id="duracion" name="duracion" min="0" step="any"
+        style="flex:1; padding:10px 14px; border:2px solid var(--color-border); border-radius:var(--radius); background:var(--color-input-bg); color:var(--color-text); font-family:inherit; font-size:1rem; outline:none; transition:all 0.2s;">
     </div>
 
     <label for="medidaTiempo">Medida de tiempo:</label>
@@ -734,17 +945,20 @@
 
     <label for="dependenciasMencionadas">Dependencias mencionadas:</label>
     <div class="campo" style="grid-column: 2 / span 3;">
-      <textarea id="dependenciasMencionadas" name="dependenciasMencionadas" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+      <textarea id="dependenciasMencionadas" name="dependenciasMencionadas" oninput="autoResize(this)" rows="2"
+        placeholder="Texto libre..."></textarea>
     </div>
 
     <label for="actorPrincipal">👤Actor principal:</label>
     <div class="campo" style="grid-column: 2 / span 3;">
-      <textarea id="actorPrincipal" name="actorPrincipal" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+      <textarea id="actorPrincipal" name="actorPrincipal" oninput="autoResize(this)" rows="2"
+        placeholder="Texto libre..."></textarea>
     </div>
 
     <label for="otrosActores">👥 Otros actores:</label>
     <div class="campo" style="grid-column: 2 / span 3;">
-      <textarea id="otrosActores" name="otrosActores" oninput="autoResize(this)" rows="2" placeholder="Texto libre..."></textarea>
+      <textarea id="otrosActores" name="otrosActores" oninput="autoResize(this)" rows="2"
+        placeholder="Texto libre..."></textarea>
     </div>
 
     <div class="button-group-form">
@@ -806,9 +1020,13 @@
   </div>
 
   <!-- Consola de Consulta SQL -->
-  <div class="sql-console-container" style="display: none; margin: 20px 0; padding: 16px; border: 2px solid var(--color-border); background: var(--color-fondo-form);">
-    <label for="inputSQL" style="display: block; margin-bottom: 8px; font-weight: bold;"><i class="fa-solid fa-code"></i> Consola de Consulta SQL (AlaSQL - Tabla: <code>notas</code>):</label>
-    <textarea id="inputSQL" rows="3" style="width: 100%; padding: 10px; border: 2px solid var(--color-border); background: var(--color-input-bg); color: var(--color-text); font-family: monospace; font-size: 0.95rem; resize: vertical;" placeholder="Escribe tu consulta SQL aquí (ej: SELECT * FROM notas WHERE municipio = 'Pachuca')"></textarea>
+  <div class="sql-console-container"
+    style="display: none; margin: 20px 0; padding: 16px; border: 2px solid var(--color-border); background: var(--color-fondo-form);">
+    <label for="inputSQL" style="display: block; margin-bottom: 8px; font-weight: bold;"><i
+        class="fa-solid fa-code"></i> Consola de Consulta SQL (AlaSQL - Tabla: <code>notas</code>):</label>
+    <textarea id="inputSQL" rows="3"
+      style="width: 100%; padding: 10px; border: 2px solid var(--color-border); background: var(--color-input-bg); color: var(--color-text); font-family: monospace; font-size: 0.95rem; resize: vertical;"
+      placeholder="Escribe tu consulta SQL aquí (ej: SELECT * FROM notas WHERE municipio = 'Pachuca')"></textarea>
     <div style="display: flex; gap: 12px; margin-top: 12px; align-items: center; flex-wrap: wrap;">
       <button type="button" id="btnEjecutarSQL"><i class="fa-solid fa-play"></i> Ejecutar SQL</button>
       <span id="sqlConsoleMsg" style="font-weight: bold; font-size: 0.9rem;"></span>
@@ -1060,7 +1278,7 @@
       filas.forEach(([radio, programa, autor, canal]) => {
         if (!radio) return;
         radioClaves.add(radio);
-        
+
         if (canal) {
           canalMap[radio] = canalMap[radio] || new Set();
           canalMap[radio].add(canal);
@@ -1244,7 +1462,7 @@
         try {
           const datos = respaldo ? JSON.parse(respaldo) : [];
           btnRestaurar.style.display = (datos && datos.length > 0) ? 'inline-flex' : 'none';
-        } catch(e) {
+        } catch (e) {
           btnRestaurar.style.display = 'none';
         }
       }
@@ -1354,7 +1572,10 @@
 
         camposDeDatos.forEach(campo => {
           const td = document.createElement("td");
-          td.textContent = nota[campo] || '';
+          const valorTexto = nota[campo] || '';
+          td.textContent = valorTexto;
+          // Tooltip nativo: muestra el texto completo al pasar el cursor
+          if (valorTexto) td.setAttribute('title', valorTexto);
           if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
             td.classList.add('alerta-vacio');
           }
@@ -1420,7 +1641,7 @@
       const container = document.getElementById('messageContainer');
       const toast = document.createElement('div');
       toast.className = `toast-message ${tipo}`;
-      
+
       const icono = tipo === 'success' ? '<i class="fa-solid fa-circle-check" style="color: #00a82d;"></i>' : '<i class="fa-solid fa-circle-exclamation" style="color: var(--color-error);"></i>';
       toast.innerHTML = `${icono} <span>${mensaje}</span>`;
 
@@ -1437,7 +1658,7 @@
           toast.addEventListener('transitionend', () => {
             toast.remove();
           }, { once: true });
-          
+
           setTimeout(() => {
             if (toast.parentNode) toast.remove();
           }, 500);
@@ -1464,9 +1685,9 @@
 
       document.querySelectorAll('#tablaNotas tbody tr').forEach(row => row.classList.remove('editando'));
       tr.classList.add('editando');
-      
+
       setTimeout(() => autoResize(document.getElementById('titular')), 10);
-      
+
       window.scrollTo(0, 0);
     }
 
@@ -1628,7 +1849,7 @@
         if (campoContenido) {
           campoContenido.value = textoTranscrito;
           localStorage.setItem('contenido', textoTranscrito);
-          
+
           // Ajustar altura elástica del textarea
           autoResize(campoContenido);
           campoContenido.dispatchEvent(new Event('input', { bubbles: true }));
@@ -1859,7 +2080,7 @@
       archivoAudio.addEventListener('change', subirAudioSeleccionado);
 
       // Lógica para el campo ID: Agregar N/A al empezar a escribir
-      document.getElementById('id').addEventListener('input', function(e) {
+      document.getElementById('id').addEventListener('input', function (e) {
         if (e.inputType === 'insertText' && this.value.length === 1) {
           if (this.value.toUpperCase() === 'N') {
             this.value = 'N/A';
@@ -1989,7 +2210,7 @@
             titular.focus();
             autoResize(titular);
           }
-          
+
           mostrarMensaje("Último registro duplicado y cargado en el formulario.");
         }
       });
