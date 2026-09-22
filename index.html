@@ -2079,14 +2079,10 @@
       btnSubirAudio.addEventListener('click', () => archivoAudio.click());
       archivoAudio.addEventListener('change', subirAudioSeleccionado);
 
-      // Lógica para el campo ID: Agregar N/A al empezar a escribir
+      // Lógica para el campo ID: completar N/A al escribir una diagonal sola
       document.getElementById('id').addEventListener('input', function (e) {
-        if (e.inputType === 'insertText' && this.value.length === 1) {
-          if (this.value.toUpperCase() === 'N') {
-            this.value = 'N/A';
-          } else {
-            this.value = 'N/A ' + this.value;
-          }
+        if (e.inputType === 'insertText' && this.value === '/') {
+          this.value = 'N/A';
         }
       });
 
@@ -2351,8 +2347,8 @@
 
       // 2. VALIDACIÓN DE ID CON DIAGONAL "/"
       const valorId = document.getElementById('id').value.trim();
-      if (valorId !== '' && !valorId.includes('/')) {
-        mostrarMensaje('Error: Para el campo ID, no se permite guardar si no se introduce una "/" (diagonal).', 'error');
+      if (valorId !== '' && (!valorId.includes('/') || /^N\/$/i.test(valorId))) {
+        mostrarMensaje('Error: El campo ID debe ser N/A o contener una "/" válida; N/ no está permitido.', 'error');
         document.getElementById('id').focus();
         return;
       }
