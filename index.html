@@ -901,6 +901,11 @@
     <label for="id">ID:</label>
     <div class="campo">
       <input type="text" id="id" name="id" autocomplete="off">
+      <select id="opcionesId" aria-label="Opciones para ID">
+        <option value="">Seleccionar</option>
+        <option value="N/A">N/A</option>
+        <option value="Mañanera">Mañanera</option>
+      </select>
       <input type="checkbox" id="checkId" onchange="alternarBloqueo('id')" tabindex="-1">
       <label for="checkId">🔒</label>
     </div>
@@ -2084,6 +2089,14 @@
         if (e.inputType === 'insertText' && this.value === '/') {
           this.value = 'N/A';
         }
+      });
+
+      document.getElementById('opcionesId').addEventListener('change', function () {
+        if (this.value) {
+          document.getElementById('id').value = this.value;
+          document.getElementById('id').dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        this.value = '';
       });
 
       // Enter keys
