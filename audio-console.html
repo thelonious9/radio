@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consola de Control de Audio</title>
+
+  <!-- CDNs del sistema -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/wavesurfer.js@7"></script>
+  <script src="https://unpkg.com/wavesurfer.js@7/dist/plugins/timeline.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <script>if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');</script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-action {
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    /* Toast Messages */
+    #messageContainer {
+      position: fixed;
+      top: 80px;
+      right: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toast-message {
+      padding: 10px 16px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+      font-weight: 600;
+      font-size: 12px;
+      box-shadow: 4px 4px 0 rgba(0,0,0,.06);
+      transition: opacity .3s, transform .3s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 400px;
+      border-radius: 0.375rem;
+    }
+
+    .dark .toast-message {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-color: #475569;
+    }
+
+    .toast-message.hide {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+
+    .toast-message.success {
+      border-left: 6px solid #16a34a;
+    }
+
+    .toast-message.error {
+      border-left: 6px solid #dc2626;
+    }
+
+    /* Waveform container */
+    #waveform-container {
+      position: relative;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.375rem;
+      overflow-x: auto;
+      padding: 6px 6px 0 6px;
+    }
+
+    .dark #waveform-container {
+      background: #0f172a;
+      border-color: #334155;
+    }
+
+    #waveform {
+      width: 100%;
+      height: 96px;
+      cursor: pointer;
+    }
+
+    #wave-timeline {
+      width: 100%;
+      margin-top: 2px;
+      border-top: 1px dashed #cbd5e1;
+    }
+
+    .dark #wave-timeline {
+      border-top-color: #334155;
+    }
+
+    /* Selection Overlay IN-OUT */
+    #selection-overlay {
+      position: absolute;
+      top: 0;
+      bottom: 20px;
+      background: rgba(34, 197, 94, 0.25);
+      border-left: 2px solid #16a34a;
+      border-right: 2px solid #dc2626;
+      pointer-events: none;
+      display: none;
+      z-index: 10;
+    }
+
+    .time-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      padding: 5px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.375rem;
+      background: #f8fafc;
+      font-weight: 600;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+
+    .dark .time-badge {
+      background: #0f172a;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+
+    .recording-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #dc2626;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulseDot 1s infinite alternate;
+    }
+
+    @keyframes pulseDot {
+      0% { opacity: 0.4; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .shortcut-badge {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .dark .shortcut-badge {
+      background: #0f172a;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+
+    .time-code-field {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      padding: 3px 4px;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.25rem;
+      background: #f8fafc;
+      color: #0f172a;
+      outline: none;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .time-code-field input {
+      width: 2ch;
+      padding: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: inherit;
+      text-align: center;
+      font: inherit;
+    }
+
+    .time-code-field input:first-child {
+      width: 3ch;
+    }
+
+    .dark .time-code-field {
+      background: #0f172a;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+
+    .time-code-field:focus-within {
+      border-color: #3b82f6;
+    }
+
+    /* Scrollbar compacta */
+    #segmentsTableWrapper::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    #segmentsTableWrapper::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #segmentsTableWrapper::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .dark #segmentsTableWrapper::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen antialiased selection:bg-slate-300 dark:selection:bg-slate-700">
+
+  <!-- Contenedor para Notificaciones Toast -->
+  <div id="messageContainer"></div>
+
+  <!-- Encabezado Principal -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="p-1.5 bg-slate-800 rounded-lg border border-slate-700">
+          <i class="fa-solid fa-wave-square text-base text-slate-300"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-base tracking-tight leading-none text-slate-100">Consola de Control de Audio</h1>
+          <span class="text-[10px] text-slate-400 font-medium">Recorte con MP3 (20kbps CBR, 11025Hz Mono) y ajuste fino</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <span class="text-[10px] text-slate-400 hidden md:flex items-center gap-1 font-mono">
+          <i class="fa-solid fa-keyboard"></i> Ctrl+I IN · Ctrl+Shift+O OUT
+        </span>
+        <button id="themeToggle" class="btn-action px-2.5 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 flex items-center space-x-1.5">
+          <i class="fa-solid fa-moon dark:hidden"></i>
+          <i class="fa-solid fa-sun hidden dark:inline"></i>
+          <span class="hidden sm:inline">Modo</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <main class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4">
+
+    <!-- Sección 1: Visualizador Waveform con barra superior de herramientas -->
+    <section class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm p-4 space-y-3">
+      <!-- Carga de archivo de audio -->
+      <div class="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-700 pb-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-file-audio text-slate-500 text-base"></i>
+          <div>
+            <h2 class="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">1. Visualizador Waveform</h2>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400">Carga un archivo de audio para visualizar la onda y registrar cortes</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-1 max-w-md">
+          <input type="file" id="audioFileInput" accept="audio/*" class="block w-full text-[11px] text-slate-500 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-[11px] file:font-semibold file:bg-slate-900 file:text-white dark:file:bg-slate-700 hover:file:bg-slate-800 dark:hover:file:bg-slate-600 border border-slate-300 dark:border-slate-600 rounded cursor-pointer bg-slate-50 dark:bg-slate-900/50">
+        </div>
+      </div>
+
+      <!-- Barra de herramientas superior: Play/Pause, -5s, +5s, Velocidad, Zoom, Marcadores IN/OUT, Cancelar IN, Guardar -->
+      <div class="flex flex-wrap items-center gap-2.5 p-2 bg-slate-50 dark:bg-slate-900/60 rounded border border-slate-200 dark:border-slate-700">
+        <!-- Controles de Reproducción -->
+        <button type="button" id="btnPlayPause" class="btn-action bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-semibold py-1.5 px-3 rounded border border-slate-700 shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-play" id="playIcon"></i> Reproducir
+        </button>
+
+        <button type="button" id="btnRewind5" class="btn-action bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-[11px] font-medium py-1.5 px-2 rounded border border-slate-300 dark:border-slate-600 flex items-center gap-1" title="Retroceder 5 segundos">
+          <i class="fa-solid fa-rotate-left"></i> -5s
+        </button>
+
+        <button type="button" id="btnForward5" class="btn-action bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-[11px] font-medium py-1.5 px-2 rounded border border-slate-300 dark:border-slate-600 flex items-center gap-1" title="Avanzar 5 segundos">
+          <i class="fa-solid fa-rotate-right"></i> +5s
+        </button>
+
+        <!-- Control de Velocidad de Reproducción -->
+        <div class="flex items-center gap-1.5 border-l border-slate-200 dark:border-slate-700 pl-2">
+          <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 whitespace-nowrap"><i class="fa-solid fa-gauge-high mr-1"></i>Velocidad:</span>
+          <input type="range" id="playbackSpeedSlider" min="0.5" max="2" step="0.1" value="1" aria-label="Velocidad de reproducción" class="w-16 h-1.5 bg-slate-200 dark:bg-slate-700 rounded appearance-none cursor-pointer">
+          <span id="playbackSpeedValue" class="text-[10px] font-mono text-slate-700 dark:text-slate-300 w-7">1.0x</span>
+        </div>
+
+        <!-- Controles de Zoom -->
+        <div class="flex items-center gap-1 border-l border-slate-200 dark:border-slate-700 pl-2">
+          <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400"><i class="fa-solid fa-magnifying-glass"></i> Zoom:</span>
+          <button type="button" id="btnZoomOut" class="btn-action bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 p-1 rounded border border-slate-300 dark:border-slate-600" title="Alejar Zoom (-)"><i class="fa-solid fa-minus text-[10px]"></i></button>
+          <span id="zoomLevelDisplay" class="shortcut-badge">100%</span>
+          <button type="button" id="btnZoomIn" class="btn-action bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 p-1 rounded border border-slate-300 dark:border-slate-600" title="Acercar Zoom (+)"><i class="fa-solid fa-plus text-[10px]"></i></button>
+        </div>
+
+        <!-- Separador -->
+        <div class="h-8 w-px bg-slate-200 dark:bg-slate-700 mx-0.5"></div>
+
+        <!-- Botón IN con tiempo activo debajo y ajuste rápido -->
+        <div class="flex flex-col items-center">
+          <button type="button" id="btnMarkIn" class="btn-action bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-play"></i> IN
+            <span class="shortcut-badge" style="background:rgba(255,255,255,0.2); border:none; color:#fff;">Ctrl+I</span>
+          </button>
+          <span class="text-[10px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 mt-0.5" id="displayIn">IN: --:--</span>
+          <div class="flex items-center gap-0.5 mt-0.5" title="Ajuste fino punto IN">
+            <button type="button" onclick="adjustActivePoint('in', -5)" class="px-1 py-0.2 text-[8px] font-mono bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded" title="-5s">-5s</button>
+            <button type="button" onclick="adjustActivePoint('in', -1)" class="px-1 py-0.2 text-[8px] font-mono bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded" title="-1s">-1s</button>
+            <button type="button" onclick="adjustActivePoint('in', 1)" class="px-1 py-0.2 text-[8px] font-mono bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded" title="+1s">+1s</button>
+            <button type="button" onclick="adjustActivePoint('in', 5)" class="px-1 py-0.2 text-[8px] font-mono bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded" title="+5s">+5s</button>
+          </div>
+        </div>
+
+        <!-- Botón OUT con tiempo activo debajo y ajuste rápido -->
+        <div class="flex flex-col items-center">
+          <button type="button" id="btnMarkOut" class="btn-action bg-red-700 hover:bg-red-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-stop"></i> OUT
+            <span class="shortcut-badge" style="background:rgba(255,255,255,0.2); border:none; color:#fff;">Ctrl+Shift+O</span>
+          </button>
+          <span class="text-[10px] font-mono font-semibold text-red-700 dark:text-red-400 mt-0.5" id="displayOut">OUT: --:--</span>
+          <div class="flex items-center gap-0.5 mt-0.5" title="Ajuste fino punto OUT">
+            <button type="button" onclick="adjustActivePoint('out', -5)" class="px-1 py-0.2 text-[8px] font-mono bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded" title="-5s">-5s</button>
+            <button type="button" onclick="adjustActivePoint('out', -1)" class="px-1 py-0.2 text-[8px] font-mono bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded" title="-1s">-1s</button>
+            <button type="button" onclick="adjustActivePoint('out', 1)" class="px-1 py-0.2 text-[8px] font-mono bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded" title="+1s">+1s</button>
+            <button type="button" onclick="adjustActivePoint('out', 5)" class="px-1 py-0.2 text-[8px] font-mono bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded" title="+5s">+5s</button>
+          </div>
+        </div>
+
+        <!-- Botón Cancelar IN -->
+        <button type="button" id="btnCancelIn" class="btn-action bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[11px] font-semibold py-1.5 px-2.5 rounded shadow-sm flex items-center gap-1.5 self-center" title="Cancelar punto IN actual">
+          <i class="fa-solid fa-xmark text-red-500"></i> Cancelar IN
+        </button>
+
+        <!-- Botón Guardar Segmento -->
+        <button type="button" id="btnAddSegment" class="btn-action bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5 self-center ml-1">
+          <i class="fa-solid fa-plus"></i> Guardar
+        </button>
+
+        <!-- Tiempo general de la pista -->
+        <div class="time-badge ml-auto self-center flex items-center gap-1" id="timeDisplay">
+          <span class="time-code-field" data-time-code-field data-time-kind="seek" aria-label="Posición de reproducción">
+            <input type="text" inputmode="numeric" maxlength="3" data-time-part="minutes" value="00" placeholder="___" aria-label="Minutos de reproducción">
+            <span aria-hidden="true">:</span>
+            <input type="text" inputmode="numeric" maxlength="2" data-time-part="seconds" value="00" placeholder="__" aria-label="Segundos de reproducción">
+          </span>
+          <span aria-hidden="true">/</span>
+          <span id="durationDisplay">00:00</span>
+        </div>
+      </div>
+
+      <!-- Barra dinámica para personalización del nombre al pulsar IN -->
+      <div id="dynamicNamingBar" class="hidden items-center gap-2.5 p-2.5 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 rounded shadow-sm">
+        <span class="recording-dot"></span>
+        <span class="text-xs font-bold text-amber-900 dark:text-amber-200 whitespace-nowrap">Nombre del Segmento:</span>
+        <input type="text" id="segmentCustomNameInput" class="flex-1 max-w-xs px-2.5 py-1 text-xs bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700 rounded text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-amber-500" placeholder="Segmento 1" autocomplete="off">
+        <button type="button" id="btnSaveCustomName" class="btn-action bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-semibold py-1 px-3 rounded flex items-center gap-1">
+          <i class="fa-solid fa-check"></i> Guardar Nombre
+        </button>
+        <span id="nameStatusBadge" class="text-[11px] text-amber-700 dark:text-amber-300 italic"></span>
+      </div>
+
+      <!-- Contenedor WaveSurfer y regla temporal -->
+      <div id="waveform-container">
+        <div id="selection-overlay"></div>
+        <div id="waveform"></div>
+        <div id="wave-timeline"></div>
+      </div>
+    </section>
+
+    <!-- Sección 2: Tabla de Segmentos y Exportación -->
+    <section class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm p-4 space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-scissors text-slate-500 text-base"></i>
+          <div>
+            <h2 class="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">2. Segmentos Registrados</h2>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400">Ajusta los puntos temporalmente (+/- segundos) y exporta los cortes a velocidad normal (1.0x)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de Segmentos -->
+      <div id="segmentsTableWrapper" class="overflow-x-auto overflow-y-auto max-h-[300px] border border-slate-200 dark:border-slate-700 rounded">
+        <table class="w-full text-left text-[11px] text-slate-700 dark:text-slate-300 border-collapse">
+          <thead class="bg-slate-100 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-700 uppercase tracking-wider sticky top-0 z-10">
+            <tr>
+              <th class="px-2 py-2 whitespace-nowrap text-center">#</th>
+              <th class="px-2 py-2 whitespace-nowrap">Nombre</th>
+              <th class="px-2 py-2 whitespace-nowrap text-center">IN (MM:SS) / Ajuste</th>
+              <th class="px-2 py-2 whitespace-nowrap text-center">OUT (MM:SS) / Ajuste</th>
+              <th class="px-2 py-2 whitespace-nowrap text-center">Duración</th>
+              <th class="px-2 py-2 whitespace-nowrap text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="segmentsTableBody" class="divide-y divide-slate-200 dark:divide-slate-700/60 bg-white dark:bg-slate-800">
+            <tr>
+              <td colspan="6" class="px-4 py-6 text-center text-slate-400 italic">No hay segmentos en la lista.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Barra inferior: Formato + Limpiar + Descargar -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+        <div class="flex items-center gap-2">
+          <label for="exportFormatSelect" class="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Formato:</label>
+          <select id="exportFormatSelect" class="px-2 py-1 text-[11px] bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-slate-700 dark:text-slate-200 outline-none">
+            <option value="mp3">MP3 (20 kbps, 11025 Hz, Mono)</option>
+            <option value="wav">WAV (11025 Hz, Mono)</option>
+          </select>
+
+          <button type="button" id="btnClearAll" class="btn-action bg-red-700 hover:bg-red-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-trash-can"></i> Limpiar Todo
+          </button>
+        </div>
+
+        <button type="button" id="btnExportAll" class="btn-action bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5" style="display: none;">
+          <i class="fa-solid fa-download"></i> Descargar Todos
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ============================================================
+    // SISTEMA DE MENSAJES TOAST
+    // ============================================================
+    function mostrarMensaje(msg, tipo = 'success') {
+      const t = document.createElement('div');
+      t.className = `toast-message ${tipo}`;
+      const i = document.createElement('i');
+      i.className = tipo === 'success' ? 'fa-solid fa-circle-check text-emerald-500 text-sm' : 'fa-solid fa-circle-exclamation text-red-500 text-sm';
+      const s = document.createElement('span');
+      s.textContent = msg;
+      t.append(i, s);
+      document.getElementById('messageContainer').appendChild(t);
+      const quitar = () => { t.classList.add('hide'); setTimeout(() => t.remove(), 300); };
+      t.onclick = quitar;
+      setTimeout(quitar, 3500);
+    }
+
+    function showToast(msg, isError = false) {
+      mostrarMensaje(msg, isError ? 'error' : 'success');
+    }
+
+    // ============================================================
+    // TEMA CLARO / OSCURO
+    // ============================================================
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      setTimeout(() => {
+        const isDark = document.documentElement.classList.contains('dark');
+        const waveColor = isDark ? '#475569' : '#64748b';
+        const progressColor = isDark ? '#38bdf8' : '#1e293b';
+        if (wavesurfer) {
+          wavesurfer.setOptions({ waveColor, progressColor });
+        }
+      }, 50);
+    });
+
+    // ============================================================
+    // LÓGICA DE LA CONSOLA DE AUDIO
+    // ============================================================
+    let wavesurfer = null;
+    let audioBufferGlobal = null;
+    let timeIn = null;
+    let timeOut = null;
+    let segmentCounter = 1;
+    let segmentsList = [];
+    let activePreviewSegmentId = null;
+    let currentZoomPx = 0;
+    let customMarkingName = '';
+    let playbackSpeed = Math.min(2, Math.max(0.5, Number(localStorage.getItem('audioConsolePlaybackSpeed')) || 1));
+
+    const fileInput = document.getElementById('audioFileInput');
+    const btnPlayPause = document.getElementById('btnPlayPause');
+    const playIcon = document.getElementById('playIcon');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const seekTimeField = timeDisplay.querySelector('[data-time-code-field]');
+    const durationDisplay = document.getElementById('durationDisplay');
+    const displayIn = document.getElementById('displayIn');
+    const displayOut = document.getElementById('displayOut');
+    const selectionOverlay = document.getElementById('selection-overlay');
+    const tableBody = document.getElementById('segmentsTableBody');
+    const btnExportAll = document.getElementById('btnExportAll');
+    const exportFormatSelect = document.getElementById('exportFormatSelect');
+    const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
+    const playbackSpeedSlider = document.getElementById('playbackSpeedSlider');
+    const playbackSpeedValue = document.getElementById('playbackSpeedValue');
+    const dynamicNamingBar = document.getElementById('dynamicNamingBar');
+    const segmentCustomNameInput = document.getElementById('segmentCustomNameInput');
+    const btnSaveCustomName = document.getElementById('btnSaveCustomName');
+    const nameStatusBadge = document.getElementById('nameStatusBadge');
+
+    // Inicializar velocidad
+    playbackSpeedSlider.value = String(playbackSpeed);
+    playbackSpeedValue.textContent = playbackSpeed.toFixed(1) + 'x';
+    playbackSpeedSlider.addEventListener('input', () => {
+      playbackSpeed = Number(playbackSpeedSlider.value);
+      playbackSpeedValue.textContent = playbackSpeed.toFixed(1) + 'x';
+      localStorage.setItem('audioConsolePlaybackSpeed', String(playbackSpeed));
+      if (wavesurfer) wavesurfer.setPlaybackRate(playbackSpeed);
+    });
+
+    function formatTimeCode(totalSeconds) {
+      if (isNaN(totalSeconds) || totalSeconds === null) return "--:--";
+      const total = Math.floor(totalSeconds);
+      const hrs = Math.floor(total / 3600);
+      const mins = Math.floor((total % 3600) / 60);
+      const secs = total % 60;
+      const pMins = mins.toString().padStart(2, '0');
+      const pSecs = secs.toString().padStart(2, '0');
+      if (hrs > 0) {
+        const pHrs = hrs.toString().padStart(2, '0');
+        return `${pHrs}:${pMins}:${pSecs}`;
+      }
+      return `${pMins}:${pSecs}`;
+    }
+
+    function splitEditableTime(totalSeconds) {
+      const total = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+      return {
+        minutes: String(Math.floor(total / 60)).padStart(2, '0'),
+        seconds: String(total % 60).padStart(2, '0')
+      };
+    }
+
+    function formatEditableTime(totalSeconds) {
+      const time = splitEditableTime(totalSeconds);
+      return `${time.minutes}:${time.seconds}`;
+    }
+
+    function timeCodeFieldMarkup(totalSeconds, kind, segmentId, label) {
+      const time = splitEditableTime(totalSeconds);
+      return `<span class="time-code-field" data-time-code-field data-time-kind="${kind}" data-segment-id="${segmentId}" aria-label="${label}">
+        <input type="text" inputmode="numeric" maxlength="3" data-time-part="minutes" value="${time.minutes}" placeholder="___" aria-label="Minutos">
+        <span aria-hidden="true">:</span>
+        <input type="text" inputmode="numeric" maxlength="2" data-time-part="seconds" value="${time.seconds}" placeholder="__" aria-label="Segundos">
+      </span>`;
+    }
+
+    function setTimeCodeField(field, totalSeconds) {
+      if (!field) return;
+      const time = splitEditableTime(totalSeconds);
+      field.querySelector('[data-time-part="minutes"]').value = time.minutes;
+      field.querySelector('[data-time-part="seconds"]').value = time.seconds;
+    }
+
+    function parseTimeToSeconds(timeStr) {
+      if (typeof timeStr === 'number') return timeStr;
+      if (!timeStr) return 0;
+      const str = timeStr.toString().trim();
+      if (!str.includes(':')) {
+        const parsed = parseFloat(str);
+        return isNaN(parsed) ? 0 : parsed;
+      }
+      const parts = str.split(':').map(p => parseFloat(p) || 0);
+      if (parts.length === 3) {
+        return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
+      } else if (parts.length === 2) {
+        return (parts[0] * 60) + parts[1];
+      }
+      return 0;
+    }
+
+    function initWaveSurfer() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const waveColor = isDark ? '#475569' : '#64748b';
+      const progressColor = isDark ? '#38bdf8' : '#1e293b';
+
+      wavesurfer = WaveSurfer.create({
+        container: '#waveform',
+        waveColor: waveColor,
+        progressColor: progressColor,
+        cursorColor: '#dc2626',
+        cursorWidth: 2,
+        height: 96,
+        barWidth: 2,
+        barGap: 1,
+        responsive: true,
+        plugins: [
+          WaveSurfer.Timeline.create({
+            container: '#wave-timeline',
+            formatTimeCallback: formatTimeCode,
+            primaryLabelInterval: 10,
+            secondaryLabelInterval: 5,
+            style: {
+              fontSize: '10px',
+              color: waveColor
+            }
+          })
+        ]
+      });
+
+      wavesurfer.on('ready', () => {
+        wavesurfer.setPlaybackRate(playbackSpeed);
+        audioBufferGlobal = wavesurfer.getDecodedData();
+        if (audioBufferGlobal) showToast("Audio cargado y listo para editar.");
+      });
+      wavesurfer.on('audioprocess', handleAudioProcess);
+      wavesurfer.on('seeking', updateTimeDisplay);
+
+      wavesurfer.on('play', () => {
+        playIcon.className = "fa-solid fa-pause";
+      });
+
+      wavesurfer.on('pause', () => {
+        playIcon.className = "fa-solid fa-play";
+        stopActivePreview();
+      });
+
+      wavesurfer.on('finish', () => {
+        playIcon.className = "fa-solid fa-play";
+        stopActivePreview();
+      });
+    }
+
+    function updateTimeDisplay() {
+      if (!wavesurfer) return;
+      const current = wavesurfer.getCurrentTime();
+      const duration = wavesurfer.getDuration();
+      if (!seekTimeField.contains(document.activeElement)) setTimeCodeField(seekTimeField, current);
+      durationDisplay.textContent = formatTimeCode(duration);
+
+      if (timeIn !== null) {
+        updateSelectionOverlay(timeIn, timeOut !== null ? timeOut : current);
+      }
+    }
+
+    function handleAudioProcess() {
+      updateTimeDisplay();
+
+      if (activePreviewSegmentId !== null) {
+        const seg = segmentsList.find(s => s.id === activePreviewSegmentId);
+        if (seg && wavesurfer.getCurrentTime() >= seg.out) {
+          wavesurfer.pause();
+          stopActivePreview();
+        }
+      }
+    }
+
+    function stopActivePreview() {
+      if (activePreviewSegmentId !== null) {
+        activePreviewSegmentId = null;
+        renderSegmentsTable();
+      }
+    }
+
+    function updateSelectionOverlay(start, end) {
+      if (!wavesurfer || wavesurfer.getDuration() === 0) return;
+      const duration = wavesurfer.getDuration();
+
+      const startPercent = Math.max(0, Math.min(100, (start / duration) * 100));
+      const endPercent = Math.max(0, Math.min(100, (end / duration) * 100));
+
+      const left = Math.min(startPercent, endPercent);
+      const width = Math.abs(endPercent - startPercent);
+
+      selectionOverlay.style.left = `${left}%`;
+      selectionOverlay.style.width = `${width}%`;
+      selectionOverlay.style.display = 'block';
+    }
+
+    function clearSelectionOverlay() {
+      selectionOverlay.style.display = 'none';
+      selectionOverlay.style.width = '0%';
+    }
+
+    function commitTimeCodeField(field) {
+      const minutesInput = field.querySelector('[data-time-part="minutes"]');
+      const secondsInput = field.querySelector('[data-time-part="seconds"]');
+      const minutes = Number(minutesInput.value || 0);
+      const seconds = Number(secondsInput.value || 0);
+      const kind = field.dataset.timeKind;
+      const segment = segmentsList.find(item => item.id === Number(field.dataset.segmentId));
+      const previousValue = kind === 'seek'
+        ? (wavesurfer ? wavesurfer.getCurrentTime() : 0)
+        : segment && (kind === 'segment-in' ? segment.in : kind === 'segment-out' ? segment.out : segment.out - segment.in);
+
+      if (seconds > 59) {
+        showToast("Los segundos deben estar entre 00 y 59.", true);
+        setTimeCodeField(field, previousValue || 0);
+        return;
+      }
+
+      const totalSeconds = minutes * 60 + seconds;
+      if (kind === 'seek') {
+        if (!wavesurfer || !wavesurfer.getDuration()) {
+          showToast("Carga un archivo de audio primero.", true);
+          setTimeCodeField(field, 0);
+        } else if (totalSeconds > wavesurfer.getDuration()) {
+          showToast("La posición no puede superar la duración del audio.", true);
+          setTimeCodeField(field, wavesurfer.getCurrentTime());
+        } else {
+          wavesurfer.setTime(totalSeconds);
+        }
+      } else if (kind === 'segment-in') {
+        updateSegmentIn(Number(field.dataset.segmentId), `${minutes}:${seconds}`);
+      } else if (kind === 'segment-out') {
+        updateSegmentOut(Number(field.dataset.segmentId), `${minutes}:${seconds}`);
+      } else if (kind === 'segment-duration') {
+        updateSegmentDuration(Number(field.dataset.segmentId), `${minutes}:${seconds}`);
+      }
+    }
+
+    document.addEventListener('input', (event) => {
+      const input = event.target.closest('[data-time-part]');
+      if (input) input.value = input.value.replace(/\D/g, '').slice(0, Number(input.maxLength));
+    });
+
+    document.addEventListener('focusout', (event) => {
+      const field = event.target.closest('[data-time-code-field]');
+      if (field && !field.contains(event.relatedTarget)) commitTimeCodeField(field);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && event.target.matches('[data-time-part]')) {
+        event.preventDefault();
+        event.target.blur();
+      }
+    });
+
+    // Reutiliza el buffer que WaveSurfer ya decodificó, sin duplicar la pista completa.
+    async function asegurarAudioBuffer() {
+      if (audioBufferGlobal) return audioBufferGlobal;
+      const file = fileInput && fileInput.files && fileInput.files[0];
+      if (!file) {
+        showToast("No hay archivo de audio seleccionado.", true);
+        return null;
+      }
+      showToast("El audio aún se está cargando. Espera a que termine antes de exportar.", true);
+      return null;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initWaveSurfer();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      audioBufferGlobal = null;
+      const objectUrl = URL.createObjectURL(file);
+      wavesurfer.load(objectUrl);
+      currentZoomPx = 0;
+      zoomLevelDisplay.textContent = "100%";
+    });
+
+    btnPlayPause.addEventListener('click', () => {
+      if (!wavesurfer || !wavesurfer.getDuration()) {
+        return showToast("Carga un archivo de audio primero.", true);
+      }
+      activePreviewSegmentId = null;
+      wavesurfer.playPause();
+    });
+
+    document.getElementById('btnRewind5').addEventListener('click', () => {
+      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
+      const cur = wavesurfer.getCurrentTime();
+      wavesurfer.setTime(Math.max(0, cur - 5));
+    });
+
+    document.getElementById('btnForward5').addEventListener('click', () => {
+      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
+      const cur = wavesurfer.getCurrentTime();
+      const dur = wavesurfer.getDuration();
+      wavesurfer.setTime(Math.min(dur, cur + 5));
+    });
+
+    document.getElementById('btnZoomIn').addEventListener('click', () => {
+      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
+      if (currentZoomPx === 0) currentZoomPx = 20;
+      else currentZoomPx = Math.min(300, currentZoomPx + 20);
+
+      wavesurfer.zoom(currentZoomPx);
+      const percentage = Math.round((currentZoomPx / 20 || 1) * 100);
+      zoomLevelDisplay.textContent = `${percentage}%`;
+    });
+
+    document.getElementById('btnZoomOut').addEventListener('click', () => {
+      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
+      if (currentZoomPx <= 20) {
+        currentZoomPx = 0;
+        wavesurfer.zoom(0);
+        zoomLevelDisplay.textContent = "100%";
+      } else {
+        currentZoomPx = Math.max(20, currentZoomPx - 20);
+        wavesurfer.zoom(currentZoomPx);
+        const percentage = Math.round((currentZoomPx / 20) * 100);
+        zoomLevelDisplay.textContent = `${percentage}%`;
+      }
+    });
+
+    // Guardar nombre personalizado desde la barra dinámica
+    btnSaveCustomName.addEventListener('click', () => {
+      const val = segmentCustomNameInput.value.trim();
+      if (val) {
+        customMarkingName = val;
+        nameStatusBadge.textContent = `Guardado: "${val}"`;
+        showToast(`Nombre guardado: "${val}"`);
+      } else {
+        customMarkingName = '';
+        nameStatusBadge.textContent = `Se usará nombre por defecto ("Segmento ${segmentCounter}")`;
+      }
+    });
+
+    segmentCustomNameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        btnSaveCustomName.click();
+      }
+    });
+
+    function markIn() {
+      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
+
+      timeIn = wavesurfer.getCurrentTime();
+      timeOut = null;
+      displayIn.textContent = `IN: ${formatTimeCode(timeIn)}`;
+      displayOut.textContent = "OUT: --:--";
+
+      // Desplegar campo dinámico de nombre
+      const defaultName = `Segmento ${segmentCounter}`;
+      dynamicNamingBar.classList.remove('hidden');
+      dynamicNamingBar.classList.add('flex');
+      segmentCustomNameInput.placeholder = defaultName;
+      if (!customMarkingName) {
+        segmentCustomNameInput.value = '';
+        nameStatusBadge.textContent = `Por defecto: "${defaultName}"`;
+      } else {
+        segmentCustomNameInput.value = customMarkingName;
+        nameStatusBadge.textContent = `Nombre actual: "${customMarkingName}"`;
+      }
+      segmentCustomNameInput.focus();
+
+      updateSelectionOverlay(timeIn, timeIn);
+      showToast(`Punto IN marcado en ${formatTimeCode(timeIn)}`);
+    }
+
+    function markOut() {
+      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
+      if (timeIn === null) return showToast("Debes marcar primero el punto IN.", true);
+
+      timeOut = wavesurfer.getCurrentTime();
+      if (timeOut <= timeIn) {
+        return showToast("El punto OUT debe ser posterior al punto IN.", true);
+      }
+
+      displayOut.textContent = `OUT: ${formatTimeCode(timeOut)}`;
+      updateSelectionOverlay(timeIn, timeOut);
+
+      // Si el usuario escribió un nombre pero no pulsó "Guardar Nombre", se conserva automáticamente
+      if (!customMarkingName && segmentCustomNameInput.value.trim()) {
+        customMarkingName = segmentCustomNameInput.value.trim();
+      }
+
+      showToast(`Punto OUT registrado en ${formatTimeCode(timeOut)}`);
+    }
+
+    function cancelIn() {
+      timeIn = null;
+      timeOut = null;
+      customMarkingName = '';
+      displayIn.textContent = "IN: --:--";
+      displayOut.textContent = "OUT: --:--";
+      clearSelectionOverlay();
+      dynamicNamingBar.classList.add('hidden');
+      dynamicNamingBar.classList.remove('flex');
+      nameStatusBadge.textContent = '';
+      segmentCustomNameInput.value = '';
+      showToast("Marcación IN cancelada.");
+    }
+
+    // Ajuste fino temporal de puntos activos (IN / OUT)
+    window.adjustActivePoint = function(point, delta) {
+      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
+      const dur = wavesurfer.getDuration();
+
+      if (point === 'in') {
+        if (timeIn === null) return showToast("Primero marca el punto IN.", true);
+        const maxIn = timeOut !== null ? timeOut - 0.1 : dur;
+        const newIn = Math.max(0, Math.min(maxIn, timeIn + delta));
+        timeIn = Math.round(newIn * 100) / 100;
+        displayIn.textContent = `IN: ${formatTimeCode(timeIn)}`;
+        updateSelectionOverlay(timeIn, timeOut !== null ? timeOut : wavesurfer.getCurrentTime());
+        showToast(`Punto IN ajustado a ${formatTimeCode(timeIn)}`);
+      } else if (point === 'out') {
+        if (timeOut === null) return showToast("Primero marca el punto OUT.", true);
+        const minOut = timeIn !== null ? timeIn + 0.1 : 0;
+        const newOut = Math.min(dur, Math.max(minOut, timeOut + delta));
+        timeOut = Math.round(newOut * 100) / 100;
+        displayOut.textContent = `OUT: ${formatTimeCode(timeOut)}`;
+        updateSelectionOverlay(timeIn !== null ? timeIn : 0, timeOut);
+        showToast(`Punto OUT ajustado a ${formatTimeCode(timeOut)}`);
+      }
+    };
+
+    document.getElementById('btnMarkIn').addEventListener('click', markIn);
+    document.getElementById('btnMarkOut').addEventListener('click', markOut);
+    document.getElementById('btnCancelIn').addEventListener('click', cancelIn);
+
+    document.addEventListener('keydown', (e) => {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'o') {
+        e.preventDefault();
+        markOut();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
+        e.preventDefault();
+        markIn();
+      }
+    });
+
+    document.getElementById('btnAddSegment').addEventListener('click', () => {
+      if (timeIn === null || timeOut === null) {
+        return showToast("Marca los puntos IN y OUT antes de guardar.", true);
+      }
+
+      let name = customMarkingName || segmentCustomNameInput.value.trim();
+      if (!name) name = `Segmento ${segmentCounter}`;
+
+      segmentsList.push({
+        id: Date.now(),
+        name: name,
+        in: timeIn,
+        out: timeOut
+      });
+
+      segmentCounter++;
+      customMarkingName = '';
+      segmentCustomNameInput.value = '';
+      timeIn = null;
+      timeOut = null;
+      displayIn.textContent = "IN: --:--";
+      displayOut.textContent = "OUT: --:--";
+      clearSelectionOverlay();
+      dynamicNamingBar.classList.add('hidden');
+      dynamicNamingBar.classList.remove('flex');
+      nameStatusBadge.textContent = '';
+
+      renderSegmentsTable();
+      showToast(`"${name}" agregado a la lista.`);
+    });
+
+    // Render de la tabla de segmentos con controles de ajuste fino
+    function renderSegmentsTable() {
+      tableBody.innerHTML = '';
+
+      if (segmentsList.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-slate-400 italic">No hay segmentos en la lista.</td></tr>';
+        btnExportAll.style.display = 'none';
+        return;
+      }
+
+      segmentsList.forEach((seg, index) => {
+        const isPlayingThis = activePreviewSegmentId === seg.id && wavesurfer && wavesurfer.isPlaying();
+        const iconClass = isPlayingThis ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30';
+        tr.innerHTML = `
+          <td class="px-2 py-2 text-center font-mono text-slate-500">${index + 1}</td>
+          <td class="px-2 py-2">
+            <input type="text" value="${seg.name}" class="w-full max-w-[140px] px-2 py-1 text-[11px] bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100" onchange="updateSegmentName(${seg.id}, this.value)">
+          </td>
+          <td class="px-2 py-2 text-center">
+            <div class="inline-flex flex-col items-center">
+              ${timeCodeFieldMarkup(seg.in, 'segment-in', seg.id, 'Punto IN')}
+              <div class="flex items-center gap-0.5 mt-1" title="Ajustar IN en +/- segundos">
+                <button type="button" class="btn-action px-1 py-0.5 text-[9px] font-mono bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200" onclick="adjustSegmentTime(${seg.id}, 'in', -5)" title="-5s">-5s</button>
+                <button type="button" class="btn-action px-1 py-0.5 text-[9px] font-mono bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200" onclick="adjustSegmentTime(${seg.id}, 'in', -1)" title="-1s">-1s</button>
+                <button type="button" class="btn-action px-1 py-0.5 text-[9px] font-mono bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200" onclick="adjustSegmentTime(${seg.id}, 'in', 1)" title="+1s">+1s</button>
+                <button type="button" class="btn-action px-1 py-0.5 text-[9px] font-mono bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200" onclick="adjustSegmentTime(${seg.id}, 'in', 5)" title="+5s">+5s</button>
+              </div>
+            </div>
+          </td>
+          <td class="px-2 py-2 text-center">
+            <div class="inline-flex flex-col items-center">
+              ${timeCodeFieldMarkup(seg.out, 'segment-out', seg.id, 'Punto OUT')}
+              <div class="flex items-center gap-0.5 mt-1" title="Ajustar OUT en +/- segundos">
+                <button type="button" class="btn-action px-1 py-0.5 text-[9px] font-mono bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200" onclick="adjustSegmentTime(${seg.id}, 'out', -5)" title="-5s">-5s</button>
+                <button type="button" class="btn-action px-1 py-0.5 text-[9px] font-mono bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200" onclick="adjustSegmentTime(${seg.id}, 'out', -1)" title="-1s">-1s</button>
+                <button type="button" class="btn-action px-1 py-0.5 text-[9px] font-mono bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200" onclick="adjustSegmentTime(${seg.id}, 'out', 1)" title="+1s">+1s</button>
+                <button type="button" class="btn-action px-1 py-0.5 text-[9px] font-mono bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200" onclick="adjustSegmentTime(${seg.id}, 'out', 5)" title="+5s">+5s</button>
+              </div>
+            </div>
+          </td>
+          <td class="px-2 py-2 text-center">
+            ${timeCodeFieldMarkup(seg.out - seg.in, 'segment-duration', seg.id, 'Duración del segmento')}
+          </td>
+          <td class="px-2 py-2 text-center whitespace-nowrap">
+            <div class="flex items-center justify-center gap-1">
+              <button type="button" class="btn-action text-blue-600 hover:text-blue-800 dark:text-blue-400 p-1" title="${isPlayingThis ? 'Pausar' : 'Previsualizar'}" onclick="togglePreview(${seg.id})">
+                <i class="${iconClass} text-[11px]"></i>
+              </button>
+              <button type="button" class="btn-action text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 p-1" title="Descargar corte individual" onclick="exportSingleSegment(${seg.id})">
+                <i class="fa-solid fa-download text-[11px]"></i>
+              </button>
+              <button type="button" class="btn-action text-red-600 hover:text-red-800 dark:text-red-400 p-1" title="Eliminar segmento" onclick="removeSegment(${seg.id})">
+                <i class="fa-solid fa-trash-can text-[11px]"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+
+      btnExportAll.style.display = 'inline-flex';
+    }
+
+    // Ajuste fino para la tabla (incrementos/decrementos de 1 a 10s)
+    window.adjustSegmentTime = function(id, target, deltaSeconds) {
+      const seg = segmentsList.find(s => s.id === id);
+      if (!seg) return;
+      const maxDuration = wavesurfer && wavesurfer.getDuration() ? wavesurfer.getDuration() : 999999;
+
+      if (target === 'in') {
+        const newIn = Math.max(0, Math.min(seg.out - 0.1, seg.in + deltaSeconds));
+        if (newIn >= seg.out) {
+          showToast("El punto IN no puede ser igual o mayor al OUT.", true);
+          return;
+        }
+        seg.in = Math.round(newIn * 100) / 100;
+      } else if (target === 'out') {
+        const newOut = Math.min(maxDuration, Math.max(seg.in + 0.1, seg.out + deltaSeconds));
+        if (newOut <= seg.in) {
+          showToast("El punto OUT debe ser mayor que el punto IN.", true);
+          return;
+        }
+        seg.out = Math.round(newOut * 100) / 100;
+      }
+      renderSegmentsTable();
+    };
+
+    window.updateSegmentName = function(id, val) {
+      const seg = segmentsList.find(s => s.id === id);
+      if (seg) seg.name = val.trim() || 'Sin Nombre';
+    };
+
+    window.updateSegmentIn = function(id, val) {
+      const seg = segmentsList.find(s => s.id === id);
+      const newIn = parseTimeToSeconds(val);
+      if (newIn < 0) return renderSegmentsTable();
+      if (newIn >= seg.out) {
+        showToast("IN no puede ser ≥ OUT.", true);
+        return renderSegmentsTable();
+      }
+      seg.in = newIn;
+      renderSegmentsTable();
+    };
+
+    window.updateSegmentOut = function(id, val) {
+      const seg = segmentsList.find(s => s.id === id);
+      const newOut = parseTimeToSeconds(val);
+      if (newOut <= seg.in) {
+        showToast("OUT debe ser mayor que IN.", true);
+        return renderSegmentsTable();
+      }
+      seg.out = newOut;
+      renderSegmentsTable();
+    };
+
+    window.updateSegmentDuration = function(id, val) {
+      const seg = segmentsList.find(s => s.id === id);
+      const newDur = parseTimeToSeconds(val);
+      if (newDur <= 0) {
+        showToast("La duración debe ser > 0.", true);
+        return renderSegmentsTable();
+      }
+      seg.out = seg.in + newDur;
+      renderSegmentsTable();
+    };
+
+    window.togglePreview = function(id) {
+      const seg = segmentsList.find(s => s.id === id);
+      if (!seg || !wavesurfer || !wavesurfer.getDuration()) {
+        return showToast("Carga un archivo de audio primero.", true);
+      }
+
+      if (activePreviewSegmentId === id && wavesurfer.isPlaying()) {
+        wavesurfer.pause();
+        stopActivePreview();
+      } else {
+        activePreviewSegmentId = id;
+        wavesurfer.setTime(seg.in);
+        wavesurfer.play();
+        renderSegmentsTable();
+      }
+    };
+
+    window.removeSegment = function(id) {
+      if (activePreviewSegmentId === id) {
+        wavesurfer.pause();
+        activePreviewSegmentId = null;
+      }
+      segmentsList = segmentsList.filter(s => s.id !== id);
+      renderSegmentsTable();
+    };
+
+    window.exportSingleSegment = async function(id) {
+      const seg = segmentsList.find(s => s.id === id);
+      if (!seg) return;
+      const buffer = await asegurarAudioBuffer();
+      if (!buffer) return;
+      processAndDownload([seg]);
+    };
+
+    btnExportAll.addEventListener('click', async () => {
+      if (segmentsList.length === 0) return showToast("No hay segmentos para cortar.", true);
+      const buffer = await asegurarAudioBuffer();
+      if (!buffer) return;
+      processAndDownload(segmentsList);
+    });
+
+    // Botón Limpiar Todo
+    document.getElementById('btnClearAll').addEventListener('click', () => {
+      if (segmentsList.length === 0 && !audioBufferGlobal && !wavesurfer?.getDuration()) {
+        return showToast("No hay nada que limpiar.", true);
+      }
+
+      if (!confirm("¿Limpiar todo? Se vaciará la tabla, se quitará el audio cargado y se reiniciarán los marcadores.")) {
+        return;
+      }
+
+      if (wavesurfer) {
+        try { wavesurfer.pause(); } catch (e) {}
+        try { wavesurfer.empty(); } catch (e) {}
+      }
+
+      audioBufferGlobal = null;
+      segmentsList = [];
+      segmentCounter = 1;
+      timeIn = null;
+      timeOut = null;
+      activePreviewSegmentId = null;
+      currentZoomPx = 0;
+      customMarkingName = '';
+
+      fileInput.value = '';
+      segmentCustomNameInput.value = '';
+      displayIn.textContent = "IN: --:--";
+      displayOut.textContent = "OUT: --:--";
+      dynamicNamingBar.classList.add('hidden');
+      dynamicNamingBar.classList.remove('flex');
+      nameStatusBadge.textContent = '';
+      clearSelectionOverlay();
+      timeDisplay.textContent = "00:00 / 00:00";
+      zoomLevelDisplay.textContent = "100%";
+      playIcon.className = "fa-solid fa-play";
+
+      initWaveSurfer();
+      renderSegmentsTable();
+      showToast("Consola de audio limpiada.");
+    });
+
+    // ============================================================
+    // REMUESTREO Y EXPORTACIÓN A VELOCIDAD NORMAL (1.0x)
+    // 1 Canal (Mono: promedio (L+R)/2), 11025 Hz, 20 kbps CBR
+    // ============================================================
+    async function resampleSegmentToMono11025(seg) {
+      const targetSampleRate = 11025;
+      const duration = Math.max(0.01, seg.out - seg.in);
+      const targetLength = Math.max(1, Math.round(duration * targetSampleRate));
+
+      const origRate = audioBufferGlobal.sampleRate;
+      const startSample = Math.floor(seg.in * origRate);
+      const endSample = Math.min(audioBufferGlobal.length, Math.floor(seg.out * origRate));
+      const sliceLength = Math.max(1, endSample - startSample);
+
+      // Usar OfflineAudioContext para remuestreo nativo con filtrado anti-aliasing
+      try {
+        const OfflineCtxClass = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        if (OfflineCtxClass) {
+          const offlineCtx = new OfflineCtxClass(1, targetLength, targetSampleRate);
+          const sliceBuffer = offlineCtx.createBuffer(1, sliceLength, origRate);
+          const sliceData = sliceBuffer.getChannelData(0);
+
+          const chan0 = audioBufferGlobal.getChannelData(0);
+          const hasChan1 = audioBufferGlobal.numberOfChannels > 1;
+          const chan1 = hasChan1 ? audioBufferGlobal.getChannelData(1) : null;
+
+          // Promediar canales izquierdo y derecho (sampleL + sampleR) / 2
+          for (let i = 0; i < sliceLength; i++) {
+            const s0 = chan0[startSample + i] || 0;
+            const s1 = chan1 ? (chan1[startSample + i] || 0) : s0;
+            sliceData[i] = (s0 + s1) / 2;
+          }
+
+          const source = offlineCtx.createBufferSource();
+          source.buffer = sliceBuffer;
+          source.connect(offlineCtx.destination);
+          source.start(0);
+
+          const renderedBuffer = await offlineCtx.startRendering();
+          return renderedBuffer.getChannelData(0);
+        }
+      } catch (e) {
+        console.warn("Fallo OfflineAudioContext, usando interpolación lineal directa:", e);
+      }
+
+      // Respaldo de remuestreo por interpolación matemática directa
+      const chan0 = audioBufferGlobal.getChannelData(0);
+      const hasChan1 = audioBufferGlobal.numberOfChannels > 1;
+      const chan1 = hasChan1 ? audioBufferGlobal.getChannelData(1) : null;
+
+      const origMono = new Float32Array(sliceLength);
+      for (let i = 0; i < sliceLength; i++) {
+        const s0 = chan0[startSample + i] || 0;
+        const s1 = chan1 ? (chan1[startSample + i] || 0) : s0;
+        origMono[i] = (s0 + s1) / 2;
+      }
+
+      const resampled = new Float32Array(targetLength);
+      const ratio = (sliceLength - 1) / (targetLength - 1 || 1);
+      for (let i = 0; i < targetLength; i++) {
+        const srcPos = i * ratio;
+        const i0 = Math.floor(srcPos);
+        const i1 = Math.min(sliceLength - 1, i0 + 1);
+        const frac = srcPos - i0;
+        resampled[i] = origMono[i0] * (1 - frac) + origMono[i1] * frac;
+      }
+      return resampled;
+    }
+
+    // Codificación MP3 mono a 11025 Hz y 20 kbps CBR vía lamejs
+    function monoFloat32ToMp3(monoSamples, sampleRate = 11025, kbps = 20) {
+      const mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, kbps);
+      const mp3Data = [];
+      const sampleBlockSize = 1152;
+      const length = monoSamples.length;
+
+      const int16Samples = new Int16Array(length);
+      for (let i = 0; i < length; i++) {
+        const s = monoSamples[i];
+        int16Samples[i] = Math.max(-32768, Math.min(32767, s * 32767));
+      }
+
+      for (let i = 0; i < length; i += sampleBlockSize) {
+        const chunk = int16Samples.subarray(i, i + sampleBlockSize);
+        const mp3buf = mp3encoder.encodeBuffer(chunk);
+        if (mp3buf && mp3buf.length > 0) {
+          mp3Data.push(mp3buf);
+        }
+      }
+
+      const mp3buf = mp3encoder.flush();
+      if (mp3buf && mp3buf.length > 0) {
+        mp3Data.push(mp3buf);
+      }
+
+      return new Blob(mp3Data, { type: 'audio/mp3' });
+    }
+
+    // Exportación WAV mono a 11025 Hz
+    function monoFloat32ToWav(monoSamples, sampleRate = 11025) {
+      const numOfChan = 1;
+      const length = monoSamples.length * 2 + 44;
+      const buffer = new ArrayBuffer(length);
+      const view = new DataView(buffer);
+      let pos = 0;
+
+      function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+      function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+
+      setUint32(0x46464952); // "RIFF"
+      setUint32(length - 8);
+      setUint32(0x45564157); // "WAVE"
+      setUint32(0x20746d66); // "fmt "
+      setUint32(16);         // Longitud de subchunk (16 para PCM)
+      setUint16(1);          // Formato Audio (1 = PCM)
+      setUint16(numOfChan);  // Canales (1 = Mono)
+      setUint32(sampleRate); // 11025 Hz
+      setUint32(sampleRate * 2 * numOfChan); // ByteRate
+      setUint16(numOfChan * 2);              // BlockAlign
+      setUint16(16);                         // BitsPerSample
+      setUint32(0x61746164); // "data"
+      setUint32(monoSamples.length * 2);
+
+      for (let i = 0; i < monoSamples.length; i++) {
+        const s = Math.max(-1, Math.min(1, monoSamples[i]));
+        const intVal = (0.5 + s < 0 ? s * 32768 : s * 32767) | 0;
+        view.setInt16(pos, intVal, true);
+        pos += 2;
+      }
+
+      return new Blob([buffer], { type: "audio/wav" });
+    }
+
+    async function processAndDownload(list) {
+      const buffer = await asegurarAudioBuffer();
+      if (!buffer) return;
+
+      const format = exportFormatSelect.value;
+      showToast(`Exportando ${list.length} segmento(s) en ${format.toUpperCase()} (11025Hz Mono)...`);
+
+      for (let idx = 0; idx < list.length; idx++) {
+        const seg = list[idx];
+        try {
+          const monoSamples = await resampleSegmentToMono11025(seg);
+          let blob;
+          if (format === 'mp3') {
+            blob = monoFloat32ToMp3(monoSamples, 11025, 20);
+          } else {
+            blob = monoFloat32ToWav(monoSamples, 11025);
+          }
+
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          const cleanName = seg.name.replace(/[^a-zA-Z0-9_\-]/g, '_');
+          const inFormatted = formatTimeCode(seg.in).replace(/:/g, '-');
+          const outFormatted = formatTimeCode(seg.out).replace(/:/g, '-');
+          a.download = `${cleanName}_(${inFormatted}_a_${outFormatted}).${format}`;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 10000);
+        } catch (err) {
+          console.error("Error al exportar segmento:", seg.name, err);
+          showToast(`Error al exportar "${seg.name}": ${err.message}`, true);
+        }
+      }
+
+      showToast(`Exportación finalizada (${list.length} corte/s).`);
+    }
+  </script>
+</body>
+
+</html>
