@@ -259,7 +259,7 @@
 
       <div class="flex items-center space-x-3">
         <span class="text-[10px] text-slate-400 hidden md:flex items-center gap-1 font-mono">
-          <i class="fa-solid fa-keyboard"></i> Ctrl+I IN · Ctrl+Shift+O OUT
+          <i class="fa-solid fa-keyboard"></i> Espacio Play/Pause · ←/→ ±5s · Ctrl+I IN · Ctrl+Shift+O OUT
         </span>
         <button id="themeToggle" class="btn-action px-2.5 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 flex items-center space-x-1.5">
           <i class="fa-solid fa-moon dark:hidden"></i>
@@ -634,7 +634,7 @@
 
       wavesurfer.on('pause', () => {
         playIcon.className = "fa-solid fa-play";
-        stopActivePreview();
+        renderSegmentsTable();
       });
 
       wavesurfer.on('finish', () => {
@@ -930,7 +930,7 @@
 
     document.addEventListener('keydown', (e) => {
       const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
-      if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
+      if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select' || document.activeElement?.isContentEditable) {
         return;
       }
 
@@ -940,6 +940,24 @@
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
         e.preventDefault();
         markIn();
+      } else if (!e.ctrlKey && !e.metaKey && !e.altKey && wavesurfer && wavesurfer.getDuration()) {
+        if (e.code === 'Space' || e.key === ' ') {
+          e.preventDefault();
+          wavesurfer.playPause();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          const segment = segmentsList.find(item => item.id === activePreviewSegmentId);
+          const current = wavesurfer.getCurrentTime();
+          const delta = e.key === 'ArrowLeft' ? -5 : 5;
+          const target = segment
+            ? Math.max(segment.in, Math.min(segment.out, current + delta))
+            : Math.max(0, Math.min(wavesurfer.getDuration(), current + delta));
+          wavesurfer.setTime(target);
+          if (segment && target >= segment.out) {
+            wavesurfer.pause();
+            stopActivePreview();
+          }
+        }
       }
     });
 
@@ -1111,7 +1129,8 @@
 
       if (activePreviewSegmentId === id && wavesurfer.isPlaying()) {
         wavesurfer.pause();
-        stopActivePreview();
+      } else if (activePreviewSegmentId === id) {
+        wavesurfer.play();
       } else {
         activePreviewSegmentId = id;
         wavesurfer.setTime(seg.in);
