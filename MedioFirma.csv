@@ -41,7 +41,6 @@ El vocero huasteco 1010 AM,Transmisión Especial,Redacción,Radio local
 Enfoque Noticias,Enfoque Noticias,Poncho Gutiérrez,Radio nacional
 Enfoque Noticias,Enfoque Noticias,Verónica Jiménez,Radio nacional
 Enfoque Noticias,Enfoque Noticias,Mario González,Radio nacional
-Enfoque Noticias,Enfoque Noticias,Poncho Gutiérrez,Radio nacional
 Enfoque Noticias,Enfoque Noticias,Alicia Salgado,Radio nacional
 Heraldo Radio,Sergio y Lupita,Sergio Sarmiento,Radio nacional
 Heraldo Radio,Sergio y Lupita,Guadalupe Juárez,Radio nacional
@@ -135,35 +134,34 @@ Milenio TV,Milenio Noticias,Sandra Gonzalez,Tv Nacional
 Milenio TV,Milenio Noticias,Sandra González,Tv Nacional
 Milenio TV,Milenio Noticias,Víctor González,Tv Nacional
 Milenio TV,Milenio Noticias,Víctor Martínez,Tv Nacional
-Milenio TV,Milenio Tv,Aarón García,Tv Nacional
-Milenio TV,Milenio Tv,Adrian Hernández,Tv Nacional
-Milenio TV,Milenio Tv,Alejandro Domínguez,Tv Nacional
-Milenio TV,Milenio Tv,Ana Lucía Ordoñana,Tv Nacional
-Milenio TV,Milenio Tv,Armando Martínez,Tv Nacional
-Milenio TV,Milenio Tv,Bertha Alfaro,Tv Nacional
-Milenio TV,Milenio Tv,Carlos Zúñiga,Tv Nacional
-Milenio TV,Milenio Tv,Elisa Alanís,Tv Nacional
-Milenio TV,Milenio Tv,Fernando Robles,Tv Nacional
-Milenio TV,Milenio Tv,Guadalupe Trejo,Tv Nacional
-Milenio TV,Milenio Tv,Héctor Zamarrón,Tv Nacional
-Milenio TV,Milenio Tv,Jorge Martínez,Tv Nacional
-Milenio TV,Milenio Tv,Josué Becerra,Tv Nacional
-Milenio TV,Milenio Tv,Mario Rodríguez,Tv Nacional
-Milenio TV,Milenio Tv,Miguel Puertolas,Tv Nacional
-Milenio TV,Milenio Tv,Milenio Noticias,Tv Nacional
-Milenio TV,Milenio Tv,Milenio Tv,Tv Nacional
-Milenio TV,Milenio Tv,Mónica Villegas,Tv Nacional
-Milenio TV,Milenio Tv,Norma García,Tv Nacional
-Milenio TV,Milenio Tv,Paola Barquet,Tv Nacional
-Milenio TV,Milenio Tv,Roberto López,Tv Nacional
-Milenio TV,Milenio Tv,Rodrigo Rico,Tv Nacional
-Milenio TV,Milenio Tv,Samuel Cuervo,Tv Nacional
-Milenio TV,Milenio Tv,Sandra Gonzalez,Tv Nacional
-Milenio TV,Milenio Tv,Tania Díaz,Tv Nacional
-Milenio TV,Milenio Tv,Víctor González Garza,Tv Nacional
-Milenio TV,Milenio Tv,Wendy Salazar,Tv Nacional
-Milenio TV,Milenio Tv,Zelenny Ibarra,Tv Nacional
-Milenio TV,Milenio TV,Pamela Villanueva,TV nacional
+Milenio TV,Milenio Noticias,Aarón García,Tv Nacional
+Milenio TV,Milenio Noticias,Adrian Hernández,Tv Nacional
+Milenio TV,Milenio Noticias,Alejandro Domínguez,Tv Nacional
+Milenio TV,Milenio Noticias,Ana Lucía Ordoñana,Tv Nacional
+Milenio TV,Milenio Noticias,Armando Martínez,Tv Nacional
+Milenio TV,Milenio Noticias,Bertha Alfaro,Tv Nacional
+Milenio TV,Milenio Noticias,Carlos Zúñiga,Tv Nacional
+Milenio TV,Milenio Noticias,Elisa Alanís,Tv Nacional
+Milenio TV,Milenio Noticias,Fernando Robles,Tv Nacional
+Milenio TV,Milenio Noticias,Guadalupe Trejo,Tv Nacional
+Milenio TV,Milenio Noticias,Héctor Zamarrón,Tv Nacional
+Milenio TV,Milenio Noticias,Jorge Martínez,Tv Nacional
+Milenio TV,Milenio Noticias,Josué Becerra,Tv Nacional
+Milenio TV,Milenio Noticias,Mario Rodríguez,Tv Nacional
+Milenio TV,Milenio Noticias,Miguel Puertolas,Tv Nacional
+Milenio TV,Milenio Noticias,Milenio Noticias,Tv Nacional
+Milenio TV,Milenio Noticias,Milenio Tv,Tv Nacional
+Milenio TV,Milenio Noticias,Mónica Villegas,Tv Nacional
+Milenio TV,Milenio Noticias,Norma García,Tv Nacional
+Milenio TV,Milenio Noticias,Paola Barquet,Tv Nacional
+Milenio TV,Milenio Noticias,Roberto López,Tv Nacional
+Milenio TV,Milenio Noticias,Rodrigo Rico,Tv Nacional
+Milenio TV,Milenio Noticias,Samuel Cuervo,Tv Nacional
+Milenio TV,Milenio Noticias,Tania Díaz,Tv Nacional
+Milenio TV,Milenio Noticias,Víctor González Garza,Tv Nacional
+Milenio TV,Milenio Noticias,Wendy Salazar,Tv Nacional
+Milenio TV,Milenio Noticias,Zelenny Ibarra,Tv Nacional
+Milenio TV,Milenio Noticias,Pamela Villanueva,TV nacional
 MVS Radio,MVS Noticias,Juan Manuel Jiménez,Radio nacional
 NQ 90.1 FM,Enlace Hidalgo,Joselyn Sánchez,Radio local
 NQ 90.1 FM,Enlace Hidalgo1,Jesús Riveros,Radio local
@@ -183,6 +181,7 @@ Radio Ahuatl 107.7 FM,Contenido Gubernamental,Alfredo Hernández,Radio local
 Radio Ahuatl 107.7 FM,Transmisión Especial,Redacción,Radio local
 Radio Disney 95.7FM,Contenido Gubernamental,Locutor,Radio local
 Radio Fórmula,Fórmula con Juan Becerra,Ignacio García,Radio nacional
+Radio Fórmula,Fórmula con Juan Becerra,Juan Becerra,Radio nacional
 Radio Lobo 96.7 FM,Enfoque Regional Matutino,Rodolfo López,Radio local
 Radio Lobo 96.7 FM,Enlace Noticias,Cgcg,Radio local
 Radio Lobo 96.7 FM,Enlace Noticias,Gina Lorenzo,Radio local
@@ -321,7 +320,6 @@ Foro TV,A las 3,Noelia Jiménez,TV nacional
 Foro TV,Las Noticias,Florencia de Rodas,TV nacional
 Foro TV,Las Noticias,Fernanda Calderón,TV nacional
 Foro TV,Las Noticias,Said Ochoa,TV nacional
-Foro TV,Las Noticias,Humberto Blizzard,TV nacional
 Foro TV,En una hora,Karla Iberia Sánchez,TV nacional
 Foro TV,Hora 21,José Luis Arévalo,TV nacional
 Foro TV,Las Noticias,Julio Patán,TV nacional
@@ -336,11 +334,8 @@ Televisa,En Punto,Enrique Acevedo,TV nacional
 Televisa,Las Noticias,Bertha Alfaro,TV nacional
 Telediario,Telediario Express,Norma García,TV nacional
 Telediario,Telediario Matutino,Liliana Sosa,TV nacional
-<<<<<<< HEAD
 Telediario,Telediario Matutino,Ana Laura Alani?s,TV nacional
-=======
 Telediario,Telediario Matutino,Ana Laura Alanís,TV nacional
->>>>>>> ebd078985d649124c9c8a6df5553f6fc957cbdc0
 Telediario,Telediario Matutino,David Medrano,TV nacional
 Telediario,Telediario Vespertino,Jaime Núñez,TV nacional
 Telediario,Telediario Vespertino,Fernanda Tapia,TV nacional
@@ -355,3 +350,29 @@ Telediario,Telediario Vespertino FDS,Isa Ross,TV nacional
 Telediario,Telediario Vespertino FDS,Rubén Carreón,TV nacional
 Telediario,Telediario Nocturno FDS,Joel Valdez,TV nacional
 Telediario,Telediario Matutino,Guadalupe Trejo,TV nacional
+Radio Fórmula, Ciro Gómez Leyva por la Mañana, Ciro Gómez Leyva, Radio nacional
+Radio Fórmula, López Dóriga Informa, Joaquín López Dóriga, Radio nacional
+Radio Fórmula, Azucena Uresti en Fórmula, Azucena Uresti, Radio nacional
+Radio Fórmula, Hoy es Risco, Javier Risco, Radio nacional
+Radio Fórmula, No son horas, Chumel Torres, Radio nacional
+Radio Fórmula, Juan Becerra en Fórmula, Juan Becerra, Radio nacional
+Radio Fórmula, Eduardo Ruiz-Healy, Eduardo Ruiz Healy, Radio nacional
+Radio Fórmula, Fórmula Financiera, Maricarmen Cortés, Radio nacional
+Radio Fórmula, Fórmula Financiera, José Yuste, Radio nacional
+Radio Fórmula, Fórmula Financiera, Marco Antonio Mares, Radio nacional
+Radio Fórmula, Fórmula Noticias, Michelle Rivera, Radio nacional
+Radio Fórmula, José Cárdenas Informa, José Cárdenas, Radio nacional
+Radio Fórmula, Fórmula Noticias, Enrique Acevedo, Radio nacional
+Radio Fórmula, Danielle Dithurbide en Fórmula, Danielle Dithurbide, Radio nacional
+Radio Fórmula, Fórmula Noticias, Juan Pablo Pérez Díaz, Radio nacional
+Radio Fórmula, Leonardo Curzio en Fórmula, Leonardo Curzio, Radio nacional
+Radio Fórmula, Feregrino por las Mañanas, Manuel Feregrino, Radio nacional
+Radio Fórmula, Juntos, Jaime Núñez, Radio nacional
+La Saga,Me lo dijo Adela,Adela Micha,TV nacional
+Milenio TV,Milenio Noticias,Pedro Gamboa,TV nacional
+Milenio TV,Milenio Noticias,Víctor Hugo Michel,TV nacional
+Milenio TV,Milenio Noticias,Francisco Villeda,TV nacional
+Milenio TV,Milenio Noticias,Alejandro Reyes,TV nacional
+Milenio TV,Multiverso,Ricardo Raphael,TV nacional
+Milenio TV,Milenio Noticias,Gerardo Duque,TV nacional
+Milenio TV,Milenio Noticias,Rubén Carreón,TV nacional
