@@ -336,7 +336,11 @@ Televisa,En Punto,Enrique Acevedo,TV nacional
 Televisa,Las Noticias,Bertha Alfaro,TV nacional
 Telediario,Telediario Express,Norma García,TV nacional
 Telediario,Telediario Matutino,Liliana Sosa,TV nacional
+<<<<<<< HEAD
 Telediario,Telediario Matutino,Ana Laura Alani?s,TV nacional
+=======
+Telediario,Telediario Matutino,Ana Laura Alanís,TV nacional
+>>>>>>> ebd078985d649124c9c8a6df5553f6fc957cbdc0
 Telediario,Telediario Matutino,David Medrano,TV nacional
 Telediario,Telediario Vespertino,Jaime Núñez,TV nacional
 Telediario,Telediario Vespertino,Fernanda Tapia,TV nacional
