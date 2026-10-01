@@ -253,7 +253,7 @@
         </div>
         <div>
           <h1 class="font-bold text-base tracking-tight leading-none text-slate-100">Consola de Control de Audio</h1>
-          <span class="text-[10px] text-slate-400 font-medium">Recorte con MP3 (20kbps CBR, 11025Hz Mono) y ajuste fino</span>
+          <span class="text-[10px] text-slate-400 font-medium">Recorte con MP3 CBR (11025Hz Mono) y ajuste fino</span>
         </div>
       </div>
 
@@ -434,6 +434,11 @@
             <option value="mp3">MP3 (20 kbps, 11025 Hz, Mono)</option>
             <option value="wav">WAV (11025 Hz, Mono)</option>
           </select>
+          <label id="mp3BitrateLabel" for="mp3BitrateSelect" class="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Bitrate:</label>
+          <select id="mp3BitrateSelect" class="px-2 py-1 text-[11px] bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-slate-700 dark:text-slate-200 outline-none">
+            <option value="20">20 kbps</option>
+            <option value="32">32 kbps</option>
+          </select>
 
           <button type="button" id="btnClearAll" class="btn-action bg-red-700 hover:bg-red-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
             <i class="fa-solid fa-trash-can"></i> Limpiar Todo
@@ -512,6 +517,8 @@
     const tableBody = document.getElementById('segmentsTableBody');
     const btnExportAll = document.getElementById('btnExportAll');
     const exportFormatSelect = document.getElementById('exportFormatSelect');
+    const mp3BitrateLabel = document.getElementById('mp3BitrateLabel');
+    const mp3BitrateSelect = document.getElementById('mp3BitrateSelect');
     const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
     const playbackSpeedSlider = document.getElementById('playbackSpeedSlider');
     const playbackSpeedValue = document.getElementById('playbackSpeedValue');
@@ -519,6 +526,12 @@
     const segmentCustomNameInput = document.getElementById('segmentCustomNameInput');
     const btnSaveCustomName = document.getElementById('btnSaveCustomName');
     const nameStatusBadge = document.getElementById('nameStatusBadge');
+
+    exportFormatSelect.addEventListener('change', () => {
+      const showBitrate = exportFormatSelect.value === 'mp3';
+      mp3BitrateLabel.hidden = !showBitrate;
+      mp3BitrateSelect.hidden = !showBitrate;
+    });
 
     // Inicializar velocidad
     playbackSpeedSlider.value = String(playbackSpeed);
@@ -1273,7 +1286,7 @@
       return resampled;
     }
 
-    // Codificación MP3 mono a 11025 Hz y 20 kbps CBR vía lamejs
+    // Codificación MP3 mono a 11025 Hz con bitrate CBR vía lamejs
     function monoFloat32ToMp3(monoSamples, sampleRate = 11025, kbps = 20) {
       const mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, kbps);
       const mp3Data = [];
@@ -1342,7 +1355,9 @@
       if (!buffer) return;
 
       const format = exportFormatSelect.value;
-      showToast(`Exportando ${list.length} segmento(s) en ${format.toUpperCase()} (11025Hz Mono)...`);
+      const bitrate = Number(mp3BitrateSelect.value);
+      const formatDescription = format === 'mp3' ? `MP3 ${bitrate} kbps` : 'WAV';
+      showToast(`Exportando ${list.length} segmento(s) en ${formatDescription} (11025Hz Mono)...`);
 
       for (let idx = 0; idx < list.length; idx++) {
         const seg = list[idx];
@@ -1350,7 +1365,7 @@
           const monoSamples = await resampleSegmentToMono11025(seg);
           let blob;
           if (format === 'mp3') {
-            blob = monoFloat32ToMp3(monoSamples, 11025, 20);
+            blob = monoFloat32ToMp3(monoSamples, 11025, bitrate);
           } else {
             blob = monoFloat32ToWav(monoSamples, 11025);
           }
