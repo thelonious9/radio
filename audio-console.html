@@ -426,9 +426,9 @@
         </table>
       </div>
 
-      <!-- Barra inferior: Formato + Limpiar + Descargar -->
+      <!-- Barra inferior: Formato + Importar + IA + Limpiar + Descargar -->
       <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
           <label for="exportFormatSelect" class="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Formato:</label>
           <select id="exportFormatSelect" class="px-2 py-1 text-[11px] bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-slate-700 dark:text-slate-200 outline-none">
             <option value="mp3">MP3 (20 kbps, 11025 Hz, Mono)</option>
@@ -439,6 +439,14 @@
             <option value="20">20 kbps</option>
             <option value="32">32 kbps</option>
           </select>
+
+          <button type="button" id="btnLoadEscaletaCsv" class="btn-action bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-file-csv"></i> Cargar Escaleta CSV
+          </button>
+
+          <button type="button" id="btnEscaletaIA" class="btn-action bg-violet-700 hover:bg-violet-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Generar Escaleta con IA
+          </button>
 
           <button type="button" id="btnClearAll" class="btn-action bg-red-700 hover:bg-red-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
             <i class="fa-solid fa-trash-can"></i> Limpiar Todo
@@ -505,7 +513,16 @@
     let customMarkingName = '';
     let playbackSpeed = Math.min(2, Math.max(0.5, Number(localStorage.getItem('audioConsolePlaybackSpeed')) || 1));
 
+    const URL_ESCALETA_GROQ = "https://script.google.com/macros/s/AKfycbzqLoBq-I_FMsRINHLu_LF6DcSAybtsnWziV7DkRV0ygtECuNAmEaw7ppFzIzeu4OS6Dg/exec";
+
     const fileInput = document.getElementById('audioFileInput');
+    const btnLoadEscaletaCsv = document.getElementById('btnLoadEscaletaCsv');
+    const btnEscaletaIA = document.getElementById('btnEscaletaIA');
+    const csvFileInput = document.createElement('input');
+    csvFileInput.type = 'file';
+    csvFileInput.accept = '.csv,text/csv';
+    csvFileInput.style.display = 'none';
+    document.body.appendChild(csvFileInput);
     const btnPlayPause = document.getElementById('btnPlayPause');
     const playIcon = document.getElementById('playIcon');
     const timeDisplay = document.getElementById('timeDisplay');
@@ -526,6 +543,122 @@
     const segmentCustomNameInput = document.getElementById('segmentCustomNameInput');
     const btnSaveCustomName = document.getElementById('btnSaveCustomName');
     const nameStatusBadge = document.getElementById('nameStatusBadge');
+
+    function parseCsvEscaletaText(csvText) {
+      const rows = csvText
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const cells = [];
+          let current = '';
+          let inQuotes = false;
+
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              if (inQuotes && line[i + 1] === '"') {
+                current += '"';
+                i++;
+              } else {
+                inQuotes = !inQuotes;
+              }
+            } else if ((char === ',' || char === ';') && !inQuotes) {
+              cells.push(current.trim());
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+
+          cells.push(current.trim());
+          return cells.map(value => value.replace(/^"|"$/g, '').trim());
+        })
+        .filter(row => row.some(value => value));
+
+      if (rows.length === 0) return [];
+
+      const normalizedHeaders = rows[0].map(value => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+      const headerIndex = {
+        name: normalizedHeaders.findIndex(value => /^(nombre|name|titulo|title|segmento|segment|tema)$/.test(value)),
+        in: normalizedHeaders.findIndex(value => /^(in|inicio|start|inicio_seg|segundo_in|time_in|tiempo_in)$/.test(value)),
+        out: normalizedHeaders.findIndex(value => /^(out|fin|end|fin_seg|segundo_out|time_out|tiempo_out)$/.test(value))
+      };
+
+      const startIndex = headerIndex.name >= 0 || headerIndex.in >= 0 || headerIndex.out >= 0 ? 1 : 0;
+      const imported = [];
+
+      for (let i = startIndex; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.length < 3) continue;
+
+        const nameValue = headerIndex.name >= 0 ? row[headerIndex.name] : row[0];
+        const inValue = headerIndex.in >= 0 ? row[headerIndex.in] : row[1];
+        const outValue = headerIndex.out >= 0 ? row[headerIndex.out] : row[2];
+
+        if (!nameValue || !inValue || !outValue) continue;
+
+        const inSec = parseTimeToSeconds(inValue);
+        const outSec = parseTimeToSeconds(outValue);
+
+        if (!isFinite(inSec) || !isFinite(outSec) || outSec <= inSec) continue;
+
+        imported.push({
+          name: String(nameValue).trim() || `Segmento ${segmentCounter + imported.length + 1}`,
+          in: inSec,
+          out: outSec
+        });
+      }
+
+      return imported;
+    }
+
+    if (btnLoadEscaletaCsv) {
+      btnLoadEscaletaCsv.addEventListener('click', () => {
+        csvFileInput.click();
+      });
+    }
+
+    csvFileInput.addEventListener('change', async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (!/\.csv$/i.test(file.name)) {
+        showToast('Selecciona un archivo CSV válido.', true);
+        csvFileInput.value = '';
+        return;
+      }
+
+      try {
+        const csvText = await file.text();
+        const imported = parseCsvEscaletaText(csvText);
+
+        if (!imported.length) {
+          throw new Error('No se encontraron segmentos válidos en el CSV. Usa columnas como Nombre, IN, OUT.');
+        }
+
+        const beforeCount = segmentsList.length;
+        imported.forEach((seg) => {
+          segmentsList.push({
+            id: Date.now() + Math.random(),
+            name: seg.name,
+            in: seg.in,
+            out: seg.out
+          });
+          segmentCounter += 1;
+        });
+
+        renderSegmentsTable();
+        showToast(`CSV importado: ${segmentsList.length - beforeCount} segmento(s) cargado(s).`);
+      } catch (err) {
+        console.error('Error al importar CSV:', err);
+        showToast('Error al importar el CSV: ' + (err && err.message ? err.message : String(err)), true);
+      } finally {
+        csvFileInput.value = '';
+      }
+    });
 
     exportFormatSelect.addEventListener('change', () => {
       const showBitrate = exportFormatSelect.value === 'mp3';
@@ -787,6 +920,99 @@
       currentZoomPx = 0;
       zoomLevelDisplay.textContent = "100%";
     });
+
+    if (btnEscaletaIA) {
+      btnEscaletaIA.addEventListener('click', async () => {
+        if (!wavesurfer || !wavesurfer.getDuration()) {
+          return showToast('Carga un archivo de audio en la Sección 1 primero.', true);
+        }
+
+        const buffer = await asegurarAudioBuffer();
+        if (!buffer) return;
+
+        btnEscaletaIA.disabled = true;
+        const textoOriginal = btnEscaletaIA.innerHTML;
+        btnEscaletaIA.innerHTML = ' Comprimiendo y analizando con IA...';
+
+        try {
+          showToast('Optimizando audio para la IA...');
+
+          // 1. Remuestrear la pista completa a 11025Hz Mono para reducir peso en un 90%
+          const fullSegment = { in: 0, out: wavesurfer.getDuration() };
+          const monoSamples = await resampleSegmentToMono11025(fullSegment);
+          const mp3Blob = monoFloat32ToMp3(monoSamples, 11025, 20);
+
+          showToast('Enviando audio comprimido a Groq...');
+
+          // 2. Convertir el Blob comprimido a Base64
+          const base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const result = reader.result;
+              resolve(typeof result === 'string' ? result.split(',')[1] || '' : '');
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(mp3Blob);
+          });
+
+          // 3. Petición POST al backend de Apps Script
+          const response = await fetch(URL_ESCALETA_GROQ, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              accion: 'generarEscaletaIA',
+              audio: {
+                base64,
+                mimeType: 'audio/mp3',
+                nombre: 'audio_optimizado.mp3'
+              }
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const resJson = await response.json();
+          console.log('Respuesta del servidor de escaleta:', resJson);
+
+          if (!resJson.exito || !Array.isArray(resJson.segmentos)) {
+            throw new Error(resJson.error || 'La API no devolvió una lista de segmentos válida.');
+          }
+
+          if (resJson.segmentos.length === 0) {
+            showToast('La IA procesó el audio pero no identificó notas individuales.', true);
+            return;
+          }
+
+          let agregados = 0;
+          resJson.segmentos.forEach((seg) => {
+            const inSec = Number(seg.in);
+            const outSec = Number(seg.out);
+
+            if (!isNaN(inSec) && !isNaN(outSec) && outSec > inSec) {
+              segmentsList.push({
+                id: Date.now() + Math.random(),
+                name: seg.name || `Segmento IA ${segmentCounter}`,
+                in: inSec,
+                out: outSec
+              });
+              segmentCounter += 1;
+              agregados += 1;
+            }
+          });
+
+          renderSegmentsTable();
+          showToast(`Escaleta generada: Se agregaron ${agregados} nota(s) a la tabla.`);
+        } catch (err) {
+          console.error('Error al generar escaleta con IA:', err);
+          showToast('Error: ' + (err && err.message ? err.message : String(err)), true);
+        } finally {
+          btnEscaletaIA.disabled = false;
+          btnEscaletaIA.innerHTML = textoOriginal;
+        }
+      });
+    }
 
     btnPlayPause.addEventListener('click', () => {
       if (!wavesurfer || !wavesurfer.getDuration()) {
