@@ -27,11 +27,10 @@ Canal del Pueblo,Vocales Radio,Mara Olvera,Tv Local
 Canal del Pueblo,Vocales Radio,Milton Cortés,Tv Local
 Canal del Pueblo,Vocales Radio,Radioescucha,Tv Local
 Canal del Pueblo,Vocales Radio,Sarkis Mikel Jeitani,Tv Local
-Canal Once,Canal Once,Armando Gama,Tv Nacional
-Canal Once,Canal Once,Arturo Arellano,Tv Nacional
-Canal Once,Canal Once,Canal Once,Tv Nacional
-Canal Once,Canal Once,Karen Ballesteros,Tv Nacional
-Canal Once,Once Noticias,Guadalupe Contreras,Tv Nacional
+Canal once,Once Noticias,Armando Gama,Tv Nacional
+Canal once,Once Noticias,Arturo Arellano,Tv Nacional
+Canal once,Once Noticias,Karen Ballesteros,Tv Nacional
+Canal once,Once Noticias,Guadalupe Contreras,Tv Nacional
 Crystal 106.1 FM,Transmisión Especial,Redacción,Radio local
 El Financiero TV,El Financiero Noticias,Carlos Barajas,Tv Nacional
 El Financiero TV,El Financiero Noticias,Jassiel Valdemar,Tv Nacional
@@ -74,7 +73,7 @@ Heraldo Televisión,Milenio Tv,Jorge Martínez,Tv Nacional
 Heraldo Televisión,Republica H,Ivan Márquez,Tv Nacional
 Heraldo Televisión,Republica H,Noticias Heraldo,Tv Nacional
 Heraldo Televisión,Republica H,Sofía García,Tv Nacional
-Heralgo Radio,Solórzano Referente Informativo,Javier Solórzano,Radio nacional
+Heraldo Radio,Solórzano Referente Informativo,Javier Solórzano,Radio nacional
 Imagen Radio,Primera Emisión,Pascal Beltrán del Río,Radio nacional
 Imagen Radio,Imagen Empresarial, Rodrigo Pacheco,Radio nacional
 Imagen Radio,Negocios en Imagen,Darío Celis,Radio nacional
@@ -83,26 +82,20 @@ Imagen Radio,Tercera Emisión,Esteban Arce,Radio nacional
 Imagen Radio,Segunda Emisión,Francisco Zea,Radio nacional
 Imagen Radio,Ya Sierra,Yuriria Sierra,Radio nacional
 Imagen Radio,Primera Emisión,Héctor Figueroa,Radio nacional
-Imagen TV,Canal 6,Td,Tv Nacional
-Imagen TV,Dpc,Paola Rojas,Tv Nacional
-Imagen TV,Imagen Noticias,Brisseida Moya,Tv Nacional
-Imagen TV,Imagen Noticias,David Páramo,Tv Nacional
-Imagen TV,Imagen Noticias,Marlene Stahl,Tv Nacional
-Imagen TV,Imagen Noticias,Mónica Noguera,Tv Nacional
-Imagen TV,Imagen Noticias,Nuria Gil,Tv Nacional
-Imagen TV,Imagen Noticias,Redacción,Tv Nacional
-Imagen TV,Imagen Tv,Crystal Mendivil,Tv Nacional
-Imagen TV,Imagen Tv,Francisco Zea,Tv Nacional
-Imagen TV,Imagen Tv,Guadalupe Trejo,Tv Nacional
-Imagen TV,Imagen Tv,Ignacio Lozano,Tv Nacional
-Imagen TV,Imagen Tv,Imagen Notícias,Tv Nacional
-Imagen TV,Imagen Tv,Imagen Tv,Tv Nacional
-Imagen TV,Imagen Tv,Mónica Noguera,Tv Nacional
-Imagen TV,Imagen Tv,Nacho Lozano,Tv Nacional
-Imagen TV,Imagen Tv,Paolette Hernández,Tv Nacional
-Imagen TV,Imagen Tv,Raúl Flores,Tv Nacional
-Imagen TV,Imagen Zea,Enrique Villanueva,Tv Nacional
-Imagen TV,Milenio Tv,Fernando Robles,Tv Nacional
+Imagen TV,Imagen Noticias,Nuria Gil,TV nacional
+Imagen TV,Imagen Noticias,Adriana Treviño,TV nacional
+Imagen TV,Imagen Noticias con Francisco Zea,Francisco Zea,TV nacional
+Imagen TV,De pisa y corre,Paola Rojas,TV nacional
+Imagen TV,Imagen Noticias con Crystal Mendivil,Crystal Mendivil,TV nacional
+Imagen TV,Imagen Noticias con Nacho Lozano,Ignacio Lozano,TV nacional
+Imagen TV,¡Qué importa!,Eduardo Videgaray,TV nacional
+Imagen TV,¡Qué importa!,José Ramón San Cristóbal,TV nacional
+Canal once,Once Noticias,Angélica Rivera,TV nacional
+Canal once,Once Noticias,Luisa Cantú,TV nacional
+Canal once,Once Noticias,Estefanía Quartino,TV nacional
+Canal once,Punto de referencia,Azul Alzaga,TV nacional
+Canal once,Once Noticias dominical,Tzindia Anabel Cerda,TV nacional
+Radio Fórmula,Feregrino por las Mañanas,Manuel Feregrino,Radio nacional
 Ke Buena 106.7 FM,Noticias 106.7,David Cárdenas,Radio local
 Ke Buena 106.7 FM,Noticias 106.7,Radioescucha,Radio local
 Ke Buena 106.7 FM,Transmisión Especial,Redacción,Radio local
