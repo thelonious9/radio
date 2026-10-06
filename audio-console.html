@@ -523,7 +523,7 @@
     let playbackSpeed = Math.min(2, Math.max(0.5, Number(localStorage.getItem('audioConsolePlaybackSpeed')) || 1));
     let currentMediaFile = null;
     let isVideoFile = false;
-    let ffmpegInstance = null;
+    let videoExportInProgress = false;
 
     const URL_ESCALETA_GROQ = "https://script.google.com/macros/s/AKfycbzqLoBq-I_FMsRINHLu_LF6DcSAybtsnWziV7DkRV0ygtECuNAmEaw7ppFzIzeu4OS6Dg/exec";
 
@@ -982,8 +982,6 @@
     }
 
     async function getFFmpeg() {
-      if (ffmpegInstance) return ffmpegInstance;
-
       showToast('Cargando motor de corte de video local...');
 
       if (typeof FFmpeg === 'undefined' || !FFmpeg.createFFmpeg) {
@@ -1009,9 +1007,9 @@
 
         try {
           await candidate.load();
-          ffmpegInstance = candidate;
-          return ffmpegInstance;
+          return candidate;
         } catch (error) {
+          try { candidate.exit(); } catch (exitError) {}
           loadErrors.push(`${new URL(corePath).host}: ${getErrorMessage(error)}`);
           if (index < corePaths.length - 1) {
             showToast('No se pudo cargar FFmpeg desde la primera fuente; probando una alternativa...');
@@ -1783,13 +1781,14 @@
 
     async function processAndDownload(list) {
       if (isVideoFile) {
-        let inputWritten = false;
+        if (videoExportInProgress) {
+          showToast('Ya hay una exportación de video en curso.', true);
+          return;
+        }
+
+        videoExportInProgress = true;
         try {
           showToast(`Iniciando corte local de ${list.length} video(s)...`);
-          const ffmpeg = await getFFmpeg();
-          const fileData = await fileToUint8Array(currentMediaFile);
-          ffmpeg.FS('writeFile', 'input_video', fileData);
-          inputWritten = true;
 
           for (let idx = 0; idx < list.length; idx++) {
             const seg = list[idx];
@@ -1803,7 +1802,13 @@
 
             showToast(`Cortando segmento ${idx + 1}/${list.length}: "${seg.name}"...`);
 
+            const ffmpeg = await getFFmpeg();
+            let inputWritten = false;
             try {
+              const fileData = await fileToUint8Array(currentMediaFile);
+              ffmpeg.FS('writeFile', 'input_video', fileData);
+              inputWritten = true;
+
               try {
                 await ffmpeg.run(
                   '-ss', inSec,
@@ -1828,8 +1833,14 @@
 
               setTimeout(() => URL.revokeObjectURL(url), 10000);
             } finally {
+              if (inputWritten) {
+                try { ffmpeg.FS('unlink', 'input_video'); } catch (error) {}
+              }
               try { ffmpeg.FS('unlink', outputName); } catch (error) {}
+              ffmpeg.exit();
             }
+
+            await new Promise(resolve => setTimeout(resolve, 200));
           }
 
           showToast(`Exportación de video completada (${list.length} corte/s).`);
@@ -1837,9 +1848,7 @@
           console.error('Error al cortar video con FFmpeg:', err);
           showToast('Error en el corte de video: ' + getErrorMessage(err), true);
         } finally {
-          if (inputWritten && ffmpegInstance) {
-            try { ffmpegInstance.FS('unlink', 'input_video'); } catch (error) {}
-          }
+          videoExportInProgress = false;
         }
         return;
       }
