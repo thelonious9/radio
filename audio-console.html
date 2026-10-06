@@ -1176,7 +1176,8 @@
                 id: Date.now() + Math.random(),
                 name: seg.name || `Segmento IA ${segmentCounter}`,
                 in: inSec,
-                out: outSec
+                out: outSec,
+                text: seg.text || "" // <--- Transcripción literal devuelta por el backend
               });
               segmentCounter += 1;
               agregados += 1;
@@ -1475,6 +1476,9 @@
               <button type="button" class="btn-action text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 p-1" title="Descargar corte individual" onclick="exportSingleSegment(${seg.id})">
                 <i class="fa-solid fa-download text-[11px]"></i>
               </button>
+              <button type="button" class="btn-action text-violet-600 hover:text-violet-800 dark:text-violet-400 p-1" title="Descargar transcripción (.txt)" onclick="downloadSegmentText(${seg.id})">
+                <i class="fa-solid fa-file-lines text-[11px]"></i>
+              </button>
               <button type="button" class="btn-action text-red-600 hover:text-red-800 dark:text-red-400 p-1" title="Eliminar segmento" onclick="removeSegment(${seg.id})">
                 <i class="fa-solid fa-trash-can text-[11px]"></i>
               </button>
@@ -1594,6 +1598,37 @@
         if (!buffer) return;
       }
       processAndDownload([seg]);
+    };
+
+    window.downloadSegmentText = function(id) {
+      const seg = segmentsList.find(s => s.id === id);
+      if (!seg) return;
+
+      if (!seg.text) {
+        showToast("Este segmento no tiene transcripción asociada.", true);
+        return;
+      }
+
+      const inFormatted = formatTimeCode(seg.in);
+      const outFormatted = formatTimeCode(seg.out);
+      const cleanName = seg.name.replace(/[^a-zA-Z0-9_\-]/g, '_');
+
+      const contenidoTxt = `SEGMENTO: ${seg.name}\n` +
+                           `TIEMPO: (${inFormatted} - ${outFormatted})\n` +
+                           `========================================\n\n` +
+                           `${seg.text}\n`;
+
+      const blob = new Blob([contenidoTxt], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${cleanName}_(${inFormatted.replace(/:/g, '-')}_a_${outFormatted.replace(/:/g, '-')}).txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+      showToast(`Transcripción descargada para "${seg.name}".`);
     };
 
     btnExportAll.addEventListener('click', async () => {
