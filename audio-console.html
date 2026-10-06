@@ -14,6 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/wavesurfer.js@7"></script>
   <script src="https://unpkg.com/wavesurfer.js@7/dist/plugins/timeline.min.js"></script>
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 
   <script>
@@ -253,7 +254,7 @@
         </div>
         <div>
           <h1 class="font-bold text-base tracking-tight leading-none text-slate-100">Consola de Control de Audio</h1>
-          <span class="text-[10px] text-slate-400 font-medium">Recorte con MP3 (20kbps CBR, 11025Hz Mono) y ajuste fino</span>
+          <span class="text-[10px] text-slate-400 font-medium">Recorte con MP3 CBR (11025Hz Mono) y ajuste fino</span>
         </div>
       </div>
 
@@ -285,7 +286,7 @@
           </div>
         </div>
         <div class="flex items-center gap-2 flex-1 max-w-md">
-          <input type="file" id="audioFileInput" accept="audio/*" class="block w-full text-[11px] text-slate-500 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-[11px] file:font-semibold file:bg-slate-900 file:text-white dark:file:bg-slate-700 hover:file:bg-slate-800 dark:hover:file:bg-slate-600 border border-slate-300 dark:border-slate-600 rounded cursor-pointer bg-slate-50 dark:bg-slate-900/50">
+          <input type="file" id="audioFileInput" accept="audio/*,video/*" class="block w-full text-[11px] text-slate-500 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-[11px] file:font-semibold file:bg-slate-900 file:text-white dark:file:bg-slate-700 hover:file:bg-slate-800 dark:hover:file:bg-slate-600 border border-slate-300 dark:border-slate-600 rounded cursor-pointer bg-slate-50 dark:bg-slate-900/50">
         </div>
       </div>
 
@@ -385,6 +386,10 @@
         <span id="nameStatusBadge" class="text-[11px] text-amber-700 dark:text-amber-300 italic"></span>
       </div>
 
+      <div id="videoPreviewWrapper" class="hidden mt-2 bg-slate-900/95 rounded border border-slate-700 p-2">
+        <video id="videoPreview" controls playsinline class="w-full max-h-72 rounded bg-black mx-auto"></video>
+      </div>
+
       <!-- Contenedor WaveSurfer y regla temporal -->
       <div id="waveform-container">
         <div id="selection-overlay"></div>
@@ -426,14 +431,31 @@
         </table>
       </div>
 
-      <!-- Barra inferior: Formato + Limpiar + Descargar -->
+      <!-- Barra inferior: Formato + Importar + IA + Limpiar + Descargar -->
       <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
           <label for="exportFormatSelect" class="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Formato:</label>
           <select id="exportFormatSelect" class="px-2 py-1 text-[11px] bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-slate-700 dark:text-slate-200 outline-none">
             <option value="mp3">MP3 (20 kbps, 11025 Hz, Mono)</option>
             <option value="wav">WAV (11025 Hz, Mono)</option>
           </select>
+          <label id="mp3BitrateLabel" for="mp3BitrateSelect" class="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Bitrate:</label>
+          <select id="mp3BitrateSelect" class="px-2 py-1 text-[11px] bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded text-slate-700 dark:text-slate-200 outline-none">
+            <option value="20">20 kbps</option>
+            <option value="32">32 kbps</option>
+          </select>
+
+          <button type="button" id="btnLoadEscaletaCsv" class="btn-action bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-100 text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-file-csv"></i> Cargar Escaleta CSV
+          </button>
+
+          <button type="button" id="btnDownloadEscaletaCsv" class="btn-action bg-sky-700 hover:bg-sky-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-file-arrow-down"></i> Descargar Escaleta CSV
+          </button>
+
+          <button type="button" id="btnEscaletaIA" class="btn-action bg-violet-700 hover:bg-violet-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Generar Escaleta con IA
+          </button>
 
           <button type="button" id="btnClearAll" class="btn-action bg-red-700 hover:bg-red-600 text-white text-[11px] font-semibold py-1.5 px-3 rounded shadow-sm flex items-center gap-1.5">
             <i class="fa-solid fa-trash-can"></i> Limpiar Todo
@@ -499,8 +521,22 @@
     let currentZoomPx = 0;
     let customMarkingName = '';
     let playbackSpeed = Math.min(2, Math.max(0.5, Number(localStorage.getItem('audioConsolePlaybackSpeed')) || 1));
+    let currentMediaFile = null;
+    let isVideoFile = false;
+    let ffmpegInstance = null;
+
+    const URL_ESCALETA_GROQ = "https://script.google.com/macros/s/AKfycbzqLoBq-I_FMsRINHLu_LF6DcSAybtsnWziV7DkRV0ygtECuNAmEaw7ppFzIzeu4OS6Dg/exec";
 
     const fileInput = document.getElementById('audioFileInput');
+    const videoPreview = document.getElementById('videoPreview');
+    const btnLoadEscaletaCsv = document.getElementById('btnLoadEscaletaCsv');
+    const btnDownloadEscaletaCsv = document.getElementById('btnDownloadEscaletaCsv');
+    const btnEscaletaIA = document.getElementById('btnEscaletaIA');
+    const csvFileInput = document.createElement('input');
+    csvFileInput.type = 'file';
+    csvFileInput.accept = '.csv,text/csv';
+    csvFileInput.style.display = 'none';
+    document.body.appendChild(csvFileInput);
     const btnPlayPause = document.getElementById('btnPlayPause');
     const playIcon = document.getElementById('playIcon');
     const timeDisplay = document.getElementById('timeDisplay');
@@ -512,6 +548,8 @@
     const tableBody = document.getElementById('segmentsTableBody');
     const btnExportAll = document.getElementById('btnExportAll');
     const exportFormatSelect = document.getElementById('exportFormatSelect');
+    const mp3BitrateLabel = document.getElementById('mp3BitrateLabel');
+    const mp3BitrateSelect = document.getElementById('mp3BitrateSelect');
     const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
     const playbackSpeedSlider = document.getElementById('playbackSpeedSlider');
     const playbackSpeedValue = document.getElementById('playbackSpeedValue');
@@ -519,6 +557,172 @@
     const segmentCustomNameInput = document.getElementById('segmentCustomNameInput');
     const btnSaveCustomName = document.getElementById('btnSaveCustomName');
     const nameStatusBadge = document.getElementById('nameStatusBadge');
+
+    function parseCsvEscaletaText(csvText) {
+      const rows = csvText
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const cells = [];
+          let current = '';
+          let inQuotes = false;
+
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              if (inQuotes && line[i + 1] === '"') {
+                current += '"';
+                i++;
+              } else {
+                inQuotes = !inQuotes;
+              }
+            } else if ((char === ',' || char === ';') && !inQuotes) {
+              cells.push(current.trim());
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+
+          cells.push(current.trim());
+          return cells.map(value => value.replace(/^"|"$/g, '').trim());
+        })
+        .filter(row => row.some(value => value));
+
+      if (rows.length === 0) return [];
+
+      const normalizedHeaders = rows[0].map(value => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+      const headerIndex = {
+        name: normalizedHeaders.findIndex(value => /^(nombre|name|titulo|title|segmento|segment|tema)$/.test(value)),
+        in: normalizedHeaders.findIndex(value => /^(in|inicio|start|inicio_seg|segundo_in|time_in|tiempo_in)$/.test(value)),
+        out: normalizedHeaders.findIndex(value => /^(out|fin|end|fin_seg|segundo_out|time_out|tiempo_out)$/.test(value))
+      };
+
+      const startIndex = headerIndex.name >= 0 || headerIndex.in >= 0 || headerIndex.out >= 0 ? 1 : 0;
+      const imported = [];
+
+      for (let i = startIndex; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.length < 3) continue;
+
+        const nameValue = headerIndex.name >= 0 ? row[headerIndex.name] : row[0];
+        const inValue = headerIndex.in >= 0 ? row[headerIndex.in] : row[1];
+        const outValue = headerIndex.out >= 0 ? row[headerIndex.out] : row[2];
+
+        if (!nameValue || !inValue || !outValue) continue;
+
+        const inSec = parseTimeToSeconds(inValue);
+        const outSec = parseTimeToSeconds(outValue);
+
+        if (!isFinite(inSec) || !isFinite(outSec) || outSec <= inSec) continue;
+
+        imported.push({
+          name: String(nameValue).trim() || `Segmento ${segmentCounter + imported.length + 1}`,
+          in: inSec,
+          out: outSec
+        });
+      }
+
+      return imported;
+    }
+
+    function formatCsvTime(totalSeconds) {
+      const value = Number(totalSeconds) || 0;
+      const safe = Math.max(0, value);
+      const hours = Math.floor(safe / 3600);
+      const minutes = Math.floor((safe % 3600) / 60);
+      const seconds = Math.floor(safe % 60);
+
+      const pad = (n) => String(n).padStart(2, '0');
+      return hours > 0
+        ? `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
+        : `${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    function downloadEscaletaCsv() {
+      if (!segmentsList.length) {
+        showToast('No hay ninguna escaleta para exportar en CSV.', true);
+        return;
+      }
+
+      const rows = [
+        ['Nombre', 'IN', 'OUT'],
+        ...segmentsList.map((seg) => [seg.name || 'Sin Nombre', formatCsvTime(seg.in), formatCsvTime(seg.out)])
+      ];
+
+      const csv = rows
+        .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'escaleta.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Escaleta CSV descargada.');
+    }
+
+    if (btnLoadEscaletaCsv) {
+      btnLoadEscaletaCsv.addEventListener('click', () => {
+        csvFileInput.click();
+      });
+    }
+
+    if (btnDownloadEscaletaCsv) {
+      btnDownloadEscaletaCsv.addEventListener('click', downloadEscaletaCsv);
+    }
+
+    csvFileInput.addEventListener('change', async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (!/\.csv$/i.test(file.name)) {
+        showToast('Selecciona un archivo CSV válido.', true);
+        csvFileInput.value = '';
+        return;
+      }
+
+      try {
+        const csvText = await file.text();
+        const imported = parseCsvEscaletaText(csvText);
+
+        if (!imported.length) {
+          throw new Error('No se encontraron segmentos válidos en el CSV. Usa columnas como Nombre, IN, OUT.');
+        }
+
+        const beforeCount = segmentsList.length;
+        imported.forEach((seg) => {
+          segmentsList.push({
+            id: Date.now() + Math.random(),
+            name: seg.name,
+            in: seg.in,
+            out: seg.out
+          });
+          segmentCounter += 1;
+        });
+
+        renderSegmentsTable();
+        showToast(`CSV importado: ${segmentsList.length - beforeCount} segmento(s) cargado(s).`);
+      } catch (err) {
+        console.error('Error al importar CSV:', err);
+        showToast('Error al importar el CSV: ' + (err && err.message ? err.message : String(err)), true);
+      } finally {
+        csvFileInput.value = '';
+      }
+    });
+
+    exportFormatSelect.addEventListener('change', () => {
+      const showBitrate = exportFormatSelect.value === 'mp3';
+      mp3BitrateLabel.hidden = !showBitrate;
+      mp3BitrateSelect.hidden = !showBitrate;
+    });
 
     // Inicializar velocidad
     playbackSpeedSlider.value = String(playbackSpeed);
@@ -630,10 +834,18 @@
 
       wavesurfer.on('play', () => {
         playIcon.className = "fa-solid fa-pause";
+        const videoElem = document.getElementById('videoPreview');
+        if (isVideoFile && videoElem && videoElem.paused) {
+          videoElem.play();
+        }
       });
 
       wavesurfer.on('pause', () => {
         playIcon.className = "fa-solid fa-play";
+        const videoElem = document.getElementById('videoPreview');
+        if (isVideoFile && videoElem && !videoElem.paused) {
+          videoElem.pause();
+        }
         renderSegmentsTable();
       });
 
@@ -644,9 +856,8 @@
     }
 
     function updateTimeDisplay() {
-      if (!wavesurfer) return;
-      const current = wavesurfer.getCurrentTime();
-      const duration = wavesurfer.getDuration();
+      const current = getTimelineCurrentTime();
+      const duration = getTimelineDuration();
       if (!seekTimeField.contains(document.activeElement)) setTimeCodeField(seekTimeField, current);
       durationDisplay.textContent = formatTimeCode(duration);
 
@@ -675,8 +886,8 @@
     }
 
     function updateSelectionOverlay(start, end) {
-      if (!wavesurfer || wavesurfer.getDuration() === 0) return;
-      const duration = wavesurfer.getDuration();
+      const duration = getTimelineDuration();
+      if (!duration) return;
 
       const startPercent = Math.max(0, Math.min(100, (start / duration) * 100));
       const endPercent = Math.max(0, Math.min(100, (end / duration) * 100));
@@ -713,14 +924,15 @@
 
       const totalSeconds = minutes * 60 + seconds;
       if (kind === 'seek') {
-        if (!wavesurfer || !wavesurfer.getDuration()) {
+        const duration = getTimelineDuration();
+        if (!duration) {
           showToast("Carga un archivo de audio primero.", true);
           setTimeCodeField(field, 0);
-        } else if (totalSeconds > wavesurfer.getDuration()) {
-          showToast("La posición no puede superar la duración del audio.", true);
-          setTimeCodeField(field, wavesurfer.getCurrentTime());
+        } else if (totalSeconds > duration) {
+          showToast("La posición no puede superar la duración del archivo.", true);
+          setTimeCodeField(field, getTimelineCurrentTime());
         } else {
-          wavesurfer.setTime(totalSeconds);
+          setTimelineCurrentTime(totalSeconds);
         }
       } else if (kind === 'segment-in') {
         updateSegmentIn(Number(field.dataset.segmentId), `${minutes}:${seconds}`);
@@ -760,6 +972,71 @@
       return null;
     }
 
+    async function fileToUint8Array(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(new Uint8Array(reader.result));
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
+    async function getFFmpeg() {
+      if (ffmpegInstance) return ffmpegInstance;
+
+      showToast('Cargando motor de corte de video local...');
+
+      if (typeof FFmpeg === 'undefined' || !FFmpeg.createFFmpeg) {
+        throw new Error('La librería FFmpeg.wasm v0.11 no se ha cargado correctamente.');
+      }
+
+      const { createFFmpeg } = FFmpeg;
+      ffmpegInstance = createFFmpeg({
+        log: true,
+        corePath: 'https://unpkg.com/@ffmpeg/core-st@0.11.0/dist/ffmpeg-core.js'
+      });
+
+      try {
+        await ffmpegInstance.load();
+        return ffmpegInstance;
+      } catch (error) {
+        ffmpegInstance = null;
+        throw error;
+      }
+    }
+
+    function getErrorMessage(error) {
+      if (error instanceof Error) return error.message || error.name;
+      if (typeof error === 'string') return error;
+      if (error === undefined || error === null) return String(error);
+
+      try {
+        return JSON.stringify(error);
+      } catch {
+        return String(error);
+      }
+    }
+
+    function getTimelineDuration() {
+      if (isVideoFile) {
+        return Number.isFinite(videoPreview.duration) ? videoPreview.duration : 0;
+      }
+      return wavesurfer ? wavesurfer.getDuration() : 0;
+    }
+
+    function getTimelineCurrentTime() {
+      if (isVideoFile) return Number.isFinite(videoPreview.currentTime) ? videoPreview.currentTime : 0;
+      return wavesurfer ? wavesurfer.getCurrentTime() : 0;
+    }
+
+    function setTimelineCurrentTime(seconds) {
+      if (isVideoFile) {
+        if (getTimelineDuration()) videoPreview.currentTime = seconds;
+      } else if (wavesurfer) {
+        wavesurfer.setTime(seconds);
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       initWaveSurfer();
     });
@@ -768,32 +1045,159 @@
       const file = e.target.files[0];
       if (!file) return;
 
+      currentMediaFile = file;
+      isVideoFile = file.type.startsWith('video/');
+
+      const videoWrapper = document.getElementById('videoPreviewWrapper');
+
+      if (isVideoFile) {
+        videoWrapper.classList.remove('hidden');
+        videoPreview.src = URL.createObjectURL(file);
+      } else {
+        videoWrapper.classList.add('hidden');
+        videoPreview.pause();
+        videoPreview.removeAttribute('src');
+        videoPreview.load();
+      }
+
       audioBufferGlobal = null;
-      const objectUrl = URL.createObjectURL(file);
-      wavesurfer.load(objectUrl);
+      wavesurfer.load(URL.createObjectURL(file));
       currentZoomPx = 0;
       zoomLevelDisplay.textContent = "100%";
     });
 
+    videoPreview.addEventListener('loadedmetadata', updateTimeDisplay);
+    videoPreview.addEventListener('timeupdate', () => {
+      updateTimeDisplay();
+      const segment = segmentsList.find(item => item.id === activePreviewSegmentId);
+      if (segment && videoPreview.currentTime >= segment.out) {
+        videoPreview.pause();
+        stopActivePreview();
+      }
+    });
+    videoPreview.addEventListener('play', () => {
+      playIcon.className = 'fa-solid fa-pause';
+    });
+    videoPreview.addEventListener('pause', () => {
+      playIcon.className = 'fa-solid fa-play';
+      renderSegmentsTable();
+    });
+
+    if (btnEscaletaIA) {
+      btnEscaletaIA.addEventListener('click', async () => {
+        if (!wavesurfer || !wavesurfer.getDuration()) {
+          return showToast('Carga un archivo de audio en la Sección 1 primero.', true);
+        }
+
+        const buffer = await asegurarAudioBuffer();
+        if (!buffer) return;
+
+        btnEscaletaIA.disabled = true;
+        const textoOriginal = btnEscaletaIA.innerHTML;
+        btnEscaletaIA.innerHTML = ' Comprimiendo y analizando con IA...';
+
+        try {
+          showToast('Optimizando audio para la IA...');
+
+          // 1. Remuestrear la pista completa a 11025Hz Mono para reducir peso en un 90%
+          const fullSegment = { in: 0, out: wavesurfer.getDuration() };
+          const monoSamples = await resampleSegmentToMono11025(fullSegment);
+          const mp3Blob = monoFloat32ToMp3(monoSamples, 11025, 20);
+
+          showToast('Enviando audio comprimido a Groq...');
+
+          // 2. Convertir el Blob comprimido a Base64
+          const base64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const result = reader.result;
+              resolve(typeof result === 'string' ? result.split(',')[1] || '' : '');
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(mp3Blob);
+          });
+
+          // 3. Petición POST al backend de Apps Script
+          const response = await fetch(URL_ESCALETA_GROQ, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              accion: 'generarEscaletaIA',
+              audio: {
+                base64,
+                mimeType: 'audio/mp3',
+                nombre: 'audio_optimizado.mp3'
+              }
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const resJson = await response.json();
+          console.log('Respuesta del servidor de escaleta:', resJson);
+
+          if (!resJson.exito || !Array.isArray(resJson.segmentos)) {
+            throw new Error(resJson.error || 'La API no devolvió una lista de segmentos válida.');
+          }
+
+          if (resJson.segmentos.length === 0) {
+            showToast('La IA procesó el audio pero no identificó notas individuales.', true);
+            return;
+          }
+
+          let agregados = 0;
+          resJson.segmentos.forEach((seg) => {
+            const inSec = Number(seg.in);
+            const outSec = Number(seg.out);
+
+            if (!isNaN(inSec) && !isNaN(outSec) && outSec > inSec) {
+              segmentsList.push({
+                id: Date.now() + Math.random(),
+                name: seg.name || `Segmento IA ${segmentCounter}`,
+                in: inSec,
+                out: outSec
+              });
+              segmentCounter += 1;
+              agregados += 1;
+            }
+          });
+
+          renderSegmentsTable();
+          showToast(`Escaleta generada: Se agregaron ${agregados} nota(s) a la tabla.`);
+        } catch (err) {
+          console.error('Error al generar escaleta con IA:', err);
+          showToast('Error: ' + (err && err.message ? err.message : String(err)), true);
+        } finally {
+          btnEscaletaIA.disabled = false;
+          btnEscaletaIA.innerHTML = textoOriginal;
+        }
+      });
+    }
+
     btnPlayPause.addEventListener('click', () => {
-      if (!wavesurfer || !wavesurfer.getDuration()) {
-        return showToast("Carga un archivo de audio primero.", true);
+      if (!getTimelineDuration()) {
+        return showToast("Carga un archivo de audio o video primero.", true);
       }
       activePreviewSegmentId = null;
-      wavesurfer.playPause();
+      if (isVideoFile) {
+        if (videoPreview.paused) videoPreview.play().catch(err => showToast(getErrorMessage(err), true));
+        else videoPreview.pause();
+      } else {
+        wavesurfer.playPause();
+      }
     });
 
     document.getElementById('btnRewind5').addEventListener('click', () => {
-      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
-      const cur = wavesurfer.getCurrentTime();
-      wavesurfer.setTime(Math.max(0, cur - 5));
+      if (!getTimelineDuration()) return showToast("Carga un archivo de audio o video primero.", true);
+      setTimelineCurrentTime(Math.max(0, getTimelineCurrentTime() - 5));
     });
 
     document.getElementById('btnForward5').addEventListener('click', () => {
-      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
-      const cur = wavesurfer.getCurrentTime();
-      const dur = wavesurfer.getDuration();
-      wavesurfer.setTime(Math.min(dur, cur + 5));
+      const duration = getTimelineDuration();
+      if (!duration) return showToast("Carga un archivo de audio o video primero.", true);
+      setTimelineCurrentTime(Math.min(duration, getTimelineCurrentTime() + 5));
     });
 
     document.getElementById('btnZoomIn').addEventListener('click', () => {
@@ -841,9 +1245,9 @@
     });
 
     function markIn() {
-      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
+      if (!getTimelineDuration()) return showToast("Carga un archivo de audio o video primero.", true);
 
-      timeIn = wavesurfer.getCurrentTime();
+      timeIn = getTimelineCurrentTime();
       timeOut = null;
       displayIn.textContent = `IN: ${formatTimeCode(timeIn)}`;
       displayOut.textContent = "OUT: --:--";
@@ -867,10 +1271,10 @@
     }
 
     function markOut() {
-      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
+      if (!getTimelineDuration()) return showToast("Carga un archivo de audio o video primero.", true);
       if (timeIn === null) return showToast("Debes marcar primero el punto IN.", true);
 
-      timeOut = wavesurfer.getCurrentTime();
+      timeOut = getTimelineCurrentTime();
       if (timeOut <= timeIn) {
         return showToast("El punto OUT debe ser posterior al punto IN.", true);
       }
@@ -902,8 +1306,8 @@
 
     // Ajuste fino temporal de puntos activos (IN / OUT)
     window.adjustActivePoint = function(point, delta) {
-      if (!wavesurfer || !wavesurfer.getDuration()) return showToast("Carga un archivo de audio primero.", true);
-      const dur = wavesurfer.getDuration();
+      const dur = getTimelineDuration();
+      if (!dur) return showToast("Carga un archivo de audio o video primero.", true);
 
       if (point === 'in') {
         if (timeIn === null) return showToast("Primero marca el punto IN.", true);
@@ -911,7 +1315,7 @@
         const newIn = Math.max(0, Math.min(maxIn, timeIn + delta));
         timeIn = Math.round(newIn * 100) / 100;
         displayIn.textContent = `IN: ${formatTimeCode(timeIn)}`;
-        updateSelectionOverlay(timeIn, timeOut !== null ? timeOut : wavesurfer.getCurrentTime());
+        updateSelectionOverlay(timeIn, timeOut !== null ? timeOut : getTimelineCurrentTime());
         showToast(`Punto IN ajustado a ${formatTimeCode(timeIn)}`);
       } else if (point === 'out') {
         if (timeOut === null) return showToast("Primero marca el punto OUT.", true);
@@ -940,21 +1344,27 @@
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
         e.preventDefault();
         markIn();
-      } else if (!e.ctrlKey && !e.metaKey && !e.altKey && wavesurfer && wavesurfer.getDuration()) {
+      } else if (!e.ctrlKey && !e.metaKey && !e.altKey && getTimelineDuration()) {
         if (e.code === 'Space' || e.key === ' ') {
           e.preventDefault();
-          wavesurfer.playPause();
+          if (isVideoFile) {
+            if (videoPreview.paused) videoPreview.play().catch(err => showToast(getErrorMessage(err), true));
+            else videoPreview.pause();
+          } else {
+            wavesurfer.playPause();
+          }
         } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
           e.preventDefault();
           const segment = segmentsList.find(item => item.id === activePreviewSegmentId);
-          const current = wavesurfer.getCurrentTime();
+          const current = getTimelineCurrentTime();
           const delta = e.key === 'ArrowLeft' ? -5 : 5;
           const target = segment
             ? Math.max(segment.in, Math.min(segment.out, current + delta))
-            : Math.max(0, Math.min(wavesurfer.getDuration(), current + delta));
-          wavesurfer.setTime(target);
+            : Math.max(0, Math.min(getTimelineDuration(), current + delta));
+          setTimelineCurrentTime(target);
           if (segment && target >= segment.out) {
-            wavesurfer.pause();
+            if (isVideoFile) videoPreview.pause();
+            else wavesurfer.pause();
             stopActivePreview();
           }
         }
@@ -1003,7 +1413,7 @@
       }
 
       segmentsList.forEach((seg, index) => {
-        const isPlayingThis = activePreviewSegmentId === seg.id && wavesurfer && wavesurfer.isPlaying();
+        const isPlayingThis = activePreviewSegmentId === seg.id && (isVideoFile ? !videoPreview.paused : wavesurfer && wavesurfer.isPlaying());
         const iconClass = isPlayingThis ? 'fa-solid fa-pause' : 'fa-solid fa-play';
 
         const tr = document.createElement('tr');
@@ -1062,7 +1472,7 @@
     window.adjustSegmentTime = function(id, target, deltaSeconds) {
       const seg = segmentsList.find(s => s.id === id);
       if (!seg) return;
-      const maxDuration = wavesurfer && wavesurfer.getDuration() ? wavesurfer.getDuration() : 999999;
+      const maxDuration = getTimelineDuration() || 999999;
 
       if (target === 'in') {
         const newIn = Math.max(0, Math.min(seg.out - 0.1, seg.in + deltaSeconds));
@@ -1089,10 +1499,10 @@
 
     window.updateSegmentIn = function(id, val) {
       const seg = segmentsList.find(s => s.id === id);
+      if (!seg) return;
       const newIn = parseTimeToSeconds(val);
-      if (newIn < 0) return renderSegmentsTable();
-      if (newIn >= seg.out) {
-        showToast("IN no puede ser ≥ OUT.", true);
+      if (!Number.isFinite(newIn) || newIn < 0 || newIn >= seg.out) {
+        showToast("IN debe ser menor que OUT.", true);
         return renderSegmentsTable();
       }
       seg.in = newIn;
@@ -1101,9 +1511,11 @@
 
     window.updateSegmentOut = function(id, val) {
       const seg = segmentsList.find(s => s.id === id);
+      if (!seg) return;
       const newOut = parseTimeToSeconds(val);
-      if (newOut <= seg.in) {
-        showToast("OUT debe ser mayor que IN.", true);
+      const duration = getTimelineDuration();
+      if (!Number.isFinite(newOut) || newOut <= seg.in || (duration && newOut > duration)) {
+        showToast("OUT debe ser mayor que IN y no superar la duración del archivo.", true);
         return renderSegmentsTable();
       }
       seg.out = newOut;
@@ -1112,9 +1524,11 @@
 
     window.updateSegmentDuration = function(id, val) {
       const seg = segmentsList.find(s => s.id === id);
+      if (!seg) return;
       const newDur = parseTimeToSeconds(val);
-      if (newDur <= 0) {
-        showToast("La duración debe ser > 0.", true);
+      const duration = getTimelineDuration();
+      if (!Number.isFinite(newDur) || newDur <= 0 || (duration && seg.in + newDur > duration)) {
+        showToast("La duración debe ser mayor que 0 y caber dentro del archivo.", true);
         return renderSegmentsTable();
       }
       seg.out = seg.in + newDur;
@@ -1123,25 +1537,30 @@
 
     window.togglePreview = function(id) {
       const seg = segmentsList.find(s => s.id === id);
-      if (!seg || !wavesurfer || !wavesurfer.getDuration()) {
-        return showToast("Carga un archivo de audio primero.", true);
+      if (!seg || !getTimelineDuration()) {
+        return showToast("Carga un archivo de audio o video primero.", true);
       }
 
-      if (activePreviewSegmentId === id && wavesurfer.isPlaying()) {
-        wavesurfer.pause();
+      const isPlaying = isVideoFile ? !videoPreview.paused : wavesurfer && wavesurfer.isPlaying();
+      if (activePreviewSegmentId === id && isPlaying) {
+        if (isVideoFile) videoPreview.pause();
+        else wavesurfer.pause();
       } else if (activePreviewSegmentId === id) {
-        wavesurfer.play();
+        if (isVideoFile) videoPreview.play().catch(err => showToast(getErrorMessage(err), true));
+        else wavesurfer.play();
       } else {
         activePreviewSegmentId = id;
-        wavesurfer.setTime(seg.in);
-        wavesurfer.play();
+        setTimelineCurrentTime(seg.in);
+        if (isVideoFile) videoPreview.play().catch(err => showToast(getErrorMessage(err), true));
+        else wavesurfer.play();
         renderSegmentsTable();
       }
     };
 
     window.removeSegment = function(id) {
       if (activePreviewSegmentId === id) {
-        wavesurfer.pause();
+        if (isVideoFile) videoPreview.pause();
+        else if (wavesurfer) wavesurfer.pause();
         activePreviewSegmentId = null;
       }
       segmentsList = segmentsList.filter(s => s.id !== id);
@@ -1151,15 +1570,19 @@
     window.exportSingleSegment = async function(id) {
       const seg = segmentsList.find(s => s.id === id);
       if (!seg) return;
-      const buffer = await asegurarAudioBuffer();
-      if (!buffer) return;
+      if (!isVideoFile) {
+        const buffer = await asegurarAudioBuffer();
+        if (!buffer) return;
+      }
       processAndDownload([seg]);
     };
 
     btnExportAll.addEventListener('click', async () => {
       if (segmentsList.length === 0) return showToast("No hay segmentos para cortar.", true);
-      const buffer = await asegurarAudioBuffer();
-      if (!buffer) return;
+      if (!isVideoFile) {
+        const buffer = await asegurarAudioBuffer();
+        if (!buffer) return;
+      }
       processAndDownload(segmentsList);
     });
 
@@ -1273,7 +1696,7 @@
       return resampled;
     }
 
-    // Codificación MP3 mono a 11025 Hz y 20 kbps CBR vía lamejs
+    // Codificación MP3 mono a 11025 Hz con bitrate CBR vía lamejs
     function monoFloat32ToMp3(monoSamples, sampleRate = 11025, kbps = 20) {
       const mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, kbps);
       const mp3Data = [];
@@ -1338,11 +1761,70 @@
     }
 
     async function processAndDownload(list) {
+      if (isVideoFile) {
+        let inputWritten = false;
+        try {
+          showToast(`Iniciando corte local de ${list.length} video(s)...`);
+          const ffmpeg = await getFFmpeg();
+          const fileData = await fileToUint8Array(currentMediaFile);
+          ffmpeg.FS('writeFile', 'input_video', fileData);
+          inputWritten = true;
+
+          for (let idx = 0; idx < list.length; idx++) {
+            const seg = list[idx];
+            const inSec = String(seg.in);
+            const durationSec = String(seg.out - seg.in);
+            const ext = currentMediaFile.name.split('.').pop() || 'mp4';
+            const outputName = `cut_${idx}.${ext}`;
+            const cleanName = seg.name.replace(/[^a-zA-Z0-9_\-]/g, '_');
+            const inFormatted = formatTimeCode(seg.in).replace(/:/g, '-');
+            const outFormatted = formatTimeCode(seg.out).replace(/:/g, '-');
+
+            showToast(`Cortando segmento ${idx + 1}/${list.length}: "${seg.name}"...`);
+
+            try {
+              await ffmpeg.run(
+                '-ss', inSec,
+                '-i', 'input_video',
+                '-t', durationSec,
+                '-c', 'copy',
+                outputName
+              );
+
+              const data = ffmpeg.FS('readFile', outputName);
+              const blob = new Blob([data], { type: currentMediaFile.type || 'video/mp4' });
+              const url = URL.createObjectURL(blob);
+
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${cleanName}_(${inFormatted}_a_${outFormatted}).${ext}`;
+              a.click();
+
+              setTimeout(() => URL.revokeObjectURL(url), 10000);
+            } finally {
+              try { ffmpeg.FS('unlink', outputName); } catch (error) {}
+            }
+          }
+
+          showToast(`Exportación de video completada (${list.length} corte/s).`);
+        } catch (err) {
+          console.error('Error al cortar video con FFmpeg:', err);
+          showToast('Error en el corte de video: ' + getErrorMessage(err), true);
+        } finally {
+          if (inputWritten && ffmpegInstance) {
+            try { ffmpegInstance.FS('unlink', 'input_video'); } catch (error) {}
+          }
+        }
+        return;
+      }
+
       const buffer = await asegurarAudioBuffer();
       if (!buffer) return;
 
       const format = exportFormatSelect.value;
-      showToast(`Exportando ${list.length} segmento(s) en ${format.toUpperCase()} (11025Hz Mono)...`);
+      const bitrate = Number(mp3BitrateSelect.value);
+      const formatDescription = format === 'mp3' ? `MP3 ${bitrate} kbps` : 'WAV';
+      showToast(`Exportando ${list.length} segmento(s) en ${formatDescription} (11025Hz Mono)...`);
 
       for (let idx = 0; idx < list.length; idx++) {
         const seg = list[idx];
@@ -1350,7 +1832,7 @@
           const monoSamples = await resampleSegmentToMono11025(seg);
           let blob;
           if (format === 'mp3') {
-            blob = monoFloat32ToMp3(monoSamples, 11025, 20);
+            blob = monoFloat32ToMp3(monoSamples, 11025, bitrate);
           } else {
             blob = monoFloat32ToWav(monoSamples, 11025);
           }
