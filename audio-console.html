@@ -991,18 +991,39 @@
       }
 
       const { createFFmpeg } = FFmpeg;
-      ffmpegInstance = createFFmpeg({
-        log: true,
-        corePath: 'https://unpkg.com/@ffmpeg/core-st@0.11.0/dist/ffmpeg-core.js'
-      });
+      const corePaths = [
+        'https://unpkg.com/@ffmpeg/core-st@0.11.0/dist/ffmpeg-core.js',
+        'https://cdn.jsdelivr.net/npm/@ffmpeg/core-st@0.11.0/dist/ffmpeg-core.js'
+      ];
+      const loadErrors = [];
 
-      try {
-        await ffmpegInstance.load();
-        return ffmpegInstance;
-      } catch (error) {
-        ffmpegInstance = null;
-        throw error;
+      for (let index = 0; index < corePaths.length; index++) {
+        const corePath = corePaths[index];
+        // core-st exports "main" and has no worker asset, but ffmpeg 0.11.6 still fetches workerPath.
+        const candidate = createFFmpeg({
+          log: true,
+          corePath,
+          mainName: 'main',
+          workerPath: 'data:application/javascript,'
+        });
+
+        try {
+          await candidate.load();
+          ffmpegInstance = candidate;
+          return ffmpegInstance;
+        } catch (error) {
+          loadErrors.push(`${new URL(corePath).host}: ${getErrorMessage(error)}`);
+          if (index < corePaths.length - 1) {
+            showToast('No se pudo cargar FFmpeg desde la primera fuente; probando una alternativa...');
+          }
+        }
       }
+
+      throw new Error(
+        'No se pudo descargar el motor de corte de video desde ninguna fuente. ' +
+        'Revisa la conexión a Internet o si el navegador/red bloquea estos CDN. ' +
+        `Detalle: ${loadErrors.join(' | ')}`
+      );
     }
 
     function getErrorMessage(error) {
@@ -1783,13 +1804,18 @@
             showToast(`Cortando segmento ${idx + 1}/${list.length}: "${seg.name}"...`);
 
             try {
-              await ffmpeg.run(
-                '-ss', inSec,
-                '-i', 'input_video',
-                '-t', durationSec,
-                '-c', 'copy',
-                outputName
-              );
+              try {
+                await ffmpeg.run(
+                  '-ss', inSec,
+                  '-i', 'input_video',
+                  '-t', durationSec,
+                  '-c', 'copy',
+                  outputName
+                );
+              } catch (error) {
+                // core-st signals a successful command by throwing ExitStatus with status 0.
+                if (!error || error.name !== 'ExitStatus' || error.status !== 0) throw error;
+              }
 
               const data = ffmpeg.FS('readFile', outputName);
               const blob = new Blob([data], { type: currentMediaFile.type || 'video/mp4' });
