@@ -464,7 +464,10 @@
 
             <div>
               <label for="otrosActores" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Otros actores</label>
-              <input type="text" id="otrosActores" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100" placeholder="Texto libre">
+              <div class="relative">
+                <input type="text" id="otrosActores" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100" placeholder="Texto libre">
+                <div id="sugOtrosActores" class="sugerencias"></div>
+              </div>
             </div>
           </div>
 
@@ -472,6 +475,9 @@
           <div class="pt-4 border-t border-slate-100 dark:border-slate-700 flex flex-wrap items-center justify-end gap-3">
             <button id="btnRestaurarTabla" type="button" onclick="restaurarTablaBorrada()" style="display:none;" class="btn-action bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs py-2 px-4 rounded shadow-sm">
               <i class="fa-solid fa-rotate-left mr-1"></i> Recuperar Tabla Borrada
+            </button>
+            <button id="btnConsulta" type="button" class="btn-action bg-teal-600 hover:bg-teal-500 text-white font-medium text-xs py-2 px-4 rounded shadow-sm">
+              <i class="fa-solid fa-magnifying-glass mr-1"></i> Consulta
             </button>
             <button id="btnBorrarTodo" type="button" onclick="borrarTodo()" class="btn-action bg-red-700 hover:bg-red-600 text-white font-medium text-xs py-2 px-4 rounded shadow-sm">
               <i class="fa-solid fa-trash mr-1"></i> Borrar Tabla
@@ -548,6 +554,34 @@
     </section>
 
   </main>
+
+  <!-- Modal de Consulta (Excel) -->
+  <div id="modalConsulta" class="hidden fixed inset-0 z-[3000] bg-slate-900/70 items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xl w-full max-w-5xl max-h-[88vh] flex flex-col">
+      <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+        <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-magnifying-glass text-slate-500"></i> Consulta
+        </h2>
+        <button id="btnConsultaCerrar" type="button" title="Cerrar (Esc)" class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 px-2 py-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="px-4 py-3 space-y-2 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex flex-col sm:flex-row gap-2">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="consultaBuscar" autocomplete="off" placeholder="Buscar (varias palabras: todas deben coincidir)" class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100">
+          </div>
+          <select id="consultaColumna" class="px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100"><option value="">Todas las columnas</option></select>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnConsultaCargar" type="button" class="btn-action bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-medium text-xs py-1.5 px-3 rounded shadow-sm"><i class="fa-solid fa-file-excel mr-1"></i> Cargar Excel</button>
+          <button id="btnConsultaRecargar" type="button" class="btn-action bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 font-medium text-xs py-1.5 px-3 rounded shadow-sm"><i class="fa-solid fa-rotate mr-1"></i> Recargar del proyecto</button>
+          <input type="file" id="consultaArchivo" accept=".xlsx,.xls,.csv" class="hidden">
+          <span id="consultaEstado" class="text-[11px] text-slate-500 dark:text-slate-400 font-mono"></span>
+        </div>
+      </div>
+      <div id="consultaResultados" class="flex-1 overflow-auto px-4 py-3 text-xs text-slate-700 dark:text-slate-300"></div>
+    </div>
+  </div>
 
   <script>
 const $ = id => document.getElementById(id);
@@ -1888,6 +1922,225 @@ cargarNotasGuardadas();
 cargarListas();
 
   </script>
+<script>
+// ============================================================
+// CONSULTA (Excel del proyecto + carga manual) y OTROS ACTORES (selección múltiple)
+// Cambia estos nombres si tus archivos se llaman distinto (misma carpeta que index.html)
+// ============================================================
+const CONSULTA_URL = './BD_Consulta.xlsx';
+const OTROS_ACTORES_URL = './Otros_Actores.xlsx';
+
+const normTxt = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
+async function leerExcel(fuente) {
+  const buf = typeof fuente === 'string'
+    ? await (async () => {
+        const r = await fetch(`${fuente}?t=${Date.now()}`);
+        if (!r.ok) throw new Error(`No se encontró ${fuente} (${r.status})`);
+        return r.arrayBuffer();
+      })()
+    : await fuente.arrayBuffer();
+  return XLSX.read(buf, { type: 'array' });
+}
+
+// ---------- Otros actores ----------
+let listaOtrosActores = [];
+
+async function cargarOtrosActores() {
+  try {
+    const wb = await leerExcel(OTROS_ACTORES_URL);
+    const filas = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: '' });
+    let nombres = filas.map(f => String(f[0] ?? '').trim()).filter(Boolean);
+    if (nombres.length && /^(nombres?|actor(es)?|otros actores)$/i.test(nombres[0])) nombres = nombres.slice(1);
+    listaOtrosActores = Array.from(new Set(nombres)).sort((a, b) => a.localeCompare(b, 'es'));
+  } catch (e) {
+    console.warn('Otros actores: no se cargó el Excel (', e.message, ')');
+    listaOtrosActores = [];
+  }
+}
+
+(function initOtrosActores() {
+  const campo = $('otrosActores'), cont = $('sugOtrosActores');
+  let indice = -1;
+  const partes = () => campo.value.split(',');
+  const elegidos = () => new Set(partes().slice(0, -1).map(normTxt).filter(Boolean));
+  const tokenActual = () => normTxt(partes().pop());
+
+  function limpiarComaFinal() {
+    const v = campo.value.split(',').map(s => s.trim()).filter(Boolean).join(', ');
+    if (v !== campo.value) { campo.value = v; guardarBorrador('otrosActores'); }
+  }
+  function render() {
+    cont.innerHTML = ''; indice = -1;
+    if (campo.readOnly || !listaOtrosActores.length) return;
+    const ya = elegidos(), t = tokenActual();
+    const items = listaOtrosActores.filter(n => !ya.has(normTxt(n)) && normTxt(n).includes(t));
+    items.forEach(n => {
+      const d = document.createElement('div');
+      d.className = 'sugerencia'; d.textContent = n;
+      d.addEventListener('mousedown', e => { e.preventDefault(); elegir(n); });
+      cont.appendChild(d);
+    });
+  }
+  function elegir(nombre) {
+    const previos = partes().slice(0, -1).map(s => s.trim()).filter(Boolean);
+    campo.value = [...previos, nombre].join(', ') + ', ';
+    guardarBorrador('otrosActores');
+    campo.focus();
+    campo.setSelectionRange(campo.value.length, campo.value.length);
+    render();
+  }
+  function resaltar(items) {
+    items.forEach(el => el.classList.remove('resaltado'));
+    if (items[indice]) { items[indice].classList.add('resaltado'); cont.scrollTop = items[indice].offsetTop - cont.offsetTop; }
+  }
+
+  campo.addEventListener('focus', () => {
+    document.querySelectorAll('.sugerencias').forEach(s => { if (s !== cont) s.innerHTML = ''; });
+    render();
+  });
+  campo.addEventListener('click', () => { if (!cont.children.length) render(); });
+  campo.addEventListener('input', render);
+  campo.addEventListener('blur', () => { setTimeout(() => { cont.innerHTML = ''; limpiarComaFinal(); }, 120); });
+  campo.addEventListener('keydown', e => {
+    const items = cont.querySelectorAll('.sugerencia');
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!items.length) return;
+      indice = e.key === 'ArrowDown' ? (indice + 1) % items.length : (indice - 1 + items.length) % items.length;
+      resaltar(items);
+    } else if (e.key === 'Escape') {
+      cont.innerHTML = '';
+    } else if (e.key === 'Enter' || e.key === 'Tab') {
+      let sel = null;
+      if (indice >= 0 && items[indice]) sel = items[indice].textContent;
+      else if (items.length === 1 && tokenActual()) sel = items[0].textContent;
+      if (sel) { e.preventDefault(); elegir(sel); return; }
+      cont.innerHTML = '';
+      limpiarComaFinal();
+      if (e.key === 'Enter') { e.preventDefault(); focusNextInput(campo); }
+    }
+  });
+
+  // botón para desplegar la lista completa (igual que los demás campos)
+  campo.style.paddingRight = '1.75rem';
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.tabIndex = -1; btn.title = 'Ver lista';
+  btn.className = 'absolute inset-y-0 right-0 w-7 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-[10px]';
+  btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+  btn.addEventListener('mousedown', e => e.preventDefault());
+  btn.addEventListener('click', () => {
+    if (campo.readOnly) return;
+    if (cont.children.length) { cont.innerHTML = ''; return; }
+    campo.focus(); render();
+  });
+  campo.parentElement.appendChild(btn);
+})();
+
+// ---------- Consulta ----------
+const consulta = { filas: [], columnas: [], origen: 'proyecto', nombre: '' };
+const MAX_FILAS_CONSULTA = 200;
+
+function cargarDatosConsulta(wb, origen, nombre) {
+  const filas = [], cols = [];
+  const varias = wb.SheetNames.length > 1;
+  wb.SheetNames.forEach(h => {
+    XLSX.utils.sheet_to_json(wb.Sheets[h], { raw: false, defval: '' }).forEach(f => {
+      const fila = varias ? { Hoja: h, ...f } : f;
+      Object.keys(fila).forEach(k => { if (!cols.includes(k)) cols.push(k); });
+      fila.__txt = normTxt(Object.entries(fila).map(([k, v]) => v).join(' | '));
+      filas.push(fila);
+    });
+  });
+  Object.assign(consulta, { filas, columnas: cols, origen, nombre });
+  const sel = $('consultaColumna'), previa = sel.value;
+  sel.innerHTML = '<option value="">Todas las columnas</option>';
+  cols.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+  if (cols.includes(previa)) sel.value = previa;
+  $('consultaEstado').textContent = `${origen === 'manual' ? 'Archivo cargado' : 'Excel del proyecto'}: ${nombre} · ${filas.length} filas`;
+  renderConsulta();
+}
+
+function renderConsulta() {
+  const box = $('consultaResultados');
+  const tokens = normTxt($('consultaBuscar').value).split(/\s+/).filter(Boolean);
+  const col = $('consultaColumna').value;
+  const coincide = f => {
+    const txt = col ? normTxt(f[col]) : f.__txt;
+    return tokens.every(t => txt.includes(t));
+  };
+  const res = consulta.filas.filter(coincide);
+  box.innerHTML = '';
+  if (!consulta.filas.length) {
+    box.innerHTML = '<p class="text-slate-500 dark:text-slate-400">No hay datos cargados. Coloca el Excel en la carpeta del proyecto o usa "Cargar Excel".</p>';
+    return;
+  }
+  if (!res.length) { box.innerHTML = '<p class="text-slate-500 dark:text-slate-400">Sin resultados.</p>'; return; }
+  const info = document.createElement('p');
+  info.className = 'mb-2 text-[11px] text-slate-500 dark:text-slate-400';
+  info.textContent = res.length > MAX_FILAS_CONSULTA
+    ? `Mostrando ${MAX_FILAS_CONSULTA} de ${res.length} resultados — afina la búsqueda para ver más`
+    : `${res.length} resultado(s)`;
+  box.appendChild(info);
+  const tabla = document.createElement('table');
+  tabla.className = 'w-full text-left border-collapse';
+  const thead = tabla.createTHead().insertRow();
+  consulta.columnas.forEach(c => {
+    const th = document.createElement('th');
+    th.className = 'px-2 py-1.5 whitespace-nowrap bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 sticky top-0 font-semibold';
+    th.textContent = c; thead.appendChild(th);
+  });
+  const tb = tabla.createTBody();
+  res.slice(0, MAX_FILAS_CONSULTA).forEach(f => {
+    const tr = tb.insertRow();
+    tr.className = 'border-b border-slate-100 dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-700/30';
+    consulta.columnas.forEach(c => { const td = tr.insertCell(); td.className = 'px-2 py-1.5 align-top'; td.textContent = f[c] ?? ''; });
+  });
+  box.appendChild(tabla);
+}
+
+async function recargarConsultaProyecto(silencioso) {
+  $('consultaEstado').textContent = 'Cargando…';
+  try {
+    const wb = await leerExcel(CONSULTA_URL);
+    cargarDatosConsulta(wb, 'proyecto', CONSULTA_URL.replace('./', ''));
+  } catch (e) {
+    consulta.filas = []; consulta.columnas = [];
+    $('consultaEstado').textContent = `No se pudo leer ${CONSULTA_URL.replace('./', '')}: ${e.message}`;
+    renderConsulta();
+    if (!silencioso) mostrarMensaje('No se pudo cargar el Excel del proyecto. Puedes usar "Cargar Excel".', 'error');
+  }
+}
+
+function abrirConsulta() {
+  const m = $('modalConsulta');
+  m.classList.remove('hidden'); m.classList.add('flex');
+  $('consultaBuscar').focus();
+  // el Excel del proyecto se vuelve a leer cada vez que se abre (se actualiza constantemente),
+  // salvo que el usuario haya cargado un archivo manualmente en esta sesión
+  if (consulta.origen !== 'manual') recargarConsultaProyecto(true);
+}
+function cerrarConsulta() { const m = $('modalConsulta'); m.classList.add('hidden'); m.classList.remove('flex'); }
+
+$('btnConsulta').addEventListener('click', abrirConsulta);
+$('btnConsultaCerrar').addEventListener('click', cerrarConsulta);
+$('modalConsulta').addEventListener('mousedown', e => { if (e.target === $('modalConsulta')) cerrarConsulta(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('modalConsulta').classList.contains('hidden')) cerrarConsulta(); });
+$('consultaBuscar').addEventListener('input', renderConsulta);
+$('consultaColumna').addEventListener('change', renderConsulta);
+$('btnConsultaCargar').addEventListener('click', () => $('consultaArchivo').click());
+$('btnConsultaRecargar').addEventListener('click', () => { consulta.origen = 'proyecto'; recargarConsultaProyecto(false); });
+$('consultaArchivo').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    cargarDatosConsulta(await leerExcel(f), 'manual', f.name);
+    mostrarMensaje(`Excel cargado: ${f.name}`);
+  } catch (err) { mostrarMensaje('No se pudo leer el archivo: ' + err.message, 'error'); }
+  e.target.value = '';
+});
+
+cargarOtrosActores();
+</script>
 <script>
 /* Editor de Audio: abre audio-console.html en ventana emergente */
 function abrirEditorAudio() {
