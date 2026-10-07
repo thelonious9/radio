@@ -214,7 +214,10 @@
         <div class="w-full md:w-2/3 flex flex-col sm:flex-row gap-3 sm:items-end">
           <div class="sm:w-56 shrink-0"><div>
             <div class="flex items-center justify-between mb-1"><label for="usuario" class="text-xs font-semibold text-slate-700 dark:text-slate-300">Usuario</label><button type="button" class="btn-lock text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs" data-lock="usuario" tabindex="-1" title="Bloquear / Desbloquear campo"><i class="fa-solid fa-lock-open"></i></button></div>
-            <input type="text" id="usuario" name="usuario" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100">
+            <div class="relative">
+              <input type="text" id="usuario" name="usuario" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100">
+              <div id="sugUsuario" class="sugerencias"></div>
+            </div>
           </div></div>
           <div class="flex-1 min-w-0">
           <input type="file" id="archivoAudio" accept="audio/*" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-white dark:file:bg-slate-700 hover:file:bg-slate-800 dark:hover:file:bg-slate-600 border border-slate-300 dark:border-slate-600 rounded cursor-pointer bg-slate-50 dark:bg-slate-900/50">
@@ -304,17 +307,17 @@
           </div>
 
           <div>
-            <div class="flex items-center justify-between mb-1"><label for="canal" class="text-xs font-semibold text-slate-700 dark:text-slate-300">Canal</label><button type="button" class="btn-lock text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs" data-lock="canal" tabindex="-1" title="Bloquear / Desbloquear campo"><i class="fa-solid fa-lock-open"></i></button></div>
-            <div class="relative">
-              <input type="text" id="canal" name="canal" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100">
-              <div id="sugCanal" class="sugerencias"></div>
-            </div>
-          </div>
-          <div>
             <div class="flex items-center justify-between mb-1"><label for="genero" class="text-xs font-semibold text-slate-700 dark:text-slate-300">Género</label><button type="button" class="btn-lock text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs" data-lock="genero" tabindex="-1" title="Bloquear / Desbloquear campo"><i class="fa-solid fa-lock-open"></i></button></div>
             <div class="relative">
               <input type="text" id="genero" name="genero" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100">
               <div id="sugGenero" class="sugerencias"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1"><label for="canal" class="text-xs font-semibold text-slate-700 dark:text-slate-300">Canal</label><button type="button" class="btn-lock text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs" data-lock="canal" tabindex="-1" title="Bloquear / Desbloquear campo"><i class="fa-solid fa-lock-open"></i></button></div>
+            <div class="relative">
+              <input type="text" id="canal" name="canal" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100">
+              <div id="sugCanal" class="sugerencias"></div>
             </div>
           </div>
         </div>
@@ -429,18 +432,18 @@
             </div>
 
             <div>
-              <label for="replica" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Réplica</label>
-              <div class="relative">
-                <input type="text" id="replica" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100" placeholder="Texto libre">
-                <div id="sugReplica" class="sugerencias"></div>
-              </div>
-            </div>
-
-            <div>
               <label for="duracion" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Duración del segmento / Medida de tiempo</label>
               <div class="grid grid-cols-2 gap-2">
                 <input type="number" id="duracion" step="any" min="0" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none font-mono" placeholder="Duración">
                 <div class="relative"><input type="text" id="medidaTiempo" autocomplete="off" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none font-mono" placeholder="Segundos / Minutos"><div id="sugMedidaTiempo" class="sugerencias"></div></div>
+              </div>
+            </div>
+
+            <div>
+              <label for="replica" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Réplica</label>
+              <div class="relative">
+                <input type="text" id="replica" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100" placeholder="Texto libre">
+                <div id="sugReplica" class="sugerencias"></div>
               </div>
             </div>
 
@@ -459,7 +462,10 @@
 
             <div>
               <label for="actorPrincipal" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Actor principal</label>
-              <input type="text" id="actorPrincipal" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100">
+              <div class="relative">
+                <input type="text" id="actorPrincipal" autocomplete="off" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded outline-none text-slate-900 dark:text-slate-100">
+                <div id="sugActorPrincipal" class="sugerencias"></div>
+              </div>
             </div>
 
             <div>
@@ -629,7 +635,9 @@ const $ = id => document.getElementById(id);
       temas: "./Tema.csv",
       municipios: "./Municipio.csv",
       origenes: "./Origen.csv",
-      medioFirma: "./MedioFirma.csv"
+      medioFirma: "./MedioFirma.csv",
+      usuarios: "./Usuario.csv",
+      actoresPrincipales: "./Actor_Principal.xlsx"
     };
 
     // --- CONFIGURACIÓN GOOGLE APP SCRIPT ---
@@ -740,6 +748,23 @@ const $ = id => document.getElementById(id);
     async function cargarLista(url) {
       const filas = limpiarFilasCSV(await cargarCSV(url));
       return Array.from(new Set(filas.map(r => r[0]))).sort((a, b) => a.localeCompare(b, 'es'));
+    }
+
+    async function cargarListaExcel(url) {
+      try {
+        const response = await fetch(`${url}?t=${Date.now()}`);
+        if (!response.ok) throw new Error(`No se encontró ${url} (${response.status})`);
+        const workbook = XLSX.read(await response.arrayBuffer(), { type: 'array' });
+        const primeraHoja = workbook.SheetNames[0];
+        if (!primeraHoja) throw new Error(`El archivo no contiene hojas: ${url}`);
+        const filas = XLSX.utils.sheet_to_json(workbook.Sheets[primeraHoja], { header: 1, raw: false, defval: '' });
+        let valores = filas.map(fila => String(fila[0] ?? '').trim()).filter(Boolean);
+        if (valores.length && /^(actor(es)?|actor principal)$/i.test(valores[0])) valores = valores.slice(1);
+        return Array.from(new Set(valores)).sort((a, b) => a.localeCompare(b, 'es'));
+      } catch (e) {
+        $('erroresCarga').innerText += `Error al cargar ${url}: ${e.message}\n`;
+        return [];
+      }
     }
 
     async function cargarMediosFirma(url) {
@@ -1565,10 +1590,14 @@ function refrescarDependientes() {
 // --- Carga de listas desde los CSV ---
 async function cargarListas() {
   const st = $('statusCarga');
-  const [depData, radioData, generos, estatus, temas, municipios, origenes] = await Promise.all([
+  const [depData, radioData, generos, estatus, temas, municipios, origenes, usuarios, actoresPrincipales] = await Promise.all([
     cargarMapa(urls.dependencias), cargarMediosFirma(urls.medioFirma), cargarLista(urls.generos),
-    cargarLista(urls.estatus), cargarLista(urls.temas), cargarLista(urls.municipios), cargarLista(urls.origenes)
+    cargarLista(urls.estatus), cargarLista(urls.temas), cargarLista(urls.municipios), cargarLista(urls.origenes),
+    cargarLista(urls.usuarios), cargarListaExcel(urls.actoresPrincipales)
   ]);
+
+  autocompletar('usuario', 'sugUsuario', usuarios);
+  autocompletar('actorPrincipal', 'sugActorPrincipal', actoresPrincipales);
 
   orgMap = depData.map;
   listasParaValidar.dependencias = depData.claves;
