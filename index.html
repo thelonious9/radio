@@ -155,6 +155,10 @@
       border-left: 6px solid #dc2626;
     }
 
+    .toast-message.warning {
+      border-left: 6px solid #d97706;
+    }
+
     .sugerencias:empty { display: none !important; }
     #notesTable { font-size: calc(0.75rem * var(--table-zoom, 1)); }
     #notesTableBody tr.selected-row td { background-color: #dbeafe !important; }
@@ -220,7 +224,7 @@
             </div>
           </div></div>
           <div class="flex-1 min-w-0">
-          <input type="file" id="archivoAudio" accept="audio/*" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-white dark:file:bg-slate-700 hover:file:bg-slate-800 dark:hover:file:bg-slate-600 border border-slate-300 dark:border-slate-600 rounded cursor-pointer bg-slate-50 dark:bg-slate-900/50">
+          <input type="file" id="archivoAudio" accept="audio/*,video/*,video/mp4,video/webm,video/quicktime" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-white dark:file:bg-slate-700 hover:file:bg-slate-800 dark:hover:file:bg-slate-600 border border-slate-300 dark:border-slate-600 rounded cursor-pointer bg-slate-50 dark:bg-slate-900/50">
         </div>
         </div>
       </div>
@@ -1136,32 +1140,137 @@ const $ = id => document.getElementById(id);
       }
     }
 
+    // ==========================================
+    // EXTRAER Y COMPRIMIR AUDIO EN EL NAVEGADOR
+    // ==========================================
+    async function extraerAudioDeMedia(file) {
+      if (file.type.startsWith('audio/') && file.size < 20 * 1024 * 1024) {
+        return { blob: file, nombre: file.name, mimeType: file.type };
+      }
+
+      const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextConstructor) {
+        throw new Error('Este navegador no admite la extracción de audio.');
+      }
+
+      const audioCtx = new AudioContextConstructor({ sampleRate: 16000 });
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        const pcmData = new Float32Array(audioBuffer.length);
+
+        for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+          const channelData = audioBuffer.getChannelData(channel);
+          for (let i = 0; i < pcmData.length; i++) {
+            pcmData[i] += channelData[i] / audioBuffer.numberOfChannels;
+          }
+        }
+
+        const sampleRate = 16000;
+        let pcmMono16k = pcmData;
+        if (audioBuffer.sampleRate !== sampleRate) {
+          const outputLength = Math.ceil(pcmData.length * sampleRate / audioBuffer.sampleRate);
+          pcmMono16k = new Float32Array(outputLength);
+          const ratio = audioBuffer.sampleRate / sampleRate;
+          for (let i = 0; i < outputLength; i++) {
+            const sourcePosition = i * ratio;
+            const sourceIndex = Math.floor(sourcePosition);
+            const fraction = sourcePosition - sourceIndex;
+            const nextIndex = Math.min(sourceIndex + 1, pcmData.length - 1);
+            pcmMono16k[i] = pcmData[sourceIndex] * (1 - fraction) + pcmData[nextIndex] * fraction;
+          }
+        }
+
+        const wavBlob = exportarWAVMono(pcmMono16k, sampleRate);
+        const nombreLimpio = file.name.replace(/\.[^/.]+$/, '') + '_audio.wav';
+        return { blob: wavBlob, nombre: nombreLimpio, mimeType: 'audio/wav' };
+      } finally {
+        await audioCtx.close();
+      }
+    }
+
+    // Convierte muestras PCM de 16-bit Mono a WAV.
+    function exportarWAVMono(samples, sampleRate) {
+      const buffer = new ArrayBuffer(44 + samples.length * 2);
+      const view = new DataView(buffer);
+
+      writeString(view, 0, 'RIFF');
+      view.setUint32(4, 36 + samples.length * 2, true);
+      writeString(view, 8, 'WAVE');
+      writeString(view, 12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeString(view, 36, 'data');
+      view.setUint32(40, samples.length * 2, true);
+
+      let offset = 44;
+      for (let i = 0; i < samples.length; i++, offset += 2) {
+        const sample = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+      }
+
+      return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    function writeString(view, offset, string) {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    }
+
+    // ==========================================
+    // FUNCIÓN PRINCIPAL DE SUBIDA ACTUALIZADA
+    // ==========================================
     async function subirAudioSeleccionado() {
       const archivoInput = document.getElementById('archivoAudio');
-      const archivo = archivoInput.files[0];
+      const archivoOriginal = archivoInput.files[0];
       const fecha = document.getElementById('fecha').value;
       const radiodifusora = document.getElementById('radiodifusora').value.trim();
       const btn = document.getElementById('btnSubirAudio');
 
-      if (!archivo) {
-        mostrarMensaje('Selecciona un archivo de audio antes de subirlo.', 'error');
+      if (!archivoOriginal) {
+        mostrarMensaje('Selecciona un archivo de audio o video antes de subirlo.', 'error');
         return;
       }
       if (!fecha || !radiodifusora) {
-        mostrarMensaje('Completa Fecha y Radiodifusora antes de subir el audio.', 'error');
+        mostrarMensaje('Completa Fecha y Radiodifusora antes de subir el archivo.', 'error');
         return;
+      }
+
+      if (archivoOriginal.size > 24 * 1024 * 1024) {
+        mostrarMensaje('El archivo supera 24 MB y puede ser pesado. Si excede el límite de la API de Groq, se guardará en Google Drive, pero la transcripción automática podría no procesarse.', 'warning');
       }
 
       btn.disabled = true;
       const textoOriginal = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando audio e IA...';
 
       try {
+        btn.innerHTML = archivoOriginal.type.startsWith('video/')
+          ? '<i class="fa-solid fa-spinner fa-spin"></i> Extrayendo audio del video...'
+          : '<i class="fa-solid fa-spinner fa-spin"></i> Procesando archivo e IA...';
+
+        const mediaProcesada = await extraerAudioDeMedia(archivoOriginal);
+        if (mediaProcesada.blob.size > 24 * 1024 * 1024) {
+          mostrarMensaje('El audio procesado supera 24 MB. Si excede el límite de la API de Groq, se guardará en Google Drive, pero la transcripción automática podría no procesarse.', 'warning');
+        }
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo a Drive y transcribiendo...';
+
         const base64 = await new Promise((resolve, reject) => {
           const lector = new FileReader();
-          lector.onload = () => resolve(lector.result.split(',')[1]);
-          lector.onerror = () => reject(new Error('No se pudo leer el archivo.'));
-          lector.readAsDataURL(archivo);
+          lector.onload = () => {
+            if (typeof lector.result !== 'string') {
+              reject(new Error('No se pudo leer el archivo de audio extraído.'));
+              return;
+            }
+            resolve(lector.result.split(',')[1]);
+          };
+          lector.onerror = () => reject(new Error('No se pudo leer el archivo de audio extraído.'));
+          lector.readAsDataURL(mediaProcesada.blob);
         });
 
         const respuesta = await fetch(URL_APP_SCRIPT, {
@@ -1171,8 +1280,8 @@ const $ = id => document.getElementById(id);
             accion: 'subirAudio',
             audio: {
               base64,
-              mimeType: archivo.type || 'application/octet-stream',
-              nombre: archivo.name,
+              mimeType: mediaProcesada.mimeType,
+              nombre: mediaProcesada.nombre,
               fecha,
               radiodifusora
             }
@@ -1184,16 +1293,14 @@ const $ = id => document.getElementById(id);
         try {
           resultado = JSON.parse(respuestaTexto);
         } catch {
-          throw new Error(respuestaTexto || 'El servidor no devolvió un objeto JSON válido.');
+          throw new Error(respuestaTexto || 'El servidor no devolvió una respuesta válida.');
         }
 
-        // 1. Extraer la URL devuelta (apoyando formato nuevo y anterior)
         const urlFinal = resultado.url || resultado.liga || '';
         if (!urlFinal) {
           throw new Error(resultado.error || 'El servidor no devolvió la URL del archivo.');
         }
 
-        // 2. Asignar Liga al Input
         const campoLiga = document.getElementById('liga');
         if (campoLiga) {
           campoLiga.value = urlFinal;
@@ -1201,27 +1308,27 @@ const $ = id => document.getElementById(id);
           campoLiga.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
-        // 3. Asignar Transcripción al Textarea de Contenido
         const campoContenido = document.getElementById('transcripcion');
         const textoTranscrito = resultado.transcripcion || resultado.texto || '';
 
         if (campoContenido) {
           campoContenido.value = textoTranscrito;
           localStorage.setItem('transcripcion', textoTranscrito);
-
-          // Ajustar altura elástica del textarea
           autoResize(campoContenido);
           campoContenido.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
-        if (textoTranscrito) {
-          mostrarMensaje('Audio respaldado en Drive y transcrito exitosamente en Transcripción.', 'success');
+        if (textoTranscrito.startsWith('[ADVERTENCIA_TAMAÑO]')) {
+          mostrarMensaje('Archivo subido a Drive, pero superó el límite de Groq.', 'error');
+        } else if (textoTranscrito) {
+          mostrarMensaje('Audio extraído, respaldado en Drive y transcrito exitosamente.', 'success');
         } else {
-          mostrarMensaje('Audio en Drive. No se obtuvo texto de transcripción.', 'error');
+          mostrarMensaje('Archivo en Drive. No se obtuvo texto de transcripción.', 'error');
         }
+
         archivoInput.value = '';
       } catch (error) {
-        console.error('Error al subir/transcribir audio:', error);
+        console.error('Error al procesar archivo:', error);
         mostrarMensaje('Error al procesar: ' + error.message, 'error');
       } finally {
         btn.disabled = false;
@@ -1486,6 +1593,7 @@ function guardarNota() {
     const durationDisplay = document.getElementById('durationDisplay');
     const audioPlaybackSpeed = document.getElementById('audioPlaybackSpeed');
     const audioPlaybackSpeedValue = document.getElementById('audioPlaybackSpeedValue');
+    let audioObjectUrl = null;
 
     audioPlaybackSpeed.addEventListener('input', () => {
       const speed = Number(audioPlaybackSpeed.value);
@@ -1496,12 +1604,15 @@ function guardarNota() {
     document.getElementById('archivoAudio').addEventListener('change', function (e) {
       const file = e.target.files[0];
       if (file) {
-        audioPlayer.src = URL.createObjectURL(file);
+        if (audioObjectUrl) URL.revokeObjectURL(audioObjectUrl);
+        audioObjectUrl = URL.createObjectURL(file);
+        audioPlayer.src = audioObjectUrl;
+        audioPlayer.load();
       }
     });
 
     function formatTime(seconds) {
-      if (isNaN(seconds)) return '00:00:00';
+      if (!Number.isFinite(seconds) || seconds < 0) return '00:00:00';
       const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
       const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
       const s = String(Math.floor(seconds % 60)).padStart(2, '0');
@@ -1513,10 +1624,12 @@ function guardarNota() {
     });
 
     audioPlayer.addEventListener('loadedmetadata', () => {
-      durationDisplay.textContent = `Duración Total: ${formatTime(audioPlayer.duration)}`;
-      $('duracion').value = Math.round(audioPlayer.duration);
+      const duracionDisponible = Number.isFinite(audioPlayer.duration);
+      durationDisplay.textContent = duracionDisponible
+        ? `Duración Total: ${formatTime(audioPlayer.duration)}`
+        : 'Duración Total: No disponible';
+      $('duracion').value = duracionDisponible ? Math.round(audioPlayer.duration) : '';
       $('medidaTiempo').value = 'Segundos';
-      
     });
 
     document.getElementById('btnInsertTime').addEventListener('click', function () {
@@ -1546,14 +1659,18 @@ function mostrarMensaje(msg, tipo = 'success') {
   const t = document.createElement('div');
   t.className = `toast-message ${tipo}`;
   const i = document.createElement('i');
-  i.className = tipo === 'success' ? 'fa-solid fa-circle-check text-emerald-500 text-base' : 'fa-solid fa-circle-exclamation text-red-500 text-base';
+  i.className = tipo === 'success'
+    ? 'fa-solid fa-circle-check text-emerald-500 text-base'
+    : tipo === 'warning'
+      ? 'fa-solid fa-triangle-exclamation text-amber-500 text-base'
+      : 'fa-solid fa-circle-exclamation text-red-500 text-base';
   const s = document.createElement('span');
   s.textContent = msg;
   t.append(i, s);
   $('messageContainer').appendChild(t);
   const quitar = () => { t.classList.add('hide'); setTimeout(() => t.remove(), 300); };
   t.onclick = quitar;
-  setTimeout(quitar, 5000);
+  setTimeout(quitar, tipo === 'warning' ? 10000 : 5000);
 }
 
 // --- Borradores (se conservan al recargar) ---
