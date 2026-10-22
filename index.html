@@ -605,13 +605,15 @@ const $ = id => document.getElementById(id);
       radiodifusoras: [],
       autores: {},
       programas: {},
+      usuarios: [],
       dependencias: [],
       organismos: {},
       generos: [],
       canales: {},
       estatus: [],
       municipios: [],
-      medioOrigen: []
+      medioOrigen: [],
+      temas: []
     };
 
     // CAMPOS PARA RADIO
@@ -1018,8 +1020,10 @@ const $ = id => document.getElementById(id);
       }
     }
 
-    function contieneCamposVacios(nota) {
-      const camposARevisar = camposDeDatos.filter(c => !camposOpcionales.includes(c));
+    function contieneCamposVacios(nota, omitirUsuario = false) {
+      const camposARevisar = camposDeDatos.filter(c =>
+        !camposOpcionales.includes(c) && !(omitirUsuario && c === 'usuario')
+      );
       for (const campo of camposARevisar) {
         if (!nota[campo] || (typeof nota[campo] === 'string' && nota[campo].trim() === '')) {
           return true;
@@ -1095,6 +1099,30 @@ const $ = id => document.getElementById(id);
     async function exportarYEnviar() {
       if (notas.length === 0) {
         mostrarMensaje("No hay notas para exportar.", 'error');
+        return;
+      }
+
+      const usuarioSeleccionado = document.getElementById('usuario').value.trim();
+      if (!listasParaValidar.usuarios.includes(usuarioSeleccionado)) {
+        mostrarMensaje('Debe seleccionar un usuario de la lista Usuario para exportar las capturas.', 'warning');
+        document.getElementById('usuario').focus();
+        return;
+      }
+
+      const notaConUsuarioInvalido = notas.find(nota =>
+        !listasParaValidar.usuarios.includes(String(nota.usuario ?? '').trim())
+      );
+      if (notaConUsuarioInvalido) {
+        mostrarMensaje(`La nota #${notaConUsuarioInvalido.ordenCaptura} no tiene un usuario válido de la lista Usuario.csv. Corrígela antes de exportar.`, 'warning');
+        return;
+      }
+
+      const notaClaudiaSinTemaValido = notas.find(nota =>
+        String(nota.usuario ?? '').trim() === 'Claudia Ávila' &&
+        !listasParaValidar.temas.includes(String(nota.tema ?? '').trim())
+      );
+      if (notaClaudiaSinTemaValido) {
+        mostrarMensaje('El tema es incorrecto. Debe elegir un elemento de la lista Tema.', 'warning');
         return;
       }
 
@@ -1463,7 +1491,22 @@ function limpiarCamposTrasGuardar() {
   autocompletar('organismo', 'sugOrg', dk ? orgMap[dk] : []);
 }
 
-function guardarNota() {
+function guardarNota(omitirRestriccionesUsuarioTema = false) {
+      omitirRestriccionesUsuarioTema = omitirRestriccionesUsuarioTema === true;
+      const usuarioSeleccionado = document.getElementById('usuario').value.trim();
+      const temaSeleccionado = document.getElementById('tema').value.trim();
+      if (!omitirRestriccionesUsuarioTema) {
+        if (!listasParaValidar.usuarios.includes(usuarioSeleccionado)) {
+          mostrarMensaje('Debe seleccionar un usuario de la lista Usuario.csv.', 'warning');
+          document.getElementById('usuario').focus();
+          return;
+        }
+        if (usuarioSeleccionado === 'Claudia Ávila' && !listasParaValidar.temas.includes(temaSeleccionado)) {
+          mostrarMensaje('El tema es incorrecto. Debe elegir un elemento de la lista Tema.', 'warning');
+          document.getElementById('tema').focus();
+          return;
+        }
+      }
 
       // 1. VALIDACIÓN DE LISTAS (No permite guardar si la información ingresada no está en las listas, EXCEPTO Tema e ID)
       const camposAValidar = [
@@ -1543,8 +1586,10 @@ function guardarNota() {
       });
 
       // 3. VALIDACIÓN DE CAMPOS OBLIGATORIOS (Ninguno en blanco salvo los opcionales)
-      if (contieneCamposVacios(nuevaNota)) {
-        const primerCampoVacioId = camposDeDatos.filter(c => !camposOpcionales.includes(c)).find(id => !nuevaNota[id]);
+      if (contieneCamposVacios(nuevaNota, omitirRestriccionesUsuarioTema)) {
+        const primerCampoVacioId = camposDeDatos
+          .filter(c => !camposOpcionales.includes(c) && !(omitirRestriccionesUsuarioTema && c === 'usuario'))
+          .find(id => !nuevaNota[id]);
         if (primerCampoVacioId) {
           document.getElementById(primerCampoVacioId).focus();
         }
@@ -1734,7 +1779,8 @@ async function cargarListas() {
 
   listasParaValidar.generos = generos; autocompletar('genero', 'sugGenero', generos);
   listasParaValidar.estatus = estatus; autocompletar('estatus', 'sugEstatus', estatus);
-  autocompletar('tema', 'sugTema', temas);
+  listasParaValidar.temas = temas; autocompletar('tema', 'sugTema', temas);
+  listasParaValidar.usuarios = usuarios;
   listasParaValidar.municipios = municipios; autocompletar('municipio', 'sugMunicipio', municipios);
   listasParaValidar.medioOrigen = origenes; autocompletar('medioOrigen', 'sugMedioOrigen', origenes);
   refrescarDependientes();
@@ -1969,7 +2015,7 @@ $('opcionesId').addEventListener('change', function () {
 ['usuario', 'fecha', 'id', 'titular'].forEach(id => $(id).addEventListener('keydown', handleEnterKey));
 
 // Botones
-$('btnAddNote').addEventListener('click', guardarNota);
+$('btnAddNote').addEventListener('click', () => guardarNota());
 $('btnClearAll').addEventListener('click', limpiarFormulario);
 $('btnSubirAudio').addEventListener('click', subirAudioSeleccionado);
 $('buscador').addEventListener('input', filtrarTabla);
@@ -1981,7 +2027,10 @@ document.querySelectorAll('#notesTable th[data-col]').forEach(th => th.addEventL
 // Atajos de teclado
 document.addEventListener('keydown', e => {
   const m = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
-  if (m && e.shiftKey && k === 'l') {
+  if (e.shiftKey && k === 'f8') {
+    e.preventDefault();
+    guardarNota(true);
+  } else if (m && e.shiftKey && k === 'l') {
     const a = document.activeElement;
     if (a && camposBloqueables.includes(a.id)) { e.preventDefault(); alternarBloqueo(a.id); }
   } else if (m && e.shiftKey && k === 'j') { e.preventDefault(); duplicarUltimo(); }
@@ -2001,6 +2050,15 @@ function listaParaCelda(col, nota) {
 function validarCelda(col, val, nota) {
   const claves = { radiodifusora: 'radiodifusoras', dependencia: 'dependencias', genero: 'generos', estatus: 'estatus', municipio: 'municipios', medioOrigen: 'medioOrigen' };
   const nombre = encabezadosTabla[col];
+  if (col === 'usuario' && !listasParaValidar.usuarios.includes(val)) {
+    return `"${val}" no es válido en Usuario. Elige un elemento de la lista Usuario.csv.`;
+  }
+  if (col === 'usuario' && val === 'Claudia Ávila' && !listasParaValidar.temas.includes(String(nota.tema ?? '').trim())) {
+    return 'El tema es incorrecto. Elige un elemento de la lista Tema.';
+  }
+  if (col === 'tema' && nota.usuario === 'Claudia Ávila' && !listasParaValidar.temas.includes(val)) {
+    return 'El tema es incorrecto. Elige un elemento de la lista Tema.';
+  }
   if (val && claves[col]) {
     const l = listasParaValidar[claves[col]];
     if (l && l.length && !l.includes(val)) return `"${val}" no es válido en ${nombre}. Elige una opción de la lista.`;
@@ -2045,7 +2103,11 @@ $('notesTableBody').addEventListener('dblclick', e => {
     const val = col === 'titular' ? ed.value.replace(/\s+/g, ' ').trim() : ed.value.trim();
     if (val === original) return renderizarTabla();
     const err = validarCelda(col, val, nota);
-    if (err) { mostrarMensaje('Error: ' + err, 'error'); return renderizarTabla(); }
+    if (err) {
+      const esRestriccionUsuarioTema = col === 'usuario' || (col === 'tema' && nota.usuario === 'Claudia Ávila');
+      mostrarMensaje(esRestriccionUsuarioTema ? err : 'Error: ' + err, esRestriccionUsuarioTema ? 'warning' : 'error');
+      return renderizarTabla();
+    }
     nota[col] = val;
     guardarNotas();
     if (ordenEnEdicion === orden && $(col)) $(col).value = val;
